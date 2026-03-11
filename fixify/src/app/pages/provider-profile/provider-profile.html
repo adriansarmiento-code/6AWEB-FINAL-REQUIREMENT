@@ -1,130 +1,152 @@
-<app-header />
+<app-header [forceBackground]="true" />
 
-<main style="background-color: #F2E8D9; min-height: 100vh;">
+<main class="min-h-screen pt-20" style="background-color: #F9F6F0;">
 
-  <!-- Loading -->
-  @if (loadingProvider()) {
-    <div class="flex flex-col items-center justify-center py-32">
-      <div class="w-10 h-10 rounded-full border-4 border-[#7AAE8E] border-t-[#1E5C3A] animate-spin mb-4"></div>
-      <p class="text-sm" style="color: #1A2E20; opacity: 0.6;">Loading provider...</p>
+  @if (loading()) {
+    <div class="flex items-center justify-center py-32">
+      <div class="w-10 h-10 rounded-full border-4 border-[#4EA8DE] border-t-[#1B3A6B] animate-spin"></div>
     </div>
-  }
-
-  <!-- Error -->
-  @if (errorProvider() && !loadingProvider()) {
-    <div class="flex flex-col items-center justify-center py-32">
+  } @else if (error()) {
+    <div class="max-w-lg mx-auto px-6 py-32 text-center">
       <div class="text-5xl mb-4">⚠️</div>
-      <p class="text-lg font-bold mb-2" style="color: #1A2E20;">{{ errorProvider() }}</p>
+      <p class="font-bold text-xl mb-2" style="color: #1B3A6B;">{{ error() }}</p>
       <a routerLink="/search"
-         class="mt-4 px-4 py-2 rounded-xl text-sm font-medium text-white"
-         style="background-color: #1E5C3A;">
-        Back to Search
+         class="inline-flex items-center gap-2 mt-4 text-sm font-semibold"
+         style="color: #F08C00;">
+        ← Back to Search
       </a>
     </div>
-  }
+  } @else if (provider()) {
 
-  @if (!loadingProvider() && !errorProvider() && provider()) {
-    <!-- Hero Banner -->
-    <section class="noise-overlay" style="background: linear-gradient(135deg, #1E5C3A, #1A2E20);">
-      <div class="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div class="flex flex-col sm:flex-row gap-6 items-start sm:items-center">
+    <!-- ═══════════════════════════════════ HERO ═══ -->
+    <section class="relative overflow-hidden noise-overlay"
+             style="background: linear-gradient(135deg, #0f2347 0%, #1B3A6B 100%);">
 
-          <!-- Avatar -->
-          @if (provider()!.profileImage) {
-            <img [src]="provider()!.profileImage!"
-                 [alt]="provider()!.name"
-                 class="w-24 h-24 rounded-2xl object-cover border-4 border-white/20 flex-shrink-0" />
-          } @else {
-            <div class="w-24 h-24 rounded-2xl flex items-center justify-center text-white text-3xl font-bold flex-shrink-0"
-                 style="background: linear-gradient(135deg, #7AAE8E, #C9A87C);">
-              {{ provider()!.name.charAt(0).toUpperCase() }}
-            </div>
-          }
+      <div class="absolute inset-0 pointer-events-none">
+        <div class="absolute w-96 h-96 rounded-full"
+             style="background: radial-gradient(circle, rgba(240,140,0,0.1) 0%, transparent 70%);
+                    top: -20%; right: -5%;"></div>
+      </div>
 
-          <!-- Info -->
-          <div class="flex-1">
-            <div class="flex flex-wrap items-center gap-2 mb-1">
-              <h1 class="text-3xl font-bold text-white">{{ provider()!.name }}</h1>
-              @if (provider()!.providerInfo?.verified) {
-                <span class="text-xs px-2 py-1 rounded-full font-medium"
-                      style="background-color: rgba(242,232,217,0.2); color: #F2E8D9;">
-                  ✓ Verified
+      <div class="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 py-14">
+
+        <!-- Back -->
+        <a routerLink="/search"
+           class="inline-flex items-center gap-2 text-sm font-medium mb-8 transition-all"
+           style="color: rgba(249,246,240,0.5);"
+           onmouseover="this.style.color='white'"
+           onmouseout="this.style.color='rgba(249,246,240,0.5)'">
+          ← Back to Search
+        </a>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+
+          <!-- Left: profile info -->
+          <div class="lg:col-span-8 flex flex-col sm:flex-row gap-7 items-start">
+
+            <!-- Avatar -->
+            @if (provider()!.profileImage) {
+              <img [src]="provider()!.profileImage!"
+                   class="w-28 h-28 rounded-3xl object-cover border-4 flex-shrink-0"
+                   style="border-color: rgba(255,255,255,0.15);" />
+            } @else {
+              <div class="w-28 h-28 rounded-3xl flex items-center justify-center text-white text-4xl font-black flex-shrink-0"
+                   style="background: linear-gradient(135deg, #F08C00, #e07800);">
+                {{ provider()!.name.charAt(0).toUpperCase() }}
+              </div>
+            }
+
+            <div class="flex-1">
+              <!-- Name + badges -->
+              <div class="flex flex-wrap items-center gap-3 mb-2">
+                <h1 class="text-3xl font-black text-white"
+                    style="font-family: 'Fraunces', serif;">
+                  {{ provider()!.name }}
+                </h1>
+                @if (provider()!.providerInfo?.verified) {
+                  <span class="text-xs px-3 py-1 rounded-full font-bold"
+                        style="background-color: rgba(45,155,111,0.2); color: #2D9B6F;">
+                    ✓ Verified
+                  </span>
+                }
+              </div>
+
+              <!-- Category + area -->
+              <div class="flex flex-wrap gap-3 mb-4">
+                <span class="text-sm px-3 py-1.5 rounded-full font-medium capitalize"
+                      [style.background-color]="getCategoryColor(provider()!.providerInfo?.category || '') + '20'"
+                      [style.color]="getCategoryColor(provider()!.providerInfo?.category || '')">
+                  {{ provider()!.providerInfo?.category || 'General' }}
                 </span>
-              }
-            </div>
-            <p class="text-[#F2E8D9] opacity-75 text-sm mb-3 capitalize">
-              {{ getCategoryLabel(provider()!.providerInfo?.category) }} ·
-              {{ provider()!.providerInfo?.serviceArea || 'Angeles City' }}
-            </p>
-            <div class="flex flex-wrap items-center gap-4 text-sm text-[#F2E8D9]">
-              <div class="flex items-center gap-1">
-                <span style="color: #C9A87C;">★</span>
-                <span>{{ (provider()!.providerInfo?.rating || 0).toFixed(1) }}</span>
-                <span class="opacity-60">({{ provider()!.providerInfo?.reviewCount || 0 }} reviews)</span>
+                @if (provider()!.providerInfo?.serviceArea) {
+                  <span class="text-sm px-3 py-1.5 rounded-full"
+                        style="background: rgba(255,255,255,0.08); color: rgba(249,246,240,0.7);">
+                    📍 {{ provider()!.providerInfo!.serviceArea }}
+                  </span>
+                }
+                @if (provider()!.providerInfo?.yearsExperience) {
+                  <span class="text-sm px-3 py-1.5 rounded-full"
+                        style="background: rgba(255,255,255,0.08); color: rgba(249,246,240,0.7);">
+                    {{ provider()!.providerInfo!.yearsExperience }}+ yrs experience
+                  </span>
+                }
               </div>
-              <div class="opacity-75">
-                {{ provider()!.providerInfo?.completedJobs || 0 }} jobs completed
-              </div>
-              @if (provider()!.providerInfo?.yearsExperience) {
-                <div class="opacity-75">
-                  {{ provider()!.providerInfo!.yearsExperience }} yrs experience
-                </div>
+
+              <!-- Bio -->
+              @if (provider()!.providerInfo?.bio) {
+                <p class="text-sm leading-relaxed max-w-lg"
+                   style="color: rgba(249,246,240,0.65);">
+                  {{ provider()!.providerInfo!.bio }}
+                </p>
               }
             </div>
           </div>
 
-          <!-- CTA Buttons -->
-          <div class="flex flex-col gap-2 flex-shrink-0">
-            <button (click)="bookProvider()"
-                    class="px-6 py-2.5 rounded-xl font-semibold text-sm transition-all"
-                    style="background-color: #C9A87C; color: #1A2E20;">
-              Book Now
-            </button>
-            <button (click)="messageProvider()"
-                    class="px-6 py-2.5 rounded-xl font-semibold text-sm border-2 transition-all"
-                    style="border-color: rgba(255,255,255,0.4); color: white;">
-              Message
-            </button>
+          <!-- Right: stats -->
+          <div class="lg:col-span-4 grid grid-cols-2 gap-3">
+            @for (stat of [
+              {value: provider()!.providerInfo?.rating?.toFixed(1) || '0.0', label: 'Rating', color: '#F08C00'},
+              {value: reviews().length, label: 'Reviews', color: '#4EA8DE'},
+              {value: provider()!.providerInfo?.hourlyRate ? '₱' + provider()!.providerInfo!.hourlyRate : '—', label: 'Per Hour', color: '#2D9B6F'},
+              {value: (provider()!.providerInfo?.services?.length || 0), label: 'Services', color: '#F08C00'}
+            ]; track stat.label) {
+              <div class="rounded-2xl p-4 text-center"
+                   style="background: rgba(255,255,255,0.06);">
+                <p class="text-2xl font-black mb-0.5" [style.color]="stat.color"
+                   style="font-family: 'Fraunces', serif;">{{ stat.value }}</p>
+                <p class="text-xs" style="color: rgba(249,246,240,0.45);">{{ stat.label }}</p>
+              </div>
+            }
           </div>
 
         </div>
       </div>
     </section>
 
-    <!-- Content -->
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- ═══════════════════════════════════ BODY ═══ -->
+    <div class="max-w-7xl mx-auto px-6 lg:px-8 py-12">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-        <!-- Left Column -->
-        <div class="lg:col-span-2 flex flex-col gap-6">
-
-          <!-- Bio -->
-          @if (provider()!.providerInfo?.bio) {
-            <div class="bg-white rounded-2xl p-6 border border-[#F2E8D9]">
-              <h2 class="font-bold text-lg mb-3" style="color: #1A2E20;">About</h2>
-              <p class="text-sm leading-relaxed" style="color: #1A2E20; opacity: 0.75;">
-                {{ provider()!.providerInfo!.bio }}
-              </p>
-            </div>
-          }
+        <!-- Left: services + reviews -->
+        <div class="lg:col-span-2 flex flex-col gap-8">
 
           <!-- Services -->
           @if (provider()!.providerInfo?.services?.length) {
-            <div class="bg-white rounded-2xl p-6 border border-[#F2E8D9]">
-              <h2 class="font-bold text-lg mb-4" style="color: #1A2E20;">Services & Pricing</h2>
-              <div class="flex flex-col gap-3">
-                @for (service of provider()!.providerInfo!.services!; track $index) {
-                  <div class="flex items-start justify-between gap-4 p-3 rounded-xl"
-                       style="background-color: #F2E8D9;">
-                    <div class="flex-1">
-                      <p class="font-medium text-sm" style="color: #1A2E20;">{{ service.name }}</p>
-                      @if (service.description) {
-                        <p class="text-xs mt-0.5" style="color: #1A2E20; opacity: 0.6;">
-                          {{ service.description }}
-                        </p>
-                      }
-                    </div>
-                    <p class="font-bold text-sm flex-shrink-0" style="color: #1E5C3A;">
+            <div>
+              <h2 class="text-2xl font-black mb-5"
+                  style="color: #1B3A6B; font-family: 'Fraunces', serif;">
+                Services Offered
+              </h2>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                @for (service of provider()!.providerInfo!.services!; track service.name) {
+                  <div class="rounded-3xl p-5 border-2 bg-white"
+                       style="border-color: rgba(27,58,107,0.08); border-left: 3px solid #1B3A6B;">
+                    <h3 class="font-bold mb-1" style="color: #1B3A6B;">{{ service.name }}</h3>
+                    @if (service.description) {
+                      <p class="text-xs mb-3 leading-relaxed"
+                         style="color: #3D4A5C; opacity: 0.6;">{{ service.description }}</p>
+                    }
+                    <p class="text-xl font-black" style="color: #F08C00; font-family: 'Fraunces', serif;">
                       ₱{{ service.price.toLocaleString() }}
                     </p>
                   </div>
@@ -133,49 +155,74 @@
             </div>
           }
 
-          <!-- Reviews -->
-          <div class="bg-white rounded-2xl p-6 border border-[#F2E8D9]">
-            <h2 class="font-bold text-lg mb-4" style="color: #1A2E20;">
-              Reviews
-              <span class="text-sm font-normal opacity-50 ml-1">({{ reviews().length }})</span>
-            </h2>
-
-            @if (loadingReviews()) {
-              <div class="flex items-center gap-2 py-4">
-                <div class="w-5 h-5 rounded-full border-2 border-[#7AAE8E] border-t-[#1E5C3A] animate-spin"></div>
-                <p class="text-sm" style="color: #1A2E20; opacity: 0.6;">Loading reviews...</p>
+          <!-- Skills -->
+          @if (provider()!.providerInfo?.skills?.length) {
+            <div>
+              <h2 class="text-xl font-black mb-4"
+                  style="color: #1B3A6B; font-family: 'Fraunces', serif;">
+                Skills & Expertise
+              </h2>
+              <div class="flex flex-wrap gap-2">
+                @for (skill of provider()!.providerInfo!.skills!; track skill) {
+                  <span class="px-4 py-2 rounded-full text-sm font-medium"
+                        style="background-color: rgba(27,58,107,0.07); color: #1B3A6B;">
+                    {{ skill }}
+                  </span>
+                }
               </div>
-            } @else if (reviews().length === 0) {
-              <div class="text-center py-8">
-                <div class="text-3xl mb-2">⭐</div>
-                <p class="text-sm" style="color: #1A2E20; opacity: 0.6;">No reviews yet.</p>
+            </div>
+          }
+
+          <!-- Reviews -->
+          <div>
+            <div class="flex items-center justify-between mb-5">
+              <h2 class="text-2xl font-black"
+                  style="color: #1B3A6B; font-family: 'Fraunces', serif;">
+                Reviews
+              </h2>
+              <span class="text-sm" style="color: #3D4A5C; opacity: 0.5;">
+                {{ reviews().length }} total
+              </span>
+            </div>
+
+            @if (reviews().length === 0) {
+              <div class="flex flex-col items-center justify-center py-12 rounded-3xl border-2 bg-white"
+                   style="border-color: rgba(27,58,107,0.08);">
+                <div class="text-4xl mb-3">⭐</div>
+                <p class="font-medium" style="color: #1B3A6B;">No reviews yet</p>
+                <p class="text-sm" style="color: #3D4A5C; opacity: 0.5;">
+                  Be the first to book and review.
+                </p>
               </div>
             } @else {
               <div class="flex flex-col gap-4">
                 @for (review of reviews(); track review._id) {
-                  <div class="border-b pb-4 last:border-0 last:pb-0" style="border-color: #F2E8D9;">
-                    <div class="flex items-start justify-between gap-2 mb-1">
-                      <p class="font-medium text-sm" style="color: #1A2E20;">
-                        {{ getReviewerName(review) }}
-                      </p>
-                      <span class="text-xs" style="color: #1A2E20; opacity: 0.5;">
+                  <div class="rounded-3xl p-5 border-2 bg-white animate-fade-up"
+                       style="border-color: rgba(27,58,107,0.08);">
+                    <div class="flex items-start justify-between gap-3 mb-2">
+                      <div>
+                        <p class="font-bold text-sm" style="color: #1B3A6B;">
+                          {{ getReviewerName(review) }}
+                        </p>
+                        <div class="flex gap-0.5 mt-0.5">
+                          @for (star of getStars(review.rating); track $index) {
+                            <span style="color: #F08C00;">{{ star }}</span>
+                          }
+                        </div>
+                      </div>
+                      <span class="text-xs flex-shrink-0" style="color: #3D4A5C; opacity: 0.4;">
                         {{ formatDate(review.createdAt) }}
                       </span>
                     </div>
-                    <div class="flex text-sm mb-2" style="color: #C9A87C;">
-                      @for (star of getStars(review.rating); track $index) {
-                        <span>{{ star }}</span>
-                      }
-                    </div>
-                    <p class="text-sm leading-relaxed" style="color: #1A2E20; opacity: 0.75;">
+                    <p class="text-sm leading-relaxed mb-3" style="color: #3D4A5C; opacity: 0.75;">
                       {{ review.comment }}
                     </p>
                     @if (review.response?.text) {
-                      <div class="mt-3 pl-3 border-l-2 border-[#7AAE8E]">
-                        <p class="text-xs font-medium mb-0.5" style="color: #1E5C3A;">
-                          Provider's response
+                      <div class="pl-4 border-l-2 py-1" style="border-color: #4EA8DE;">
+                        <p class="text-xs font-bold mb-1" style="color: #4EA8DE;">
+                          Provider Response
                         </p>
-                        <p class="text-xs" style="color: #1A2E20; opacity: 0.7;">
+                        <p class="text-xs" style="color: #3D4A5C; opacity: 0.7;">
                           {{ review.response!.text }}
                         </p>
                       </div>
@@ -188,116 +235,195 @@
 
         </div>
 
-        <!-- Right Column -->
-        <div class="flex flex-col gap-4">
+        <!-- Right: sticky booking card -->
+        <div class="lg:col-span-1">
+          <div class="rounded-3xl p-6 border-2 bg-white sticky top-24"
+               style="border-color: rgba(27,58,107,0.08);">
 
-          <!-- Stats Card -->
-          <div class="bg-white rounded-2xl p-5 border border-[#F2E8D9]">
-            <h3 class="font-bold text-sm mb-4" style="color: #1A2E20;">Provider Stats</h3>
-            <div class="flex flex-col gap-3">
-              <div class="flex justify-between items-center">
-                <span class="text-xs" style="color: #1A2E20; opacity: 0.6;">Rating</span>
-                <span class="font-bold text-sm" style="color: #1E5C3A;">
-                  {{ (provider()!.providerInfo?.rating || 0).toFixed(1) }} ★
-                </span>
+            <h3 class="font-black text-lg mb-1"
+                style="color: #1B3A6B; font-family: 'Fraunces', serif;">
+              Book {{ provider()!.name.split(' ')[0] }}
+            </h3>
+            <p class="text-sm mb-5" style="color: #3D4A5C; opacity: 0.5;">
+              {{ provider()!.providerInfo?.services?.length || 0 }} service(s) available
+            </p>
+
+            <!-- Rating summary -->
+            <div class="flex items-center gap-3 mb-5 p-4 rounded-2xl"
+                 style="background-color: rgba(27,58,107,0.04);">
+              <p class="text-4xl font-black" style="color: #1B3A6B; font-family: 'Fraunces', serif;">
+                {{ provider()!.providerInfo?.rating?.toFixed(1) || '0.0' }}
+              </p>
+              <div>
+                <div class="flex gap-0.5 mb-0.5">
+                  @for (star of getStars(provider()!.providerInfo?.rating ?? 0); track $index) {
+                    <span style="color: #F08C00;">{{ star }}</span>
+                  }
+                </div>
+                <p class="text-xs" style="color: #3D4A5C; opacity: 0.5;">
+                  {{ reviews().length }} reviews
+                </p>
               </div>
-              <div class="flex justify-between items-center">
-                <span class="text-xs" style="color: #1A2E20; opacity: 0.6;">Reviews</span>
-                <span class="font-bold text-sm" style="color: #1A2E20;">
-                  {{ provider()!.providerInfo?.reviewCount || 0 }}
-                </span>
-              </div>
-              <div class="flex justify-between items-center">
-                <span class="text-xs" style="color: #1A2E20; opacity: 0.6;">Jobs Done</span>
-                <span class="font-bold text-sm" style="color: #1A2E20;">
-                  {{ provider()!.providerInfo?.completedJobs || 0 }}
-                </span>
-              </div>
-              @if (provider()!.providerInfo?.yearsExperience) {
-                <div class="flex justify-between items-center">
-                  <span class="text-xs" style="color: #1A2E20; opacity: 0.6;">Experience</span>
-                  <span class="font-bold text-sm" style="color: #1A2E20;">
-                    {{ provider()!.providerInfo!.yearsExperience }} yrs
+            </div>
+
+            <!-- Provider details -->
+            <div class="flex flex-col gap-3 mb-6 text-sm">
+              @if (provider()!.providerInfo?.serviceArea) {
+                <div class="flex items-center justify-between">
+                  <span style="color: #3D4A5C; opacity: 0.5;">Service Area</span>
+                  <span class="font-medium" style="color: #1B3A6B;">
+                    {{ provider()!.providerInfo!.serviceArea }}
                   </span>
                 </div>
               }
               @if (provider()!.providerInfo?.hourlyRate) {
-                <div class="flex justify-between items-center">
-                  <span class="text-xs" style="color: #1A2E20; opacity: 0.6;">Rate</span>
-                  <span class="font-bold text-sm" style="color: #1E5C3A;">
-                    ₱{{ provider()!.providerInfo!.hourlyRate!.toLocaleString() }}/hr
+                <div class="flex items-center justify-between">
+                  <span style="color: #3D4A5C; opacity: 0.5;">Hourly Rate</span>
+                  <span class="font-bold" style="color: #F08C00;">
+                    ₱{{ provider()!.providerInfo!.hourlyRate }}/hr
                   </span>
                 </div>
               }
-            </div>
-          </div>
-
-          <!-- Skills -->
-          @if (provider()!.providerInfo?.skills?.length) {
-            <div class="bg-white rounded-2xl p-5 border border-[#F2E8D9]">
-              <h3 class="font-bold text-sm mb-3" style="color: #1A2E20;">Skills</h3>
-              <div class="flex flex-wrap gap-2">
-                @for (skill of provider()!.providerInfo!.skills!; track $index) {
-                  <span class="text-xs px-2.5 py-1 rounded-full"
-                        style="background-color: #F2E8D9; color: #1E5C3A;">
-                    {{ skill }}
-                  </span>
+              <div class="flex items-center justify-between">
+                <span style="color: #3D4A5C; opacity: 0.5;">Status</span>
+                @if (provider()!.providerInfo?.verified) {
+                  <span class="font-medium" style="color: #2D9B6F;">✓ Verified</span>
+                } @else {
+                  <span style="color: #F08C00;">Pending</span>
                 }
               </div>
             </div>
-          }
 
-          <!-- Book CTA -->
-          <div class="bg-white rounded-2xl p-5 border border-[#F2E8D9]">
-            <h3 class="font-bold text-sm mb-3" style="color: #1A2E20;">Ready to book?</h3>
-            <p class="text-xs mb-4" style="color: #1A2E20; opacity: 0.6;">
-              Book {{ provider()!.name.split(' ')[0] }} for your home service needs.
-            </p>
-            <button (click)="bookProvider()"
-                    class="w-full py-2.5 rounded-xl text-sm font-semibold text-white transition-all"
-                    style="background-color: #1E5C3A;">
-              Book Now
-            </button>
-            <button (click)="messageProvider()"
-                    class="w-full mt-2 py-2.5 rounded-xl text-sm font-medium border transition-all"
-                    style="border-color: #1E5C3A; color: #1E5C3A;">
-              Send Message
-            </button>
+            <!-- Action buttons -->
+            <div class="flex flex-col gap-3">
+              <button (click)="onBookNow()"
+                      class="w-full py-3.5 rounded-2xl text-sm font-bold text-white relative overflow-hidden group"
+                      style="background-color: #F08C00;">
+                <span class="relative z-10">Book Now →</span>
+                <div class="absolute inset-0 bg-white/15 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+              </button>
+              <button (click)="onContactProvider()"
+                      class="w-full py-3.5 rounded-2xl text-sm font-bold border-2 transition-all"
+                      style="border-color: rgba(27,58,107,0.15); color: #1B3A6B;"
+                      onmouseover="this.style.backgroundColor='rgba(27,58,107,0.05)'"
+                      onmouseout="this.style.backgroundColor='transparent'">
+                💬 Contact Provider
+              </button>
+            </div>
+
           </div>
-
         </div>
+
       </div>
     </div>
   }
 
 </main>
 
-<!-- Login Prompt Modal -->
+<!-- ═══════════════════ LOGIN MODAL ═══ -->
 @if (showLoginModal()) {
   <div class="fixed inset-0 z-50 flex items-center justify-center px-4"
-       style="background-color: rgba(0,0,0,0.5);">
-    <div class="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-fade-up">
-      <h3 class="text-lg font-bold mb-2" style="color: #1A2E20;">Login Required</h3>
-      <p class="text-sm mb-6" style="color: #1A2E20; opacity: 0.6;">
-        You need to be logged in to book or message a provider.
+       style="background-color: rgba(0,0,0,0.6);"
+       (click)="showLoginModal.set(false)">
+    <div class="bg-white rounded-3xl p-8 w-full max-w-sm shadow-2xl animate-fade-up"
+         (click)="$event.stopPropagation()">
+      <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-5"
+           style="background: linear-gradient(135deg, #1B3A6B, #2d5a9e);">
+        🔒
+      </div>
+      <h3 class="text-xl font-black text-center mb-2"
+          style="color: #1B3A6B; font-family: 'Fraunces', serif;">
+        Sign in first
+      </h3>
+      <p class="text-sm text-center mb-6" style="color: #3D4A5C; opacity: 0.65;">
+        You need an account to book or message <strong>{{ provider()!.name }}</strong>.
       </p>
-      <div class="flex flex-col gap-2">
-        <button (click)="goToLogin()"
-                class="w-full py-2.5 rounded-xl text-sm font-medium text-white"
-                style="background-color: #1E5C3A;">
-          Login
-        </button>
-        <button (click)="goToSignup()"
-                class="w-full py-2.5 rounded-xl text-sm font-medium border"
-                style="border-color: #1E5C3A; color: #1E5C3A;">
+      <div class="flex flex-col gap-3">
+        <a [routerLink]="'/login'"
+           [queryParams]="{redirect: '/provider/' + provider()!._id}"
+           class="w-full py-3.5 rounded-2xl text-sm font-bold text-white text-center relative overflow-hidden group"
+           style="background-color: #F08C00;">
+          <span class="relative z-10">Sign In</span>
+          <div class="absolute inset-0 bg-white/15 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+        </a>
+        <a [routerLink]="'/signup'"
+           [queryParams]="{redirect: '/provider/' + provider()!._id}"
+           class="w-full py-3.5 rounded-2xl text-sm font-bold text-center border-2 transition-all"
+           style="border-color: rgba(27,58,107,0.15); color: #1B3A6B;"
+           onmouseover="this.style.backgroundColor='rgba(27,58,107,0.04)'"
+           onmouseout="this.style.backgroundColor='transparent'">
           Create Account
-        </button>
-        <button (click)="closeLoginModal()"
-                class="w-full py-2.5 rounded-xl text-sm"
-                style="color: #1A2E20; opacity: 0.6;">
-          Cancel
+        </a>
+        <button (click)="showLoginModal.set(false)"
+                class="text-xs font-medium"
+                style="color: #3D4A5C; opacity: 0.4;">
+          Maybe later
         </button>
       </div>
+    </div>
+  </div>
+}
+
+<!-- ═══════════════════ SELECT SERVICE MODAL ═══ -->
+@if (showServiceModal()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center px-4"
+       style="background-color: rgba(0,0,0,0.6);"
+       (click)="showServiceModal.set(false)">
+    <div class="bg-white rounded-3xl p-7 w-full max-w-md shadow-2xl animate-fade-up"
+         (click)="$event.stopPropagation()">
+
+      <h3 class="text-xl font-black mb-1"
+          style="color: #1B3A6B; font-family: 'Fraunces', serif;">
+        Select a Service
+      </h3>
+      <p class="text-sm mb-5" style="color: #3D4A5C; opacity: 0.55;">
+        Choose from {{ provider()!.name.split(' ')[0] }}'s offerings below.
+      </p>
+
+      @if (provider()!.providerInfo?.services?.length) {
+        <div class="flex flex-col gap-2 mb-5">
+          @for (service of provider()!.providerInfo!.services!; track service.name) {
+            <button type="button"
+                    (click)="selectService(service)"
+                    class="flex items-center justify-between px-4 py-3.5 rounded-2xl border-2 text-left transition-all"
+                    [style.border-color]="selectedService()?.name === service.name ? '#1B3A6B' : 'rgba(27,58,107,0.12)'"
+                    [style.background-color]="selectedService()?.name === service.name ? 'rgba(27,58,107,0.05)' : 'transparent'">
+              <div>
+                <p class="font-semibold text-sm" style="color: #1B3A6B;">{{ service.name }}</p>
+                @if (service.description) {
+                  <p class="text-xs mt-0.5" style="color: #3D4A5C; opacity: 0.5;">{{ service.description }}</p>
+                }
+              </div>
+              <div class="flex items-center gap-3 ml-4 flex-shrink-0">
+                <span class="font-black" style="color: #F08C00; font-family: 'Fraunces', serif;">
+                  ₱{{ service.price.toLocaleString() }}
+                </span>
+                @if (selectedService()?.name === service.name) {
+                  <span class="w-5 h-5 rounded-full flex items-center justify-center text-white text-xs"
+                        style="background-color: #1B3A6B;">✓</span>
+                }
+              </div>
+            </button>
+          }
+        </div>
+        <button (click)="proceedToBooking()"
+                [disabled]="!selectedService()"
+                class="w-full py-3.5 rounded-2xl text-sm font-bold text-white relative overflow-hidden group disabled:opacity-40"
+                style="background-color: #F08C00;">
+          <span class="relative z-10">Continue to Booking →</span>
+          <div class="absolute inset-0 bg-white/15 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+        </button>
+      } @else {
+        <p class="text-sm text-center py-6" style="color: #3D4A5C; opacity: 0.5;">
+          This provider has no services listed yet.
+        </p>
+      }
+
+      <button (click)="showServiceModal.set(false)"
+              class="w-full mt-3 text-xs font-medium"
+              style="color: #3D4A5C; opacity: 0.4;">
+        Cancel
+      </button>
     </div>
   </div>
 }

@@ -96,6 +96,7 @@ export interface Booking {
   totalAmount: number;
   createdAt?: string;
   updatedAt?: string;
+  reviewed?: boolean;
 }
 
 export interface CreateBookingPayload {
@@ -148,20 +149,27 @@ export interface CreateReviewPayload {
 
 export interface Message {
   _id: string;
+  conversation?: string;
   sender: User | string;
   receiver: User | string;
-  content: string;
+  message: string;
   read: boolean;
   createdAt?: string;
 }
 
 
 export interface Conversation {
-  _id: string;
-  participants: (User | string)[];
-  lastMessage?: Message | string;
+  conversationId: string;
+  otherUser: {
+    _id: string;
+    name: string;
+    email?: string;
+    phone?: string;
+    profileImage?: string;
+  };
+  lastMessage: string;
+  lastMessageTime?: string;
   unreadCount?: number;
-  updatedAt?: string;
 }
 
 // ============================================================

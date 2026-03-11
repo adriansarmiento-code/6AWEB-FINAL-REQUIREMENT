@@ -1,266 +1,295 @@
-<app-header />
+<app-header [forceBackground]="true" />
 
-<main style="background-color: #F2E8D9; min-height: 100vh;">
+<main class="min-h-screen pt-24 pb-16" style="background-color: #F9F6F0;">
+  <div class="max-w-4xl mx-auto px-6 lg:px-8">
 
-  <!-- Loading -->
-  @if (loadingProvider()) {
-    <div class="flex flex-col items-center justify-center py-32">
-      <div class="w-10 h-10 rounded-full border-4 border-[#7AAE8E] border-t-[#1E5C3A] animate-spin mb-4"></div>
-      <p class="text-sm" style="color: #1A2E20; opacity: 0.6;">Loading...</p>
-    </div>
-  }
+    <!-- Back -->
+    <a [routerLink]="provider() ? '/provider/' + provider()!._id : '/search'"
+       class="inline-flex items-center gap-2 text-sm font-medium mb-7 transition-all"
+       style="color: #3D4A5C; opacity: 0.5;"
+       onmouseover="this.style.opacity='1'"
+       onmouseout="this.style.opacity='0.5'">
+      ← Back to Provider
+    </a>
 
-  <!-- Error -->
-  @if (errorProvider() && !loadingProvider()) {
-    <div class="flex flex-col items-center justify-center py-32">
-      <div class="text-5xl mb-4">⚠️</div>
-      <p class="text-lg font-bold" style="color: #1A2E20;">{{ errorProvider() }}</p>
-    </div>
-  }
-
-  @if (!loadingProvider() && !errorProvider() && provider()) {
-
-    <!-- Header -->
-    <section class="py-10 noise-overlay" style="background-color: #1E5C3A;">
-      <div class="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 class="text-3xl font-bold text-white mb-1">Book a Service</h1>
-        <p class="text-[#F2E8D9] opacity-75 text-sm">
-          with {{ provider()!.name }}
-        </p>
+    <!-- Page title -->
+    <div class="mb-8 animate-fade-up">
+      <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border mb-4"
+           style="border-color: rgba(27,58,107,0.15); background-color: rgba(27,58,107,0.05);">
+        <span class="text-xs font-bold uppercase tracking-widest" style="color: #1B3A6B;">
+          New Booking
+        </span>
       </div>
-    </section>
+      <h1 class="text-3xl font-black" style="color: #1B3A6B; font-family: 'Fraunces', serif;">
+        Book a Service
+      </h1>
+    </div>
 
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-7">
 
-        <!-- Form -->
-        <div class="lg:col-span-2">
+      <!-- ══════════ FORM ══════════ -->
+      <div class="lg:col-span-2">
+        <div class="rounded-3xl p-6 sm:p-8 border-2 bg-white animate-fade-up"
+             style="border-color: rgba(27,58,107,0.08);">
+
+          @if (error()) {
+            <div class="mb-5 px-4 py-3 rounded-2xl text-sm font-medium"
+                 style="background-color: rgba(220,38,38,0.08); color: #ef4444;
+                        border: 1px solid rgba(220,38,38,0.2);">
+              {{ error() }}
+            </div>
+          }
+
           <form (ngSubmit)="onSubmit()">
 
-            <!-- Error -->
-            @if (error()) {
-              <div class="mb-4 px-4 py-3 rounded-xl text-sm"
-                   style="background-color: #FEE2E2; color: #DC2626;">
-                {{ error() }}
-              </div>
-            }
-
-            <!-- Select Service -->
-            <div class="bg-white rounded-2xl p-6 border border-[#F2E8D9] mb-4">
-              <h2 class="font-bold text-lg mb-4" style="color: #1A2E20;">Select a Service</h2>
-
-              @if (!provider()!.providerInfo?.services?.length) {
-                <p class="text-sm" style="color: #1A2E20; opacity: 0.6;">
-                  This provider has no services listed yet.
-                </p>
+            <!-- Service selector -->
+            <div class="mb-6">
+              <label class="block text-xs font-bold uppercase tracking-wider mb-3"
+                     style="color: #3D4A5C; opacity: 0.5;">
+                Select Service <span style="color: #ef4444;">*</span>
+              </label>
+              @if (loadingProvider()) {
+                <div class="h-16 rounded-2xl animate-pulse"
+                     style="background-color: rgba(27,58,107,0.06);"></div>
+              } @else if (provider()?.providerInfo?.services?.length) {
+                <div class="flex flex-col gap-2">
+                  @for (service of provider()!.providerInfo!.services!; track service.name) {
+                    <button type="button"
+                            (click)="selectedService.set(service)"
+                            class="flex items-center justify-between px-4 py-3 rounded-2xl border-2 text-left transition-all"
+                            [style.border-color]="selectedService()?.name === service.name ? '#1B3A6B' : 'rgba(27,58,107,0.12)'"
+                            [style.background-color]="selectedService()?.name === service.name ? 'rgba(27,58,107,0.05)' : 'transparent'">
+                      <div>
+                        <p class="font-semibold text-sm" style="color: #1B3A6B;">{{ service.name }}</p>
+                        @if (service.description) {
+                          <p class="text-xs mt-0.5" style="color: #3D4A5C; opacity: 0.5;">
+                            {{ service.description }}
+                          </p>
+                        }
+                      </div>
+                      <div class="flex items-center gap-3 flex-shrink-0 ml-4">
+                        <span class="font-black text-base" style="color: #F08C00; font-family: 'Fraunces', serif;">
+                          ₱{{ service.price.toLocaleString() }}
+                        </span>
+                        @if (selectedService()?.name === service.name) {
+                          <span class="w-5 h-5 rounded-full flex items-center justify-center text-white text-xs"
+                                style="background-color: #1B3A6B;">✓</span>
+                        }
+                      </div>
+                    </button>
+                  }
+                </div>
+              } @else {
+                <div class="px-4 py-3 rounded-2xl text-sm"
+                     style="background-color: rgba(27,58,107,0.04); color: #3D4A5C; opacity: 0.6;">
+                  No services listed by this provider.
+                </div>
               }
+            </div>
 
-              <div class="flex flex-col gap-3">
-                @for (service of provider()!.providerInfo?.services || []; track $index) {
+            <!-- Date -->
+            <div class="mb-5">
+              <label class="block text-xs font-bold uppercase tracking-wider mb-2"
+                     style="color: #3D4A5C; opacity: 0.5;">
+                Preferred Date <span style="color: #ef4444;">*</span>
+              </label>
+              <input type="date"
+                     [ngModel]="scheduledDate()"
+                     (ngModelChange)="scheduledDate.set($event)"
+                     name="scheduledDate"
+                     [min]="minDate"
+                     required
+                     class="w-full px-4 py-3 rounded-2xl border-2 text-sm outline-none transition-all"
+                     style="border-color: rgba(27,58,107,0.12); color: #1B3A6B;"
+                     onfocus="this.style.borderColor='#1B3A6B'"
+                     onblur="this.style.borderColor='rgba(27,58,107,0.12)'" />
+            </div>
+
+            <!-- Time -->
+            <div class="mb-5">
+              <label class="block text-xs font-bold uppercase tracking-wider mb-2"
+                     style="color: #3D4A5C; opacity: 0.5;">
+                Preferred Time <span style="color: #ef4444;">*</span>
+              </label>
+              <div class="grid grid-cols-3 sm:grid-cols-5 gap-2">
+                @for (slot of timeSlots; track slot) {
                   <button type="button"
-                          (click)="selectService(service)"
-                          class="flex items-center justify-between p-4 rounded-xl border-2 text-left transition-all"
-                          [style.border-color]="selectedService()?._id === service._id || selectedService()?.name === service.name ? '#1E5C3A' : '#F2E8D9'"
-                          [style.background-color]="selectedService()?._id === service._id || selectedService()?.name === service.name ? 'rgba(30,92,58,0.05)' : 'white'">
-                    <div>
-                      <p class="font-medium text-sm" style="color: #1A2E20;">{{ service.name }}</p>
-                      @if (service.description) {
-                        <p class="text-xs mt-0.5" style="color: #1A2E20; opacity: 0.6;">
-                          {{ service.description }}
-                        </p>
-                      }
-                    </div>
-                    <p class="font-bold text-sm flex-shrink-0 ml-4" style="color: #1E5C3A;">
-                      ₱{{ service.price.toLocaleString() }}
-                    </p>
+                          (click)="scheduledTime.set(slot)"
+                          class="py-2.5 rounded-2xl text-xs font-semibold border-2 transition-all"
+                          [style.background-color]="scheduledTime() === slot ? '#1B3A6B' : 'transparent'"
+                          [style.color]="scheduledTime() === slot ? 'white' : '#1B3A6B'"
+                          [style.border-color]="scheduledTime() === slot ? '#1B3A6B' : 'rgba(27,58,107,0.15)'">
+                    {{ slot }}
                   </button>
                 }
               </div>
             </div>
 
-            <!-- Schedule -->
-            <div class="bg-white rounded-2xl p-6 border border-[#F2E8D9] mb-4">
-              <h2 class="font-bold text-lg mb-4" style="color: #1A2E20;">Schedule</h2>
-
-              <div class="mb-4">
-                <label class="block text-sm font-medium mb-1.5" style="color: #1A2E20;">
-                  Preferred Date
-                </label>
-                <input type="date"
-                       [ngModel]="scheduledDate()"
-                       (ngModelChange)="scheduledDate.set($event)"
-                       name="scheduledDate"
-                       [min]="minDate()"
-                       required
-                       class="w-full px-4 py-2.5 rounded-xl border text-sm outline-none"
-                       style="border-color: #F2E8D9; color: #1A2E20;"
-                       onfocus="this.style.borderColor='#1E5C3A'"
-                       onblur="this.style.borderColor='#F2E8D9'" />
-              </div>
-
-              <div>
-                <label class="block text-sm font-medium mb-2" style="color: #1A2E20;">
-                  Preferred Time
-                </label>
-                <div class="grid grid-cols-3 gap-2">
-                  @for (slot of timeSlots; track slot) {
-                    <button type="button"
-                            (click)="scheduledTime.set(slot)"
-                            class="py-2 rounded-lg text-xs font-medium border-2 transition-all"
-                            [style.border-color]="scheduledTime() === slot ? '#1E5C3A' : '#F2E8D9'"
-                            [style.background-color]="scheduledTime() === slot ? 'rgba(30,92,58,0.05)' : 'white'"
-                            [style.color]="scheduledTime() === slot ? '#1E5C3A' : '#1A2E20'">
-                      {{ slot }}
-                    </button>
-                  }
-                </div>
-              </div>
+            <!-- Address -->
+            <div class="mb-5">
+              <label class="block text-xs font-bold uppercase tracking-wider mb-2"
+                     style="color: #3D4A5C; opacity: 0.5;">
+                Service Address <span style="color: #ef4444;">*</span>
+              </label>
+              <input type="text"
+                     [ngModel]="address()"
+                     (ngModelChange)="address.set($event)"
+                     name="address"
+                     placeholder="House No., Street, Barangay, Angeles City"
+                     required
+                     class="w-full px-4 py-3 rounded-2xl border-2 text-sm outline-none transition-all"
+                     style="border-color: rgba(27,58,107,0.12); color: #1B3A6B;"
+                     onfocus="this.style.borderColor='#1B3A6B'"
+                     onblur="this.style.borderColor='rgba(27,58,107,0.12)'" />
             </div>
 
-            <!-- Location & Contact -->
-            <div class="bg-white rounded-2xl p-6 border border-[#F2E8D9] mb-4">
-              <h2 class="font-bold text-lg mb-4" style="color: #1A2E20;">Location & Contact</h2>
+            <!-- Contact -->
+            <div class="mb-5">
+              <label class="block text-xs font-bold uppercase tracking-wider mb-2"
+                     style="color: #3D4A5C; opacity: 0.5;">
+                Contact Number <span style="color: #ef4444;">*</span>
+              </label>
+              <input type="tel"
+                     [ngModel]="contactPhone()"
+                     (ngModelChange)="contactPhone.set($event)"
+                     name="contactPhone"
+                     placeholder="09xxxxxxxxx"
+                     required
+                     class="w-full px-4 py-3 rounded-2xl border-2 text-sm outline-none transition-all"
+                     style="border-color: rgba(27,58,107,0.12); color: #1B3A6B;"
+                     onfocus="this.style.borderColor='#1B3A6B'"
+                     onblur="this.style.borderColor='rgba(27,58,107,0.12)'" />
+            </div>
 
-              <div class="mb-4">
-                <label class="block text-sm font-medium mb-1.5" style="color: #1A2E20;">
-                  Service Address
-                </label>
-                <input type="text"
-                       [ngModel]="address()"
-                       (ngModelChange)="address.set($event)"
-                       name="address"
-                       placeholder="House No., Street, Barangay, Angeles City"
-                       required
-                       class="w-full px-4 py-2.5 rounded-xl border text-sm outline-none"
-                       style="border-color: #F2E8D9; color: #1A2E20;"
-                       onfocus="this.style.borderColor='#1E5C3A'"
-                       onblur="this.style.borderColor='#F2E8D9'" />
-              </div>
-
-              <div class="mb-4">
-                <label class="block text-sm font-medium mb-1.5" style="color: #1A2E20;">
-                  Contact Phone
-                </label>
-                <input type="tel"
-                       [ngModel]="contactPhone()"
-                       (ngModelChange)="contactPhone.set($event)"
-                       name="contactPhone"
-                       placeholder="09xxxxxxxxx"
-                       class="w-full px-4 py-2.5 rounded-xl border text-sm outline-none"
-                       style="border-color: #F2E8D9; color: #1A2E20;"
-                       onfocus="this.style.borderColor='#1E5C3A'"
-                       onblur="this.style.borderColor='#F2E8D9'" />
-              </div>
-
-              <div class="mb-4">
-                <label class="block text-sm font-medium mb-1.5" style="color: #1A2E20;">
-                  Contact Email
-                </label>
-                <input type="email"
-                       [ngModel]="contactEmail()"
-                       (ngModelChange)="contactEmail.set($event)"
-                       name="contactEmail"
-                       class="w-full px-4 py-2.5 rounded-xl border text-sm outline-none"
-                       style="border-color: #F2E8D9; color: #1A2E20;"
-                       onfocus="this.style.borderColor='#1E5C3A'"
-                       onblur="this.style.borderColor='#F2E8D9'" />
-              </div>
-
-              <div>
-                <label class="block text-sm font-medium mb-1.5" style="color: #1A2E20;">
-                  Additional Notes <span class="opacity-50 font-normal">(optional)</span>
-                </label>
-                <textarea [ngModel]="notes()"
-                          (ngModelChange)="notes.set($event)"
-                          name="notes"
-                          rows="3"
-                          placeholder="Describe the issue or any special instructions..."
-                          class="w-full px-4 py-2.5 rounded-xl border text-sm outline-none resize-none"
-                          style="border-color: #F2E8D9; color: #1A2E20;"
-                          onfocus="this.style.borderColor='#1E5C3A'"
-                          onblur="this.style.borderColor='#F2E8D9'"></textarea>
-              </div>
+            <!-- Notes -->
+            <div class="mb-7">
+              <label class="block text-xs font-bold uppercase tracking-wider mb-2"
+                     style="color: #3D4A5C; opacity: 0.5;">
+                Additional Notes <span class="font-normal">(optional)</span>
+              </label>
+              <textarea [ngModel]="notes()"
+                        (ngModelChange)="notes.set($event)"
+                        name="notes"
+                        rows="3"
+                        placeholder="Describe the issue or any special instructions..."
+                        class="w-full px-4 py-3 rounded-2xl border-2 text-sm outline-none resize-none transition-all"
+                        style="border-color: rgba(27,58,107,0.12); color: #1B3A6B;"
+                        onfocus="this.style.borderColor='#1B3A6B'"
+                        onblur="this.style.borderColor='rgba(27,58,107,0.12)'"></textarea>
             </div>
 
             <button type="submit"
-                    [disabled]="submitting() || !selectedService()"
-                    class="w-full py-3 rounded-xl font-semibold text-sm text-white transition-all disabled:opacity-60"
-                    style="background-color: #1E5C3A;">
-              @if (submitting()) {
-                <span>Confirming booking...</span>
-              } @else {
-                <span>Confirm Booking →</span>
-              }
+                    [disabled]="submitting()"
+                    class="w-full py-4 rounded-2xl font-bold text-white relative overflow-hidden group disabled:opacity-60 transition-all"
+                    style="background-color: #F08C00;">
+              <span class="relative z-10">
+                {{ submitting() ? 'Creating Booking...' : 'Confirm Booking →' }}
+              </span>
+              <div class="absolute inset-0 bg-white/15 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
             </button>
 
           </form>
         </div>
+      </div>
 
-        <!-- Summary Sidebar -->
-        <div class="flex flex-col gap-4">
+      <!-- ══════════ SUMMARY SIDEBAR ══════════ -->
+      <div class="lg:col-span-1">
+        <div class="rounded-3xl p-6 border-2 bg-white sticky top-24 animate-fade-up delay-100"
+             style="border-color: rgba(27,58,107,0.08);">
 
-          <!-- Provider Card -->
-          <div class="bg-white rounded-2xl p-5 border border-[#F2E8D9]">
-            <h3 class="font-bold text-sm mb-3" style="color: #1A2E20;">Provider</h3>
-            <div class="flex items-center gap-3">
+          <h3 class="font-black text-base mb-5"
+              style="color: #1B3A6B; font-family: 'Fraunces', serif;">
+            Booking Summary
+          </h3>
+
+          <!-- Provider -->
+          @if (loadingProvider()) {
+            <div class="flex items-center gap-3 mb-5 pb-5 border-b"
+                 style="border-color: rgba(27,58,107,0.08);">
+              <div class="w-10 h-10 rounded-xl animate-pulse"
+                   style="background-color: rgba(27,58,107,0.08);"></div>
+              <div class="flex-1">
+                <div class="h-3 rounded-full mb-1.5 animate-pulse"
+                     style="background-color: rgba(27,58,107,0.08); width: 60%;"></div>
+                <div class="h-2.5 rounded-full animate-pulse"
+                     style="background-color: rgba(27,58,107,0.06); width: 40%;"></div>
+              </div>
+            </div>
+          } @else if (provider()) {
+            <div class="flex items-center gap-3 mb-5 pb-5 border-b"
+                 style="border-color: rgba(27,58,107,0.08);">
               @if (provider()!.profileImage) {
                 <img [src]="provider()!.profileImage!"
-                     [alt]="provider()!.name"
-                     class="w-10 h-10 rounded-xl object-cover" />
+                     class="w-10 h-10 rounded-xl object-cover flex-shrink-0" />
               } @else {
-                <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white text-sm font-bold"
-                     style="background: linear-gradient(135deg, #1E5C3A, #7AAE8E);">
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold flex-shrink-0"
+                     style="background: linear-gradient(135deg, #1B3A6B, #2d5a9e);">
                   {{ provider()!.name.charAt(0).toUpperCase() }}
                 </div>
               }
               <div>
-                <p class="font-medium text-sm" style="color: #1A2E20;">{{ provider()!.name }}</p>
-                <p class="text-xs capitalize" style="color: #1A2E20; opacity: 0.6;">
+                <p class="font-bold text-sm" style="color: #1B3A6B;">{{ provider()!.name }}</p>
+                <p class="text-xs capitalize" style="color: #3D4A5C; opacity: 0.5;">
                   {{ provider()!.providerInfo?.category }}
+                  @if (provider()!.providerInfo?.verified) { · ✓ Verified }
                 </p>
               </div>
             </div>
-          </div>
+          }
 
-          <!-- Price Summary -->
-          <div class="bg-white rounded-2xl p-5 border border-[#F2E8D9]">
-            <h3 class="font-bold text-sm mb-4" style="color: #1A2E20;">Price Summary</h3>
-
-            @if (!selectedService()) {
-              <p class="text-sm" style="color: #1A2E20; opacity: 0.5;">
-                Select a service to see pricing.
-              </p>
-            } @else {
-              <div class="flex flex-col gap-2">
-                <div class="flex justify-between text-sm">
-                  <span style="color: #1A2E20; opacity: 0.7;">{{ selectedService()!.name }}</span>
-                  <span style="color: #1A2E20;">₱{{ selectedService()!.price.toLocaleString() }}</span>
-                </div>
-                <div class="flex justify-between text-sm">
-                  <span style="color: #1A2E20; opacity: 0.7;">Platform fee (10%)</span>
-                  <span style="color: #1A2E20;">₱{{ platformFee().toLocaleString() }}</span>
-                </div>
-                <div class="border-t pt-2 mt-1 flex justify-between" style="border-color: #F2E8D9;">
-                  <span class="font-bold text-sm" style="color: #1A2E20;">Total</span>
-                  <span class="font-bold text-sm" style="color: #1E5C3A;">
-                    ₱{{ totalAmount().toLocaleString() }}
-                  </span>
-                </div>
+          <!-- Service -->
+          <div class="flex flex-col gap-3 mb-5 pb-5 border-b text-sm"
+               style="border-color: rgba(27,58,107,0.08);">
+            <div class="flex justify-between">
+              <span style="color: #3D4A5C; opacity: 0.5;">Service</span>
+              <span class="font-medium text-right max-w-32 truncate" style="color: #1B3A6B;">
+                {{ selectedService()?.name || 'Not selected' }}
+              </span>
+            </div>
+            @if (scheduledDate()) {
+              <div class="flex justify-between">
+                <span style="color: #3D4A5C; opacity: 0.5;">Date</span>
+                <span class="font-medium" style="color: #1B3A6B;">{{ scheduledDate() }}</span>
+              </div>
+            }
+            @if (scheduledTime()) {
+              <div class="flex justify-between">
+                <span style="color: #3D4A5C; opacity: 0.5;">Time</span>
+                <span class="font-medium" style="color: #1B3A6B;">{{ scheduledTime() }}</span>
               </div>
             }
           </div>
 
-          <!-- Info -->
-          <div class="rounded-2xl p-4 text-xs leading-relaxed"
-               style="background-color: rgba(30,92,58,0.08); color: #1E5C3A;">
-            💡 Payment is held in escrow and only released to the provider after you confirm the job is complete.
+          <!-- Price breakdown -->
+          <div class="flex flex-col gap-2 text-sm mb-5">
+            <div class="flex justify-between">
+              <span style="color: #3D4A5C; opacity: 0.5;">Service Fee</span>
+              <span style="color: #1B3A6B;">₱{{ selectedService()?.price?.toLocaleString() || '0' }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span style="color: #3D4A5C; opacity: 0.5;">Platform Fee (10%)</span>
+              <span style="color: #1B3A6B;">₱{{ platformFee().toLocaleString() }}</span>
+            </div>
+            <div class="flex justify-between font-bold pt-2 border-t"
+                 style="border-color: rgba(27,58,107,0.08);">
+              <span style="color: #1B3A6B;">Total</span>
+              <span class="text-lg" style="color: #F08C00; font-family: 'Fraunces', serif;">
+                ₱{{ total().toLocaleString() }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Escrow note -->
+          <div class="rounded-2xl p-3 text-xs leading-relaxed"
+               style="background-color: rgba(45,155,111,0.08); color: #2D9B6F;">
+            🔒 Payment is held securely in escrow and only released to the provider after you confirm the job is complete.
           </div>
 
         </div>
       </div>
-    </div>
-  }
 
+    </div>
+  </div>
 </main>
 
 <app-footer />

@@ -1,251 +1,338 @@
-<app-header />
+<app-header [forceBackground]="true" />
 
-<main style="background-color: #F2E8D9; min-height: 100vh;">
+<main class="min-h-screen pt-24 pb-16" style="background-color: #F9F6F0;">
+  <div class="max-w-4xl mx-auto px-6 lg:px-8">
 
-  <!-- Loading -->
-  @if (loading()) {
-    <div class="flex flex-col items-center justify-center py-32">
-      <div class="w-10 h-10 rounded-full border-4 border-[#7AAE8E] border-t-[#1E5C3A] animate-spin mb-4"></div>
-      <p class="text-sm" style="color: #1A2E20; opacity: 0.6;">Loading booking...</p>
-    </div>
-  }
-
-  <!-- Error -->
-  @if (error() && !loading() && !submitting()) {
-    <div class="flex flex-col items-center justify-center py-32">
-      <div class="text-5xl mb-4">⚠️</div>
-      <p class="text-lg font-bold" style="color: #1A2E20;">{{ error() }}</p>
-    </div>
-  }
-
-  @if (!loading() && booking()) {
-
-    <!-- Header -->
-    <section class="py-10 noise-overlay" style="background-color: #1E5C3A;">
-      <div class="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 class="text-3xl font-bold text-white mb-1">Payment</h1>
-        <p class="text-[#F2E8D9] opacity-75 text-sm">
-          Complete your booking payment
-        </p>
+    @if (loading()) {
+      <div class="flex items-center justify-center py-32">
+        <div class="w-10 h-10 rounded-full border-4 border-[#4EA8DE] border-t-[#1B3A6B] animate-spin"></div>
       </div>
-    </section>
 
-    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    } @else if (error()) {
+      <div class="flex flex-col items-center justify-center py-32 text-center">
+        <div class="text-5xl mb-4">⚠️</div>
+        <p class="font-bold text-xl mb-4" style="color: #1B3A6B;">{{ error() }}</p>
+        <a routerLink="/dashboard"
+           class="px-6 py-3 rounded-xl text-sm font-bold text-white"
+           style="background-color: #F08C00;">
+          Go to Dashboard
+        </a>
+      </div>
 
-      <!-- Processing overlay -->
-      @if (submitting()) {
-        <div class="fixed inset-0 z-50 flex flex-col items-center justify-center"
-             style="background-color: rgba(26,46,32,0.85);">
-          <div class="w-14 h-14 rounded-full border-4 border-[#7AAE8E] border-t-[#C9A87C] animate-spin mb-6"></div>
-          <p class="text-white text-lg font-semibold mb-1">Processing Payment...</p>
-          <p class="text-[#F2E8D9] text-sm opacity-70">Please do not close this window</p>
+    } @else if (paid()) {
+      <!-- ══════════ SUCCESS STATE ══════════ -->
+      <div class="flex flex-col items-center justify-center py-20 text-center animate-fade-up">
+        <div class="w-24 h-24 rounded-3xl flex items-center justify-center text-5xl mb-6 shadow-lg"
+             style="background: linear-gradient(135deg, #2D9B6F, #25896000);">
+          ✅
         </div>
-      }
-
-      <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
-
-        <!-- Payment Form -->
-        <div class="lg:col-span-3">
-          <form (ngSubmit)="onSubmit()">
-
-            @if (error() && !submitting()) {
-              <div class="mb-4 px-4 py-3 rounded-xl text-sm"
-                   style="background-color: #FEE2E2; color: #DC2626;">
-                {{ error() }}
-              </div>
-            }
-
-            <!-- Payment Method -->
-            <div class="bg-white rounded-2xl p-6 border border-[#F2E8D9] mb-4">
-              <h2 class="font-bold text-lg mb-4" style="color: #1A2E20;">Payment Method</h2>
-
-              <div class="flex flex-col gap-3">
-                @for (method of paymentMethods; track method.id) {
-                  <button type="button"
-                          (click)="selectedMethod.set(method.id)"
-                          class="flex items-center gap-3 p-4 rounded-xl border-2 text-left transition-all"
-                          [style.border-color]="selectedMethod() === method.id ? '#1E5C3A' : '#F2E8D9'"
-                          [style.background-color]="selectedMethod() === method.id ? 'rgba(30,92,58,0.05)' : 'white'">
-                    <span class="text-2xl">{{ method.icon }}</span>
-                    <span class="font-medium text-sm" style="color: #1A2E20;">{{ method.label }}</span>
-                    @if (selectedMethod() === method.id) {
-                      <span class="ml-auto text-xs font-medium px-2 py-0.5 rounded-full"
-                            style="background-color: #F2E8D9; color: #1E5C3A;">
-                        Selected
-                      </span>
-                    }
-                  </button>
-                }
-              </div>
-            </div>
-
-            <!-- Card Details (shown only for card) -->
-            @if (selectedMethod() === 'card') {
-              <div class="bg-white rounded-2xl p-6 border border-[#F2E8D9] mb-4 animate-fade-in">
-                <h2 class="font-bold text-lg mb-4" style="color: #1A2E20;">Card Details</h2>
-                <div class="mb-4">
-                  <label class="block text-sm font-medium mb-1.5" style="color: #1A2E20;">
-                    Card Number
-                  </label>
-                  <input type="text"
-                         placeholder="1234 5678 9012 3456"
-                         maxlength="19"
-                         class="w-full px-4 py-2.5 rounded-xl border text-sm outline-none"
-                         style="border-color: #F2E8D9; color: #1A2E20;"
-                         onfocus="this.style.borderColor='#1E5C3A'"
-                         onblur="this.style.borderColor='#F2E8D9'" />
-                </div>
-                <div class="grid grid-cols-2 gap-3 mb-4">
-                  <div>
-                    <label class="block text-sm font-medium mb-1.5" style="color: #1A2E20;">
-                      Expiry Date
-                    </label>
-                    <input type="text"
-                           placeholder="MM / YY"
-                           maxlength="7"
-                           class="w-full px-4 py-2.5 rounded-xl border text-sm outline-none"
-                           style="border-color: #F2E8D9; color: #1A2E20;"
-                           onfocus="this.style.borderColor='#1E5C3A'"
-                           onblur="this.style.borderColor='#F2E8D9'" />
-                  </div>
-                  <div>
-                    <label class="block text-sm font-medium mb-1.5" style="color: #1A2E20;">
-                      CVV
-                    </label>
-                    <input type="text"
-                           placeholder="123"
-                           maxlength="4"
-                           class="w-full px-4 py-2.5 rounded-xl border text-sm outline-none"
-                           style="border-color: #F2E8D9; color: #1A2E20;"
-                           onfocus="this.style.borderColor='#1E5C3A'"
-                           onblur="this.style.borderColor='#F2E8D9'" />
-                  </div>
-                </div>
-                <div>
-                  <label class="block text-sm font-medium mb-1.5" style="color: #1A2E20;">
-                    Cardholder Name
-                  </label>
-                  <input type="text"
-                         placeholder="Juan dela Cruz"
-                         class="w-full px-4 py-2.5 rounded-xl border text-sm outline-none"
-                         style="border-color: #F2E8D9; color: #1A2E20;"
-                         onfocus="this.style.borderColor='#1E5C3A'"
-                         onblur="this.style.borderColor='#F2E8D9'" />
-                </div>
-              </div>
-            }
-
-            <!-- E-Wallet -->
-            @if (selectedMethod() === 'ewallet') {
-              <div class="bg-white rounded-2xl p-6 border border-[#F2E8D9] mb-4 animate-fade-in">
-                <h2 class="font-bold text-lg mb-4" style="color: #1A2E20;">E-Wallet</h2>
-                <div>
-                  <label class="block text-sm font-medium mb-1.5" style="color: #1A2E20;">
-                    Mobile Number
-                  </label>
-                  <input type="tel"
-                         placeholder="09xxxxxxxxx"
-                         class="w-full px-4 py-2.5 rounded-xl border text-sm outline-none"
-                         style="border-color: #F2E8D9; color: #1A2E20;"
-                         onfocus="this.style.borderColor='#1E5C3A'"
-                         onblur="this.style.borderColor='#F2E8D9'" />
-                </div>
-              </div>
-            }
-
-            <!-- Online Banking -->
-            @if (selectedMethod() === 'banking') {
-              <div class="bg-white rounded-2xl p-6 border border-[#F2E8D9] mb-4 animate-fade-in">
-                <h2 class="font-bold text-lg mb-4" style="color: #1A2E20;">Online Banking</h2>
-                <div>
-                  <label class="block text-sm font-medium mb-1.5" style="color: #1A2E20;">
-                    Select Bank
-                  </label>
-                  <select class="w-full px-4 py-2.5 rounded-xl border text-sm outline-none"
-                          style="border-color: #F2E8D9; color: #1A2E20;"
-                          onfocus="this.style.borderColor='#1E5C3A'"
-                          onblur="this.style.borderColor='#F2E8D9'">
-                    <option>BDO</option>
-                    <option>BPI</option>
-                    <option>Metrobank</option>
-                    <option>UnionBank</option>
-                    <option>Security Bank</option>
-                  </select>
-                </div>
-              </div>
-            }
-
-            <!-- Simulation notice -->
-            <div class="rounded-xl p-4 mb-4 text-xs"
-                 style="background-color: rgba(201,168,124,0.15); color: #1A2E20;">
-              ⚠️ <strong>Simulation only.</strong> No real payment will be processed.
-              This is a demo for academic purposes.
-            </div>
-
-            <button type="submit"
-                    [disabled]="submitting()"
-                    class="w-full py-3 rounded-xl font-semibold text-sm text-white transition-all disabled:opacity-60"
-                    style="background-color: #1E5C3A;">
-              Pay ₱{{ booking()!.totalAmount.toLocaleString() }}
-            </button>
-
-          </form>
+        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border mb-5"
+             style="border-color: rgba(45,155,111,0.3); background-color: rgba(45,155,111,0.08);">
+          <span class="text-xs font-bold uppercase tracking-widest" style="color: #2D9B6F;">
+            Payment Confirmed
+          </span>
         </div>
+        <h1 class="text-4xl font-black mb-3" style="color: #1B3A6B; font-family: 'Fraunces', serif;">
+          Booking confirmed!
+        </h1>
+        <p class="text-base mb-2 max-w-sm" style="color: #3D4A5C; opacity: 0.65;">
+          Your payment of
+          <span class="font-bold" style="color: #F08C00;">₱{{ total().toLocaleString() }}</span>
+          is held securely in escrow.
+        </p>
+        <p class="text-sm mb-8 max-w-sm" style="color: #3D4A5C; opacity: 0.5;">
+          The provider will be notified and will confirm your booking shortly.
+          Payment is released only after you confirm the job is complete.
+        </p>
 
-        <!-- Order Summary -->
-        <div class="lg:col-span-2">
-          <div class="bg-white rounded-2xl p-5 border border-[#F2E8D9] sticky top-20">
-            <h3 class="font-bold text-sm mb-4" style="color: #1A2E20;">Order Summary</h3>
-
-            <div class="flex flex-col gap-3 text-sm">
-              <div>
-                <p class="text-xs mb-0.5" style="color: #1A2E20; opacity: 0.5;">Service</p>
-                <p class="font-medium" style="color: #1A2E20;">{{ booking()!.service.name }}</p>
-              </div>
-              <div>
-                <p class="text-xs mb-0.5" style="color: #1A2E20; opacity: 0.5;">Provider</p>
-                <p class="font-medium" style="color: #1A2E20;">{{ getProviderName() }}</p>
-              </div>
-              <div>
-                <p class="text-xs mb-0.5" style="color: #1A2E20; opacity: 0.5;">Date</p>
-                <p class="font-medium" style="color: #1A2E20;">{{ formatDate(booking()!.scheduledDate) }}</p>
-              </div>
-              <div>
-                <p class="text-xs mb-0.5" style="color: #1A2E20; opacity: 0.5;">Time</p>
-                <p class="font-medium" style="color: #1A2E20;">{{ booking()!.scheduledTime }}</p>
-              </div>
-              <div>
-                <p class="text-xs mb-0.5" style="color: #1A2E20; opacity: 0.5;">Address</p>
-                <p class="font-medium" style="color: #1A2E20;">{{ booking()!.address }}</p>
-              </div>
-
-              <div class="border-t pt-3 mt-1" style="border-color: #F2E8D9;">
-                <div class="flex justify-between mb-1">
-                  <span style="color: #1A2E20; opacity: 0.7;">Service price</span>
-                  <span style="color: #1A2E20;">₱{{ booking()!.service.price.toLocaleString() }}</span>
-                </div>
-                <div class="flex justify-between mb-2">
-                  <span style="color: #1A2E20; opacity: 0.7;">Platform fee</span>
-                  <span style="color: #1A2E20;">₱{{ booking()!.platformFee.toLocaleString() }}</span>
-                </div>
-                <div class="flex justify-between font-bold">
-                  <span style="color: #1A2E20;">Total</span>
-                  <span style="color: #1E5C3A;">₱{{ booking()!.totalAmount.toLocaleString() }}</span>
-                </div>
-              </div>
-
-              <div class="rounded-xl p-3 text-xs"
-                   style="background-color: #F2E8D9; color: #1E5C3A;">
-                🔒 Payment held in escrow until job is complete.
-              </div>
+        <!-- Booking summary card -->
+        <div class="rounded-3xl p-6 border-2 bg-white w-full max-w-sm text-left mb-8"
+             style="border-color: rgba(27,58,107,0.08);">
+          <p class="text-xs font-bold uppercase tracking-wider mb-4"
+             style="color: #3D4A5C; opacity: 0.4;">Booking Details</p>
+          <div class="flex flex-col gap-3 text-sm">
+            <div class="flex justify-between">
+              <span style="color: #3D4A5C; opacity: 0.5;">Service</span>
+              <span class="font-medium" style="color: #1B3A6B;">{{ booking()!.service.name }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span style="color: #3D4A5C; opacity: 0.5;">Date</span>
+              <span class="font-medium" style="color: #1B3A6B;">{{ formatDate(booking()!.scheduledDate) }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span style="color: #3D4A5C; opacity: 0.5;">Time</span>
+              <span class="font-medium" style="color: #1B3A6B;">{{ booking()!.scheduledTime }}</span>
+            </div>
+            <div class="flex justify-between font-bold pt-2 border-t"
+                 style="border-color: rgba(27,58,107,0.08);">
+              <span style="color: #1B3A6B;">Total Paid</span>
+              <span style="color: #F08C00; font-family: 'Fraunces', serif;">
+                ₱{{ total().toLocaleString() }}
+              </span>
             </div>
           </div>
         </div>
 
+        <button (click)="goToDashboard()"
+                class="px-8 py-4 rounded-2xl font-bold text-white relative overflow-hidden group"
+                style="background-color: #F08C00;">
+          <span class="relative z-10">View My Bookings →</span>
+          <div class="absolute inset-0 bg-white/15 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+        </button>
       </div>
-    </div>
-  }
 
+    } @else {
+      <!-- ══════════ PAYMENT FORM ══════════ -->
+
+      <!-- Back -->
+      <a routerLink="/dashboard"
+         class="inline-flex items-center gap-2 text-sm font-medium mb-7 transition-all"
+         style="color: #3D4A5C; opacity: 0.5;"
+         onmouseover="this.style.opacity='1'"
+         onmouseout="this.style.opacity='0.5'">
+        ← Back to Dashboard
+      </a>
+
+      <!-- Title -->
+      <div class="mb-8 animate-fade-up">
+        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border mb-4"
+             style="border-color: rgba(27,58,107,0.15); background-color: rgba(27,58,107,0.05);">
+          <span class="text-xs font-bold uppercase tracking-widest" style="color: #1B3A6B;">
+            Secure Payment
+          </span>
+        </div>
+        <h1 class="text-3xl font-black" style="color: #1B3A6B; font-family: 'Fraunces', serif;">
+          Complete Payment
+        </h1>
+      </div>
+
+      @if (error()) {
+        <div class="mb-5 px-4 py-3 rounded-2xl text-sm font-medium"
+             style="background-color: rgba(220,38,38,0.08); color: #ef4444;
+                    border: 1px solid rgba(220,38,38,0.2);">
+          {{ error() }}
+        </div>
+      }
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-7">
+
+        <!-- Payment methods -->
+        <div class="lg:col-span-2 animate-fade-up">
+          <div class="rounded-3xl p-6 sm:p-8 border-2 bg-white"
+               style="border-color: rgba(27,58,107,0.08);">
+
+            <h2 class="font-black text-base mb-5"
+                style="color: #1B3A6B; font-family: 'Fraunces', serif;">
+              Payment Method
+            </h2>
+
+            <!-- Method selector -->
+            <div class="flex flex-col gap-3 mb-6">
+              @for (method of methods; track method.id) {
+                <button type="button"
+                        (click)="selectedMethod.set(method.id)"
+                        class="flex items-center gap-4 px-5 py-4 rounded-2xl border-2 text-left transition-all"
+                        [style.border-color]="selectedMethod() === method.id ? '#1B3A6B' : 'rgba(27,58,107,0.12)'"
+                        [style.background-color]="selectedMethod() === method.id ? 'rgba(27,58,107,0.04)' : 'transparent'">
+                  <span class="text-2xl">{{ method.icon }}</span>
+                  <div class="flex-1">
+                    <p class="font-bold text-sm" style="color: #1B3A6B;">{{ method.label }}</p>
+                    <p class="text-xs" style="color: #3D4A5C; opacity: 0.5;">{{ method.desc }}</p>
+                  </div>
+                  @if (selectedMethod() === method.id) {
+                    <span class="w-5 h-5 rounded-full flex items-center justify-center text-white text-xs flex-shrink-0"
+                          style="background-color: #1B3A6B;">✓</span>
+                  }
+                </button>
+              }
+            </div>
+
+            <!-- GCash / Maya fields -->
+            @if (selectedMethod() === 'gcash' || selectedMethod() === 'maya') {
+              <div class="rounded-2xl p-5 mb-6 border-2 animate-fade-up"
+                   style="border-color: rgba(27,58,107,0.08); background-color: rgba(27,58,107,0.02);">
+                <p class="text-sm font-bold mb-4" style="color: #1B3A6B;">
+                  {{ selectedMethod() === 'gcash' ? '📱 GCash' : '💙 Maya' }} Details
+                </p>
+                <div class="mb-4">
+                  <label class="block text-xs font-bold uppercase tracking-wider mb-2"
+                         style="color: #3D4A5C; opacity: 0.5;">
+                    Mobile Number <span style="color: #ef4444;">*</span>
+                  </label>
+                  <input type="tel"
+                         placeholder="09xxxxxxxxx"
+                         class="w-full px-4 py-3 rounded-2xl border-2 text-sm outline-none transition-all"
+                         style="border-color: rgba(27,58,107,0.12); color: #1B3A6B;"
+                         onfocus="this.style.borderColor='#1B3A6B'"
+                         onblur="this.style.borderColor='rgba(27,58,107,0.12)'" />
+                </div>
+                <div class="rounded-xl p-3 flex items-start gap-3"
+                     style="background-color: rgba(78,168,222,0.08); border: 1px solid rgba(78,168,222,0.2);">
+                  <span class="text-base flex-shrink-0">ℹ️</span>
+                  <p class="text-xs leading-relaxed" style="color: #4EA8DE;">
+                    After clicking Pay, you will receive a notification on your
+                    {{ selectedMethod() === 'gcash' ? 'GCash' : 'Maya' }} app to confirm
+                    the payment. Make sure your app is updated and notifications are enabled.
+                  </p>
+                </div>
+              </div>
+            }
+
+            <!-- Card fields -->
+            @if (selectedMethod() === 'card') {
+              <div class="rounded-2xl p-5 mb-6 border-2 animate-fade-up"
+                   style="border-color: rgba(27,58,107,0.08); background-color: rgba(27,58,107,0.02);">
+                <p class="text-sm font-bold mb-4" style="color: #1B3A6B;">💳 Card Details</p>
+                <div class="mb-4">
+                  <label class="block text-xs font-bold uppercase tracking-wider mb-2"
+                         style="color: #3D4A5C; opacity: 0.5;">Cardholder Name</label>
+                  <input type="text"
+                         placeholder="Name on card"
+                         class="w-full px-4 py-3 rounded-2xl border-2 text-sm outline-none transition-all"
+                         style="border-color: rgba(27,58,107,0.12); color: #1B3A6B;"
+                         onfocus="this.style.borderColor='#1B3A6B'"
+                         onblur="this.style.borderColor='rgba(27,58,107,0.12)'" />
+                </div>
+                <div class="mb-4">
+                  <label class="block text-xs font-bold uppercase tracking-wider mb-2"
+                         style="color: #3D4A5C; opacity: 0.5;">Card Number</label>
+                  <input type="text"
+                         placeholder="1234 5678 9012 3456"
+                         maxlength="19"
+                         class="w-full px-4 py-3 rounded-2xl border-2 text-sm outline-none transition-all font-mono"
+                         style="border-color: rgba(27,58,107,0.12); color: #1B3A6B;"
+                         onfocus="this.style.borderColor='#1B3A6B'"
+                         onblur="this.style.borderColor='rgba(27,58,107,0.12)'" />
+                </div>
+                <div class="grid grid-cols-2 gap-3 mb-4">
+                  <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider mb-2"
+                           style="color: #3D4A5C; opacity: 0.5;">Expiry Date</label>
+                    <input type="text"
+                           placeholder="MM / YY"
+                           maxlength="7"
+                           class="w-full px-4 py-3 rounded-2xl border-2 text-sm outline-none transition-all"
+                           style="border-color: rgba(27,58,107,0.12); color: #1B3A6B;"
+                           onfocus="this.style.borderColor='#1B3A6B'"
+                           onblur="this.style.borderColor='rgba(27,58,107,0.12)'" />
+                  </div>
+                  <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider mb-2"
+                           style="color: #3D4A5C; opacity: 0.5;">CVV</label>
+                    <input type="password"
+                           placeholder="•••"
+                           maxlength="4"
+                           class="w-full px-4 py-3 rounded-2xl border-2 text-sm outline-none transition-all"
+                           style="border-color: rgba(27,58,107,0.12); color: #1B3A6B;"
+                           onfocus="this.style.borderColor='#1B3A6B'"
+                           onblur="this.style.borderColor='rgba(27,58,107,0.12)'" />
+                  </div>
+                </div>
+                <div class="rounded-xl p-3 flex items-start gap-3"
+                     style="background-color: rgba(45,155,111,0.08); border: 1px solid rgba(45,155,111,0.2);">
+                  <span class="text-base flex-shrink-0">🔒</span>
+                  <p class="text-xs leading-relaxed" style="color: #2D9B6F;">
+                    Your card details are encrypted and processed securely.
+                    We do not store your card information.
+                  </p>
+                </div>
+              </div>
+            }
+
+            <!-- Escrow info -->
+            <div class="rounded-2xl p-4 mb-6"
+                 style="background: linear-gradient(135deg, rgba(27,58,107,0.04), rgba(78,168,222,0.04));
+                        border: 1px solid rgba(27,58,107,0.08);">
+              <p class="text-xs font-bold mb-1" style="color: #1B3A6B;">🔒 Escrow Protection</p>
+              <p class="text-xs leading-relaxed" style="color: #3D4A5C; opacity: 0.65;">
+                Your payment is held securely and only released to the provider after
+                you confirm the job is complete. Full refund if the booking is cancelled.
+              </p>
+            </div>
+
+            <button (click)="onPay()"
+                    [disabled]="processing()"
+                    class="w-full py-4 rounded-2xl font-bold text-white relative overflow-hidden group disabled:opacity-70 transition-all"
+                    style="background-color: #F08C00;">
+              @if (processing()) {
+                <span class="relative z-10 flex items-center justify-center gap-3">
+                  <span class="w-4 h-4 rounded-full border-2 border-white border-t-transparent animate-spin"></span>
+                  Processing Payment...
+                </span>
+              } @else {
+                <span class="relative z-10">
+                  Pay ₱{{ total().toLocaleString() }} →
+                </span>
+                <div class="absolute inset-0 bg-white/15 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+              }
+            </button>
+
+          </div>
+        </div>
+
+        <!-- Order summary -->
+        <div class="lg:col-span-1">
+          <div class="rounded-3xl p-6 border-2 bg-white sticky top-24 animate-fade-up delay-100"
+               style="border-color: rgba(27,58,107,0.08);">
+
+            <h3 class="font-black text-base mb-5"
+                style="color: #1B3A6B; font-family: 'Fraunces', serif;">
+              Order Summary
+            </h3>
+
+            <div class="flex flex-col gap-3 text-sm mb-5 pb-5 border-b"
+                 style="border-color: rgba(27,58,107,0.08);">
+              <div class="flex justify-between">
+                <span style="color: #3D4A5C; opacity: 0.5;">Service</span>
+                <span class="font-medium text-right max-w-32 truncate" style="color: #1B3A6B;">
+                  {{ booking()!.service.name }}
+                </span>
+              </div>
+              <div class="flex justify-between">
+                <span style="color: #3D4A5C; opacity: 0.5;">Date</span>
+                <span class="font-medium" style="color: #1B3A6B;">
+                  {{ formatDate(booking()!.scheduledDate) }}
+                </span>
+              </div>
+              <div class="flex justify-between">
+                <span style="color: #3D4A5C; opacity: 0.5;">Time</span>
+                <span class="font-medium" style="color: #1B3A6B;">
+                  {{ booking()!.scheduledTime }}
+                </span>
+              </div>
+              <div class="flex justify-between">
+                <span style="color: #3D4A5C; opacity: 0.5;">Address</span>
+                <span class="font-medium text-right max-w-32 text-xs" style="color: #1B3A6B;">
+                  {{ booking()!.address }}
+                </span>
+              </div>
+            </div>
+
+            <div class="flex flex-col gap-2 text-sm">
+              <div class="flex justify-between">
+                <span style="color: #3D4A5C; opacity: 0.5;">Service Fee</span>
+                <span style="color: #1B3A6B;">₱{{ booking()!.service.price.toLocaleString() }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span style="color: #3D4A5C; opacity: 0.5;">Platform Fee</span>
+                <span style="color: #1B3A6B;">₱{{ platformFee().toLocaleString() }}</span>
+              </div>
+              <div class="flex justify-between font-bold pt-2 border-t"
+                   style="border-color: rgba(27,58,107,0.08);">
+                <span style="color: #1B3A6B;">Total</span>
+                <span class="text-lg" style="color: #F08C00; font-family: 'Fraunces', serif;">
+                  ₱{{ total().toLocaleString() }}
+                </span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    }
+
+  </div>
 </main>
 
 <app-footer />

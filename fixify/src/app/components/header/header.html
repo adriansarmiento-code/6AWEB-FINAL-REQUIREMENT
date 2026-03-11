@@ -1,8 +1,8 @@
 <header
   class="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
-  [style.background-color]="scrolled() ? '#1B3A6B' : 'transparent'"
-  [style.box-shadow]="scrolled() ? '0 2px 24px rgba(27,58,107,0.15)' : 'none'"
-  [style.backdrop-filter]="scrolled() ? 'blur(12px)' : 'none'">
+  [style.background-color]="scrolled() || forceBackground ? '#1B3A6B' : 'transparent'"
+[style.box-shadow]="scrolled() || forceBackground ? '0 2px 24px rgba(27,58,107,0.15)' : 'none'"
+[style.backdrop-filter]="scrolled() || forceBackground ? 'blur(12px)' : 'none'">
 
   <div class="max-w-7xl mx-auto px-6 lg:px-8">
     <div class="flex items-center justify-between h-16 lg:h-20">

@@ -1,4 +1,4 @@
-import { Component, inject, signal, HostListener } from '@angular/core';
+import { Component, inject, signal, HostListener, Input } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
@@ -10,14 +10,15 @@ import { AuthService } from '../../services/auth.service';
 export class HeaderComponent {
   private router = inject(Router);
   authService = inject(AuthService);
-
+  
+  @Input() forceBackground = false;
   mobileOpen = signal(false);
   scrolled = signal(false);
 
-  @HostListener('window:scroll')
-  onScroll(): void {
-    this.scrolled.set(window.scrollY > 20);
-  }
+@HostListener('window:scroll')
+onScroll(): void {
+  this.scrolled.set(this.forceBackground || window.scrollY > 20);
+}
 
   @HostListener('window:keydown.escape')
   onEsc(): void {

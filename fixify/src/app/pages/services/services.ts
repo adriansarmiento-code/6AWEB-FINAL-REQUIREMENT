@@ -1,18 +1,9 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../services/api.service';
 import { HeaderComponent } from '../../components/header/header';
 import { FooterComponent } from '../../components/footer/footer';
-import { FormsModule } from '@angular/forms';
-
-interface ServiceCategory {
-  id: string;
-  label: string;
-  icon: string;
-  description: string;
-  count: number;
-  loading: boolean;
-}
 
 @Component({
   selector: 'app-services',
@@ -23,71 +14,51 @@ export class ServicesComponent implements OnInit {
   private router = inject(Router);
   private apiService = inject(ApiService);
 
-  categories = signal<ServiceCategory[]>([
+  providerCounts = signal<Record<string, number | undefined>>({});
+  loadingCounts = signal(true);
+
+  readonly categories = [
     {
       id: 'plumbing',
       label: 'Plumbing',
       icon: '🔧',
-      description: 'Leaks, pipe repairs, drain cleaning, fixture installation, and emergency plumbing services.',
-      count: 0,
-      loading: true,
+      color: '#4EA8DE',
+      desc: 'Leak repairs, pipe installations, drain cleaning, water heater service, and emergency plumbing.',
+      features: ['Leak Detection', 'Pipe Repair', 'Drain Cleaning', 'Water Heater', 'Emergency Service'],
     },
     {
       id: 'electrical',
       label: 'Electrical',
       icon: '⚡',
-      description: 'Wiring repairs, outlet installation, light fixture setup, and electrical fault diagnosis.',
-      count: 0,
-      loading: true,
+      color: '#F08C00',
+      desc: 'Wiring, outlets, circuit breakers, lighting installation, and electrical fault diagnosis.',
+      features: ['Wiring', 'Outlets & Switches', 'Circuit Breakers', 'Lighting', 'Fault Diagnosis'],
     },
     {
       id: 'cleaning',
       label: 'Cleaning',
       icon: '🧹',
-      description: 'Deep cleaning, regular maintenance cleaning, and move-in/move-out cleaning services.',
-      count: 0,
-      loading: true,
+      color: '#2D9B6F',
+      desc: 'Deep cleaning, regular maintenance, post-construction cleanup, and move-in/out cleaning.',
+      features: ['Deep Cleaning', 'Regular Maintenance', 'Post-Construction', 'Move In/Out', 'Office Cleaning'],
     },
-  ]);
-
-  searchQuery = signal('');
+  ];
 
   ngOnInit(): void {
-    this.loadCounts();
-  }
-
-  private loadCounts(): void {
-    this.categories().forEach((cat, index) => {
+    this.categories.forEach((cat) => {
       this.apiService.getProviders({ category: cat.id }).subscribe({
         next: (providers) => {
-          this.categories.update((cats) =>
-            cats.map((c, i) =>
-              i === index ? { ...c, count: providers.length, loading: false } : c
-            )
-          );
+          this.providerCounts.update((c) => ({ ...c, [cat.id]: providers.length }));
+          if (Object.keys(this.providerCounts()).length === this.categories.length) {
+            this.loadingCounts.set(false);
+          }
         },
-        error: () => {
-          this.categories.update((cats) =>
-            cats.map((c, i) =>
-              i === index ? { ...c, count: 0, loading: false } : c
-            )
-          );
-        },
+        error: () => this.loadingCounts.set(false),
       });
     });
   }
 
-  get filteredCategories(): ServiceCategory[] {
-    const q = this.searchQuery().toLowerCase().trim();
-    if (!q) return this.categories();
-    return this.categories().filter(
-      (c) =>
-        c.label.toLowerCase().includes(q) ||
-        c.description.toLowerCase().includes(q)
-    );
-  }
-
-  goToSearch(categoryId: string): void {
+  browse(categoryId: string): void {
     this.router.navigate(['/search'], { queryParams: { category: categoryId } });
   }
 }

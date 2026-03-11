@@ -1,14 +1,15 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
-import { Router, RouterLink, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 import { HeaderComponent } from '../../components/header/header';
 import { FooterComponent } from '../../components/footer/footer';
-import { User, Review } from '../../models/models';
+import { User, Review, ProviderService } from '../../models/models';
 
 @Component({
   selector: 'app-provider-profile',
-  imports: [RouterLink, HeaderComponent, FooterComponent],
+  imports: [RouterLink, FormsModule, HeaderComponent, FooterComponent],
   templateUrl: './provider-profile.html',
 })
 export class ProviderProfileComponent implements OnInit {
@@ -19,79 +20,75 @@ export class ProviderProfileComponent implements OnInit {
 
   provider = signal<User | null>(null);
   reviews = signal<Review[]>([]);
-  loadingProvider = signal(true);
-  loadingReviews = signal(true);
-  errorProvider = signal('');
+  loading = signal(true);
+  error = signal('');
+
   showLoginModal = signal(false);
+  showServiceModal = signal(false);
+  selectedService = signal<ProviderService | null>(null);
 
   ngOnInit(): void {
-    const id = this.route.snapshot.paramMap.get('id');
-    if (id) {
-      this.loadProvider(id);
-      this.loadReviews(id);
-    }
+    this.route.paramMap.subscribe((params) => {
+      const id = params.get('id');
+      if (id) this.loadProvider(id);
+    });
   }
 
-  private loadProvider(id: string): void {
-    this.loadingProvider.set(true);
-    this.apiService.getProviderById(id).subscribe({
-      next: (provider) => {
-        this.provider.set(provider);
-        this.loadingProvider.set(false);
+  loadProvider(id: string): void {
+    this.loading.set(true);
+    this.error.set('');
+    this.apiService.getProvider(id).subscribe({
+      next: (p: User) => {
+        this.provider.set(p);
+        this.loading.set(false);
+        this.loadReviews(id);
       },
       error: () => {
-        this.errorProvider.set('Provider not found.');
-        this.loadingProvider.set(false);
+        this.error.set('Provider not found.');
+        this.loading.set(false);
       },
     });
   }
 
-  private loadReviews(id: string): void {
-    this.loadingReviews.set(true);
+  loadReviews(id: string): void {
     this.apiService.getProviderReviews(id).subscribe({
-      next: (reviews) => {
-        this.reviews.set(reviews);
-        this.loadingReviews.set(false);
-      },
-      error: () => {
-        this.loadingReviews.set(false);
-      },
+      next: (r) => this.reviews.set(r),
+      error: () => {},
     });
   }
 
-  bookProvider(): void {
+  onBookNow(): void {
     if (!this.authService.isAuthenticated()) {
       this.showLoginModal.set(true);
       return;
     }
-    this.router.navigate(['/booking', this.provider()?._id]);
+    this.showServiceModal.set(true);
   }
 
-  messageProvider(): void {
+  onContactProvider(): void {
     if (!this.authService.isAuthenticated()) {
       this.showLoginModal.set(true);
       return;
     }
-    if (this.authService.isProvider()) {
-      this.router.navigate(['/provider-messages', this.provider()?._id]);
-    } else {
-      this.router.navigate(['/messages', this.provider()?._id]);
-    }
-  }
-
-  closeLoginModal(): void {
-    this.showLoginModal.set(false);
-  }
-
-  goToLogin(): void {
-    const id = this.provider()?._id;
-    this.router.navigate(['/login'], {
-      queryParams: { redirect: `/booking/${id}` },
+    this.router.navigate(['/messages'], {
+      queryParams: { userId: this.provider()!._id }
     });
   }
 
-  goToSignup(): void {
-    this.router.navigate(['/signup']);
+  selectService(service: ProviderService): void {
+    this.selectedService.set(service);
+  }
+
+  proceedToBooking(): void {
+    const service = this.selectedService();
+    if (!service) return;
+    this.showServiceModal.set(false);
+    this.router.navigate(['/booking', this.provider()!._id], {
+      queryParams: {
+        serviceName: service.name,
+        servicePrice: service.price,
+      },
+    });
   }
 
   getStars(rating: number): string[] {
@@ -99,33 +96,23 @@ export class ProviderProfileComponent implements OnInit {
   }
 
   getReviewerName(review: Review): string {
-    if (typeof review.customer === 'object' && review.customer !== null) {
-      return (review.customer as User).name;
-    }
-    return 'Anonymous';
+    const c = review.customer;
+    if (typeof c === 'object' && c !== null) return (c as User).name;
+    return 'Customer';
   }
 
-  formatDate(dateStr?: string): string {
-    if (!dateStr) return '';
-    return new Date(dateStr).toLocaleDateString('en-PH', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
+  formatDate(d?: string): string {
+    if (!d) return '';
+    return new Date(d).toLocaleDateString('en-PH', {
+      year: 'numeric', month: 'short', day: 'numeric',
     });
   }
 
-  getCategoryLabel(category?: string): string {
+  getCategoryColor(cat: string): string {
     const map: Record<string, string> = {
-      plumbing: 'Plumbing',
-      electrical: 'Electrical',
-      cleaning: 'Cleaning',
-      carpentry: 'Carpentry',
-      painting: 'Painting',
-      hvac: 'HVAC',
-      landscaping: 'Landscaping',
-      'appliance-repair': 'Appliance Repair',
-      other: 'Other',
+      plumbing: '#4EA8DE', electrical: '#F08C00',
+      cleaning: '#2D9B6F', carpentry: '#1B3A6B',
     };
-    return map[category || ''] || category || '';
+    return map[cat] || '#1B3A6B';
   }
 }

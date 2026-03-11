@@ -1,135 +1,197 @@
 <app-header />
 
-<main style="background-color: #F2E8D9;">
+<!-- ═══════════════════════════════════════════ HERO ═══ -->
+<section class="relative pt-32 pb-28 overflow-hidden noise-overlay diagonal-cut"
+         style="background: linear-gradient(135deg, #0f2347 0%, #1B3A6B 100%);">
 
-  <!-- Hero -->
-  <section class="py-20 noise-overlay diagonal-cut" style="background-color: #1E5C3A;">
-    <div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-      <h1 class="text-5xl font-bold text-white mb-4 animate-fade-up">
-        About Fixify
+  <div class="absolute inset-0 pointer-events-none">
+    <div class="absolute w-96 h-96 rounded-full"
+         style="background: radial-gradient(circle, rgba(240,140,0,0.1) 0%, transparent 70%);
+                top: -15%; right: -5%;"></div>
+    <div class="absolute w-64 h-64 rounded-full"
+         style="background: radial-gradient(circle, rgba(78,168,222,0.08) 0%, transparent 70%);
+                bottom: 5%; left: 5%;"></div>
+  </div>
+
+  <div class="relative z-10 max-w-7xl mx-auto px-6 lg:px-8">
+    <div class="max-w-3xl animate-fade-up">
+      <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border mb-6"
+           style="border-color: rgba(240,140,0,0.3); background-color: rgba(240,140,0,0.08);">
+        <div class="w-1.5 h-1.5 rounded-full" style="background-color: #F08C00;"></div>
+        <span class="text-xs font-bold uppercase tracking-widest" style="color: #F08C00;">
+          Our Story
+        </span>
+      </div>
+      <h1 class="text-5xl lg:text-6xl font-black text-white leading-tight mb-6"
+          style="font-family: 'Fraunces', serif;">
+        Built for homes.<br />
+        <span style="-webkit-background-clip: text; -webkit-text-fill-color: transparent;
+                      background-image: linear-gradient(90deg, #F08C00, #ffb347);">
+          Built for trust.
+        </span>
       </h1>
-      <p class="text-[#F2E8D9] opacity-80 text-lg max-w-2xl mx-auto animate-fade-up delay-100">
-        A capstone project by Holy Angel University students — reimagining how homeowners
-        connect with trusted service professionals in Angeles City.
+      <p class="text-lg leading-relaxed max-w-xl" style="color: rgba(249,246,240,0.65);">
+        Fixify was born from a simple frustration — finding a reliable home service
+        provider in Angeles City shouldn't require five phone calls and a leap of faith.
+        We built the platform we wished existed.
       </p>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- Mission -->
-  <section class="py-20">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-        <div class="animate-fade-up">
-          <h2 class="text-4xl font-bold mb-4" style="color: #1A2E20;">Our Mission</h2>
-          <p class="text-base leading-relaxed mb-4" style="color: #1A2E20; opacity: 0.75;">
-            Fixify was born out of a simple observation: finding a reliable home service
-            professional in Angeles City shouldn't be difficult. Too often, homeowners
-            rely on word of mouth, and skilled tradespeople struggle to reach new clients.
-          </p>
-          <p class="text-base leading-relaxed mb-4" style="color: #1A2E20; opacity: 0.75;">
-            We built Fixify to bridge that gap — a platform where verified providers can
-            showcase their skills, and customers can book services with confidence, knowing
-            their payment is protected until the job is done right.
-          </p>
-          <p class="text-base leading-relaxed" style="color: #1A2E20; opacity: 0.75;">
-            This project was developed as the final requirement for <strong>6AWEB — Advanced
-            Dynamic Web Development</strong> at Holy Angel University, Angeles City, under the
-            guidance of <strong>Dr. Joseph A. Esquivel</strong>.
-          </p>
-        </div>
+<!-- ═══════════════════════════════════ MISSION ═══ -->
+<section class="py-24" style="background-color: #F9F6F0;">
+  <div class="max-w-7xl mx-auto px-6 lg:px-8">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
 
-        <div class="grid grid-cols-2 gap-4 animate-fade-up delay-200">
-          @for (value of values; track value.title) {
-            <div class="bg-white rounded-2xl p-5 border border-[#F2E8D9]">
-              <div class="text-3xl mb-3">{{ value.icon }}</div>
-              <h3 class="font-bold text-sm mb-1.5" style="color: #1A2E20;">{{ value.title }}</h3>
-              <p class="text-xs leading-relaxed" style="color: #1A2E20; opacity: 0.65;">
-                {{ value.description }}
-              </p>
-            </div>
-          }
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Tech Stack -->
-  <section class="py-16" style="background-color: white;">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-      <h2 class="text-3xl font-bold mb-3" style="color: #1A2E20;">Built With</h2>
-      <p class="text-sm mb-10" style="color: #1A2E20; opacity: 0.6;">
-        Modern, production-grade technologies from frontend to backend.
-      </p>
-      <div class="flex flex-wrap justify-center gap-3">
-        @for (tech of [
-          'Angular 21', 'TypeScript', 'Tailwind CSS v4',
-          'Node.js', 'Express.js', 'MongoDB Atlas',
-          'JWT Auth', 'Signals', 'Standalone Components'
-        ]; track tech) {
-          <span class="px-4 py-2 rounded-xl text-sm font-medium border"
-                style="border-color: #F2E8D9; color: #1A2E20; background-color: #F2E8D9;">
-            {{ tech }}
-          </span>
-        }
-      </div>
-    </div>
-  </section>
-
-  <!-- Team -->
-  <section class="py-20">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-12">
-        <h2 class="text-4xl font-bold mb-3" style="color: #1A2E20;">Meet the Team</h2>
-        <p class="text-sm" style="color: #1A2E20; opacity: 0.6;">
-          6AWEB Students · Holy Angel University · Angeles City, Pampanga
+      <!-- Left: large stat + text -->
+      <div class="lg:col-span-5 animate-fade-up">
+        <p class="text-8xl font-black leading-none mb-4"
+           style="color: #1B3A6B; font-family: 'Fraunces', serif; opacity: 0.08;">
+          WHY
         </p>
+        <div class="-mt-12">
+          <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border mb-5"
+               style="border-color: rgba(27,58,107,0.15); background-color: rgba(27,58,107,0.05);">
+            <span class="text-xs font-bold uppercase tracking-widest" style="color: #1B3A6B;">
+              Our Mission
+            </span>
+          </div>
+          <h2 class="text-4xl font-black mb-5"
+              style="color: #1B3A6B; font-family: 'Fraunces', serif; line-height: 1.2;">
+            Making home services<br />simple and safe.
+          </h2>
+          <p class="text-base leading-relaxed mb-4" style="color: #3D4A5C; opacity: 0.7;">
+            We verify every provider on our platform — checking credentials, reviewing
+            portfolios, and collecting real feedback from real customers. No fake reviews,
+            no anonymous listings.
+          </p>
+          <p class="text-base leading-relaxed" style="color: #3D4A5C; opacity: 0.7;">
+            Our escrow payment system means your money is protected until the job is done
+            right. You confirm completion before the provider gets paid. Simple as that.
+          </p>
+        </div>
       </div>
 
-      <div class="flex flex-wrap justify-center gap-5">
-        @for (member of team; track member.name) {
-          <div class="bg-white rounded-2xl p-6 border border-[#F2E8D9] text-center w-44 animate-fade-up">
-            <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-white text-xl font-bold mx-auto mb-3"
-                 [style.background-color]="member.color">
-              {{ member.initials }}
+      <!-- Right: value cards -->
+      <div class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4 animate-fade-up delay-200">
+        @for (val of [
+          {icon: '🔍', title: 'Verified Providers', desc: 'Every provider is manually reviewed and approved before appearing on our platform.', color: '#4EA8DE'},
+          {icon: '🔒', title: 'Escrow Payments', desc: 'Pay securely upfront. Funds are only released after you confirm the job is complete.', color: '#2D9B6F'},
+          {icon: '⭐', title: 'Real Reviews', desc: 'Only customers who completed a booking can leave a review. No fakes, ever.', color: '#F08C00'},
+          {icon: '💬', title: 'Direct Messaging', desc: 'Chat directly with your provider before and during the job. Full transparency.', color: '#1B3A6B'}
+        ]; track val.title) {
+          <div class="rounded-3xl p-6 border-2 bg-white hover:shadow-md transition-all"
+               style="border-color: rgba(27,58,107,0.08);">
+            <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl mb-4"
+                 [style.background-color]="val.color + '15'">
+              {{ val.icon }}
             </div>
-            <p class="font-bold text-sm mb-1" style="color: #1A2E20;">{{ member.name }}</p>
-            <p class="text-xs leading-tight" style="color: #1A2E20; opacity: 0.6;">
-              {{ member.role }}
+            <h3 class="font-black mb-2" style="color: #1B3A6B;">{{ val.title }}</h3>
+            <p class="text-sm leading-relaxed" style="color: #3D4A5C; opacity: 0.65;">
+              {{ val.desc }}
             </p>
           </div>
         }
       </div>
 
-      <div class="text-center mt-10">
-        <p class="text-sm" style="color: #1A2E20; opacity: 0.5;">
-          Advised by <strong style="opacity: 1;">Dr. Joseph A. Esquivel</strong>
-        </p>
-      </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- CTA -->
-  <section class="py-16 noise-overlay diagonal-cut-reverse" style="background-color: #1A2E20;">
-    <div class="relative z-10 max-w-3xl mx-auto px-4 text-center">
-      <h2 class="text-3xl font-bold text-white mb-3">Ready to try Fixify?</h2>
-      <p class="text-[#F2E8D9] opacity-70 mb-8 text-sm">
-        Find a trusted service professional in Angeles City today.
-      </p>
-      <div class="flex flex-wrap justify-center gap-3">
-        <a routerLink="/search"
-           class="px-6 py-3 rounded-xl font-semibold text-sm transition-all"
-           style="background-color: #C9A87C; color: #1A2E20;">
-          Find a Provider
-        </a>
-        <a routerLink="/signup"
-           class="px-6 py-3 rounded-xl font-semibold text-sm border-2 transition-all"
-           style="border-color: rgba(255,255,255,0.3); color: white;">
-          Create Account
-        </a>
-      </div>
+<!-- ═══════════════════════════════════ STATS ═══ -->
+<section class="py-20 noise-overlay relative overflow-hidden"
+         style="background: linear-gradient(135deg, #1B3A6B 0%, #0f2347 100%);">
+  <div class="absolute inset-0 pointer-events-none">
+    <div class="absolute w-96 h-96 rounded-full"
+         style="background: radial-gradient(circle, rgba(240,140,0,0.07) 0%, transparent 70%);
+                top: -20%; right: -5%;"></div>
+  </div>
+  <div class="relative z-10 max-w-7xl mx-auto px-6 lg:px-8">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
+      @for (stat of [
+        {value: '3', label: 'Service Categories', suffix: ''},
+        {value: '100', label: 'Verified Providers', suffix: '+'},
+        {value: '500', label: 'Bookings Completed', suffix: '+'},
+        {value: '4.8', label: 'Average Rating', suffix: '★'}
+      ]; track stat.label) {
+        <div class="text-center animate-fade-up">
+          <p class="text-5xl font-black text-white mb-2"
+             style="font-family: 'Fraunces', serif;">
+            {{ stat.value }}<span style="color: #F08C00;">{{ stat.suffix }}</span>
+          </p>
+          <p class="text-sm" style="color: rgba(249,246,240,0.5);">{{ stat.label }}</p>
+        </div>
+      }
     </div>
-  </section>
+  </div>
+</section>
 
-</main>
+<!-- ═══════════════════════════════════ TEAM ═══ -->
+<section class="py-24" style="background-color: #F9F6F0;">
+  <div class="max-w-7xl mx-auto px-6 lg:px-8">
+
+    <div class="max-w-2xl mb-14 animate-fade-up">
+      <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border mb-5"
+           style="border-color: rgba(27,58,107,0.15); background-color: rgba(27,58,107,0.05);">
+        <span class="text-xs font-bold uppercase tracking-widest" style="color: #1B3A6B;">
+          The Team
+        </span>
+      </div>
+      <h2 class="text-4xl font-black"
+          style="color: #1B3A6B; font-family: 'Fraunces', serif;">
+        Built by students,<br />for the community.
+      </h2>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      @for (member of [
+        {name: 'Holy Angel University', role: '6AWEB Web Development', initials: 'HAU', color: '#1B3A6B'},
+        {name: 'Angular 21', role: 'Frontend Framework', initials: 'NG', color: '#F08C00'},
+        {name: 'Node.js + MongoDB', role: 'Backend & Database', initials: 'DB', color: '#2D9B6F'}
+      ]; track member.name) {
+        <div class="rounded-3xl p-6 border-2 bg-white animate-fade-up"
+             style="border-color: rgba(27,58,107,0.08);">
+          <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-white font-black text-lg mb-4"
+               [style.background-color]="member.color">
+            {{ member.initials }}
+          </div>
+          <h3 class="font-black mb-1" style="color: #1B3A6B;">{{ member.name }}</h3>
+          <p class="text-sm" style="color: #3D4A5C; opacity: 0.55;">{{ member.role }}</p>
+        </div>
+      }
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ CTA ═══ -->
+<section class="py-20 noise-overlay relative overflow-hidden"
+         style="background: linear-gradient(135deg, #1B3A6B 0%, #0f2347 100%);">
+  <div class="relative z-10 max-w-3xl mx-auto px-6 lg:px-8 text-center animate-fade-up">
+    <h2 class="text-4xl font-black text-white mb-4"
+        style="font-family: 'Fraunces', serif;">
+      Ready to try Fixify?
+    </h2>
+    <p class="text-base mb-8" style="color: rgba(249,246,240,0.6);">
+      Browse verified providers in Angeles City today.
+    </p>
+    <div class="flex flex-wrap justify-center gap-4">
+      <a routerLink="/search"
+         class="relative inline-flex items-center gap-2 px-7 py-3.5 rounded-xl font-bold text-white overflow-hidden group"
+         style="background-color: #F08C00;">
+        <span class="relative z-10">Browse Services →</span>
+        <div class="absolute inset-0 bg-white/15 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+      </a>
+      <a routerLink="/contact"
+         class="px-7 py-3.5 rounded-xl font-bold border-2 transition-all"
+         style="border-color: rgba(249,246,240,0.2); color: white;"
+         onmouseover="this.style.borderColor='rgba(249,246,240,0.5)'"
+         onmouseout="this.style.borderColor='rgba(249,246,240,0.2)'">
+        Contact Us
+      </a>
+    </div>
+  </div>
+</section>
 
 <app-footer />

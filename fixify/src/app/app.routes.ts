@@ -50,24 +50,9 @@ export const routes: Routes = [
   },
 
   // Customer routes
-  {
-    path: 'booking/:providerId',
-    loadComponent: () =>
-      import('./pages/booking/booking').then((m) => m.BookingComponent),
-    canActivate: [authGuard],
-  },
-  {
-    path: 'payment/:bookingId',
-    loadComponent: () =>
-      import('./pages/payment/payment').then((m) => m.PaymentComponent),
-    canActivate: [authGuard],
-  },
-  {
-    path: 'review/:bookingId',
-    loadComponent: () =>
-      import('./pages/review/review').then((m) => m.ReviewComponent),
-    canActivate: [authGuard],
-  },
+{ path: 'booking/:providerId', loadComponent: () => import('./pages/booking/booking').then(m => m.BookingComponent) },
+{ path: 'payment/:bookingId', loadComponent: () => import('./pages/payment/payment').then(m => m.PaymentComponent) },
+{ path: 'review/:bookingId', loadComponent: () => import('./pages/review/review').then(m => m.ReviewComponent) },
   {
     path: 'dashboard',
     loadComponent: () =>

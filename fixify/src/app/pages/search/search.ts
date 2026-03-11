@@ -1,15 +1,16 @@
-import { Component, inject, signal, OnInit, computed } from '@angular/core';
-import { Router, RouterLink, ActivatedRoute } from '@angular/router';
+import { Component, inject, signal, OnInit } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 import { HeaderComponent } from '../../components/header/header';
 import { FooterComponent } from '../../components/footer/footer';
 import { User } from '../../models/models';
+import { TitleCasePipe } from '@angular/common';
 
 @Component({
   selector: 'app-search',
-  imports: [FormsModule, HeaderComponent, FooterComponent],
+  imports: [FormsModule, HeaderComponent, FooterComponent, TitleCasePipe],
   templateUrl: './search.html',
 })
 export class SearchComponent implements OnInit {
@@ -19,24 +20,13 @@ export class SearchComponent implements OnInit {
   authService = inject(AuthService);
 
   providers = signal<User[]>([]);
-  loading = signal(false);
+  loading = signal(true);
   error = signal('');
-  showLoginModal = signal(false);
 
-  // Filters
-  category = signal('');
-  serviceArea = signal('');
-  minRating = signal(0);
-  verifiedOnly = signal(false);
-  sortBy = signal('rating');
-
-  readonly serviceAreas = [
-    'Angeles City Center',
-    'Balibago',
-    'Nepo Mall Area',
-    'Marquee Mall Area',
-    'Clark',
-  ];
+  searchCategory = signal('');
+  searchArea = signal('');
+  searchMinRating = signal(0);
+  searchMaxPrice = signal(0);
 
   readonly categories = [
     { value: '', label: 'All Categories' },
@@ -51,10 +41,28 @@ export class SearchComponent implements OnInit {
     { value: 'other', label: 'Other' },
   ];
 
+  readonly areas = [
+    { value: '', label: 'All Areas' },
+    { value: 'Angeles City Center', label: 'Angeles City Center' },
+    { value: 'Balibago', label: 'Balibago' },
+    { value: 'Nepo Mall Area', label: 'Nepo Mall Area' },
+    { value: 'Marquee Mall Area', label: 'Marquee Mall Area' },
+    { value: 'Clark', label: 'Clark' },
+  ];
+
+  readonly ratings = [
+    { value: 0, label: 'Any Rating' },
+    { value: 3, label: '3★ and above' },
+    { value: 4, label: '4★ and above' },
+    { value: 4.5, label: '4.5★ and above' },
+  ];
+
   ngOnInit(): void {
     this.route.queryParamMap.subscribe((params) => {
-      const cat = params.get('category');
-      if (cat) this.category.set(cat);
+      const cat = params.get('category') || '';
+      const area = params.get('area') || '';
+      this.searchCategory.set(cat);
+      this.searchArea.set(area);
       this.loadProviders();
     });
   }
@@ -62,75 +70,44 @@ export class SearchComponent implements OnInit {
   loadProviders(): void {
     this.loading.set(true);
     this.error.set('');
-
-    const params: any = { sort: this.sortBy() };
-    if (this.category()) params.category = this.category();
-    if (this.serviceArea()) params.serviceArea = this.serviceArea();
-    if (this.minRating() > 0) params.minRating = this.minRating();
-    if (this.verifiedOnly()) params.verified = true;
+    const params: any = {};
+    if (this.searchCategory()) params.category = this.searchCategory();
+    if (this.searchArea()) params.serviceArea = this.searchArea();
+    if (this.searchMinRating() > 0) params.minRating = this.searchMinRating();
+    if (this.searchMaxPrice() > 0) params.maxPrice = this.searchMaxPrice();
 
     this.apiService.getProviders(params).subscribe({
-      next: (providers) => {
-        this.providers.set(providers);
-        this.loading.set(false);
-      },
-      error: () => {
-        this.error.set('Failed to load providers. Please try again.');
-        this.loading.set(false);
-      },
+      next: (p) => { this.providers.set(p); this.loading.set(false); },
+      error: () => { this.error.set('Failed to load providers.'); this.loading.set(false); },
     });
   }
 
-  onFilterChange(): void {
-    this.loadProviders();
-  }
+  applyFilters(): void { this.loadProviders(); }
 
   clearFilters(): void {
-    this.category.set('');
-    this.serviceArea.set('');
-    this.minRating.set(0);
-    this.verifiedOnly.set(false);
-    this.sortBy.set('rating');
+    this.searchCategory.set('');
+    this.searchArea.set('');
+    this.searchMinRating.set(0);
+    this.searchMaxPrice.set(0);
     this.loadProviders();
   }
-
-  viewProvider(id: string): void {
-    this.router.navigate(['/provider', id]);
-  }
-
   bookProvider(providerId: string): void {
-    if (!this.authService.isAuthenticated()) {
-      this.showLoginModal.set(true);
-      return;
-    }
-    this.router.navigate(['/booking', providerId]);
-  }
+  this.router.navigate(['/booking', providerId]);
+}
 
-  messageProvider(providerId: string): void {
-    if (!this.authService.isAuthenticated()) {
-      this.showLoginModal.set(true);
-      return;
-    }
-    this.router.navigate(['/messages', providerId]);
-  }
-
-  closeLoginModal(): void {
-    this.showLoginModal.set(false);
-  }
-
-  goToLogin(): void {
-    this.router.navigate(['/login']);
-  }
-
-  goToSignup(): void {
-    this.router.navigate(['/signup']);
-  }
+viewProfile(providerId: string): void {
+  this.router.navigate(['/provider', providerId]);
+}
 
   getStars(rating: number): string[] {
     return Array(5).fill('').map((_, i) => i < Math.round(rating) ? '★' : '☆');
   }
 
-  getCategoryLabel(value: string): string {
-    return this.categories.find((c) => c.value === value)?.label || value;
+  getCategoryColor(cat: string): string {
+    const map: Record<string, string> = {
+      plumbing: '#4EA8DE', electrical: '#F08C00', cleaning: '#2D9B6F',
+      carpentry: '#1B3A6B', painting: '#F08C00', hvac: '#4EA8DE',
+    };
+    return map[cat] || '#1B3A6B';
   }
 }

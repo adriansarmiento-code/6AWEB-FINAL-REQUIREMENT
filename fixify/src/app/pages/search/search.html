@@ -1,277 +1,275 @@
 <app-header />
 
-<main style="background-color: #F2E8D9; min-height: 100vh;">
-
-  <!-- Page Header -->
-  <section class="py-10 noise-overlay" style="background-color: #1E5C3A;">
-    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h1 class="text-3xl font-bold text-white mb-1 animate-fade-up">Find a Provider</h1>
-      <p class="text-[#F2E8D9] opacity-75 animate-fade-up delay-100">
-        Verified home service professionals in Angeles City, Pampanga
-      </p>
+<!-- ═══════════════════════════════════════════ HERO ═══ -->
+<section class="relative pt-32 pb-16 overflow-hidden noise-overlay diagonal-cut"
+         style="background: linear-gradient(135deg, #0f2347 0%, #1B3A6B 100%);">
+  <div class="absolute inset-0 pointer-events-none">
+    <div class="absolute w-80 h-80 rounded-full"
+         style="background: radial-gradient(circle, rgba(240,140,0,0.1) 0%, transparent 70%);
+                top: -10%; right: 5%;"></div>
+  </div>
+  <div class="relative z-10 max-w-7xl mx-auto px-6 lg:px-8">
+    <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border mb-5 animate-fade-in"
+         style="border-color: rgba(240,140,0,0.3); background-color: rgba(240,140,0,0.08);">
+      <div class="w-1.5 h-1.5 rounded-full" style="background-color: #F08C00;"></div>
+      <span class="text-xs font-bold uppercase tracking-widest" style="color: #F08C00;">
+        Find Providers
+      </span>
     </div>
-  </section>
+    <h1 class="text-4xl lg:text-5xl font-black text-white mb-3 animate-fade-up"
+        style="font-family: 'Fraunces', serif;">
+      @if (searchCategory()) {
+        {{ searchCategory() | titlecase }} providers
+      } @else {
+        All service providers
+      }
+    </h1>
+    <p class="text-base animate-fade-up delay-100" style="color: rgba(249,246,240,0.6);">
+      Verified professionals serving Angeles City, Pampanga.
+    </p>
+  </div>
+</section>
 
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div class="flex flex-col lg:flex-row gap-6">
+<!-- ═══════════════════════════ MAIN CONTENT ═══ -->
+<section class="py-12" style="background-color: #F9F6F0;">
+  <div class="max-w-7xl mx-auto px-6 lg:px-8">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-7">
 
-      <!-- Sidebar Filters -->
-      <aside class="lg:w-64 flex-shrink-0">
-        <div class="bg-white rounded-2xl p-5 border border-[#F2E8D9] sticky top-20">
-          <div class="flex items-center justify-between mb-4">
-            <h2 class="font-bold text-sm" style="color: #1A2E20;">Filters</h2>
+      <!-- ══════════ FILTERS SIDEBAR ══════════ -->
+      <aside class="lg:col-span-1">
+        <div class="rounded-3xl p-6 border-2 bg-white sticky top-24"
+             style="border-color: rgba(27,58,107,0.08);">
+          <div class="flex items-center justify-between mb-5">
+            <h2 class="font-black text-base" style="color: #1B3A6B; font-family: 'Fraunces', serif;">
+              Filters
+            </h2>
             <button (click)="clearFilters()"
-                    class="text-xs transition-colors"
-                    style="color: #1E5C3A;">
+                    class="text-xs font-semibold transition-colors"
+                    style="color: #F08C00;"
+                    onmouseover="this.style.opacity='0.7'"
+                    onmouseout="this.style.opacity='1'">
               Clear all
             </button>
           </div>
 
           <!-- Category -->
-          <div class="mb-4">
-            <label class="block text-xs font-medium mb-1.5" style="color: #1A2E20;">Category</label>
-            <select [ngModel]="category()"
-                    (ngModelChange)="category.set($event); onFilterChange()"
-                    name="category"
-                    class="w-full px-3 py-2 rounded-xl border text-sm outline-none"
-                    style="border-color: #F2E8D9; color: #1A2E20;">
+          <div class="mb-5">
+            <label class="block text-xs font-bold uppercase tracking-wider mb-2"
+                   style="color: #3D4A5C; opacity: 0.5;">Category</label>
+            <select [ngModel]="searchCategory()"
+                    (ngModelChange)="searchCategory.set($event)"
+                    name="searchCategory"
+                    class="w-full px-3 py-2.5 rounded-2xl border-2 text-sm outline-none transition-all"
+                    style="border-color: rgba(27,58,107,0.12); color: #1B3A6B; background-color: white;"
+                    onfocus="this.style.borderColor='#1B3A6B'"
+                    onblur="this.style.borderColor='rgba(27,58,107,0.12)'">
               @for (cat of categories; track cat.value) {
                 <option [value]="cat.value">{{ cat.label }}</option>
               }
             </select>
           </div>
 
-          <!-- Service Area -->
-          <div class="mb-4">
-            <label class="block text-xs font-medium mb-1.5" style="color: #1A2E20;">Service Area</label>
-            <select [ngModel]="serviceArea()"
-                    (ngModelChange)="serviceArea.set($event); onFilterChange()"
-                    name="serviceArea"
-                    class="w-full px-3 py-2 rounded-xl border text-sm outline-none"
-                    style="border-color: #F2E8D9; color: #1A2E20;">
-              <option value="">All Areas</option>
-              @for (area of serviceAreas; track area) {
-                <option [value]="area">{{ area }}</option>
+          <!-- Area -->
+          <div class="mb-5">
+            <label class="block text-xs font-bold uppercase tracking-wider mb-2"
+                   style="color: #3D4A5C; opacity: 0.5;">Service Area</label>
+            <select [ngModel]="searchArea()"
+                    (ngModelChange)="searchArea.set($event)"
+                    name="searchArea"
+                    class="w-full px-3 py-2.5 rounded-2xl border-2 text-sm outline-none transition-all"
+                    style="border-color: rgba(27,58,107,0.12); color: #1B3A6B; background-color: white;"
+                    onfocus="this.style.borderColor='#1B3A6B'"
+                    onblur="this.style.borderColor='rgba(27,58,107,0.12)'">
+              @for (area of areas; track area.value) {
+                <option [value]="area.value">{{ area.label }}</option>
               }
             </select>
           </div>
 
           <!-- Min Rating -->
-          <div class="mb-4">
-            <label class="block text-xs font-medium mb-1.5" style="color: #1A2E20;">
-              Minimum Rating: {{ minRating() > 0 ? minRating() + '★' : 'Any' }}
-            </label>
-            <input type="range"
-                   [ngModel]="minRating()"
-                   (ngModelChange)="minRating.set($event); onFilterChange()"
-                   name="minRating"
-                   min="0" max="5" step="0.5"
-                   class="w-full accent-[#1E5C3A]" />
-            <div class="flex justify-between text-xs mt-1" style="color: #1A2E20; opacity: 0.5;">
-              <span>Any</span>
-              <span>5★</span>
-            </div>
-          </div>
-
-          <!-- Verified Only -->
-          <div class="mb-4">
-            <label class="flex items-center gap-2 cursor-pointer">
-              <input type="checkbox"
-                     [ngModel]="verifiedOnly()"
-                     (ngModelChange)="verifiedOnly.set($event); onFilterChange()"
-                     name="verifiedOnly"
-                     class="accent-[#1E5C3A]" />
-              <span class="text-sm" style="color: #1A2E20;">Verified only</span>
-            </label>
-          </div>
-
-          <!-- Sort -->
-          <div>
-            <label class="block text-xs font-medium mb-1.5" style="color: #1A2E20;">Sort by</label>
-            <select [ngModel]="sortBy()"
-                    (ngModelChange)="sortBy.set($event); onFilterChange()"
-                    name="sortBy"
-                    class="w-full px-3 py-2 rounded-xl border text-sm outline-none"
-                    style="border-color: #F2E8D9; color: #1A2E20;">
-              <option value="rating">Top Rated</option>
-              <option value="price-low">Price: Low to High</option>
-              <option value="price-high">Price: High to Low</option>
-              <option value="experience">Most Experienced</option>
-              <option value="reviews">Most Reviews</option>
+          <div class="mb-5">
+            <label class="block text-xs font-bold uppercase tracking-wider mb-2"
+                   style="color: #3D4A5C; opacity: 0.5;">Minimum Rating</label>
+            <select [ngModel]="searchMinRating()"
+                    (ngModelChange)="searchMinRating.set(+$event)"
+                    name="searchMinRating"
+                    class="w-full px-3 py-2.5 rounded-2xl border-2 text-sm outline-none transition-all"
+                    style="border-color: rgba(27,58,107,0.12); color: #1B3A6B; background-color: white;"
+                    onfocus="this.style.borderColor='#1B3A6B'"
+                    onblur="this.style.borderColor='rgba(27,58,107,0.12)'">
+              @for (r of ratings; track r.value) {
+                <option [value]="r.value">{{ r.label }}</option>
+              }
             </select>
           </div>
 
+          <!-- Max Price -->
+          <div class="mb-6">
+            <label class="block text-xs font-bold uppercase tracking-wider mb-2"
+                   style="color: #3D4A5C; opacity: 0.5;">
+              Max Price (₱)
+              @if (searchMaxPrice() > 0) {
+                <span style="color: #F08C00;">· ₱{{ searchMaxPrice() }}</span>
+              }
+            </label>
+            <input type="number"
+                   [ngModel]="searchMaxPrice()"
+                   (ngModelChange)="searchMaxPrice.set(+$event)"
+                   name="searchMaxPrice"
+                   min="0"
+                   placeholder="No limit"
+                   class="w-full px-3 py-2.5 rounded-2xl border-2 text-sm outline-none transition-all"
+                   style="border-color: rgba(27,58,107,0.12); color: #1B3A6B;"
+                   onfocus="this.style.borderColor='#1B3A6B'"
+                   onblur="this.style.borderColor='rgba(27,58,107,0.12)'" />
+          </div>
+
+          <button (click)="applyFilters()"
+                  class="w-full py-3 rounded-xl text-sm font-bold text-white relative overflow-hidden group"
+                  style="background-color: #1B3A6B;">
+            <span class="relative z-10">Apply Filters</span>
+            <div class="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+          </button>
         </div>
       </aside>
 
-      <!-- Results -->
-      <div class="flex-1">
+      <!-- ══════════ RESULTS ══════════ -->
+      <div class="lg:col-span-3">
 
-        <!-- Loading -->
+        <!-- Results header -->
+        <div class="flex items-center justify-between mb-5">
+          <p class="text-sm font-medium" style="color: #3D4A5C; opacity: 0.6;">
+            @if (loading()) { Searching... }
+            @else { {{ providers().length }} provider{{ providers().length !== 1 ? 's' : '' }} found }
+          </p>
+        </div>
+
         @if (loading()) {
-          <div class="flex flex-col items-center justify-center py-20">
-            <div class="w-10 h-10 rounded-full border-4 border-[#7AAE8E] border-t-[#1E5C3A] animate-spin mb-4"></div>
-            <p class="text-sm" style="color: #1A2E20; opacity: 0.6;">Finding providers...</p>
+          <div class="flex items-center justify-center py-24">
+            <div class="w-10 h-10 rounded-full border-4 border-[#4EA8DE] border-t-[#1B3A6B] animate-spin"></div>
           </div>
-        }
-
-        <!-- Error -->
-        @if (error() && !loading()) {
-          <div class="text-center py-20">
-            <div class="text-5xl mb-4">⚠️</div>
-            <p class="text-sm mb-4" style="color: #1A2E20;">{{ error() }}</p>
-            <button (click)="loadProviders()"
-                    class="px-4 py-2 rounded-xl text-sm font-medium text-white"
-                    style="background-color: #1E5C3A;">
-              Try Again
-            </button>
+        } @else if (error()) {
+          <div class="flex flex-col items-center justify-center py-20 rounded-3xl border-2 bg-white"
+               style="border-color: rgba(27,58,107,0.08);">
+            <div class="text-4xl mb-3">⚠️</div>
+            <p class="font-medium" style="color: #1B3A6B;">{{ error() }}</p>
           </div>
-        }
-
-        <!-- Empty -->
-        @if (!loading() && !error() && providers().length === 0) {
-          <div class="text-center py-20">
+        } @else if (providers().length === 0) {
+          <div class="flex flex-col items-center justify-center py-20 rounded-3xl border-2 bg-white"
+               style="border-color: rgba(27,58,107,0.08);">
             <div class="text-5xl mb-4">🔍</div>
-            <h3 class="text-xl font-bold mb-2" style="color: #1A2E20;">No providers found</h3>
-            <p class="text-sm mb-4" style="color: #1A2E20; opacity: 0.6;">
+            <p class="font-bold text-lg mb-1" style="color: #1B3A6B;">No providers found</p>
+            <p class="text-sm mb-4" style="color: #3D4A5C; opacity: 0.5;">
               Try adjusting your filters.
             </p>
             <button (click)="clearFilters()"
-                    class="px-4 py-2 rounded-xl text-sm font-medium text-white"
-                    style="background-color: #1E5C3A;">
+                    class="px-5 py-2.5 rounded-xl text-sm font-bold text-white"
+                    style="background-color: #F08C00;">
               Clear Filters
             </button>
           </div>
-        }
+        } @else {
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            @for (provider of providers(); track provider._id; let i = $index) {
+              <div class="rounded-3xl border-2 bg-white overflow-hidden group hover:shadow-lg
+                          transition-all duration-300 cursor-pointer animate-fade-up"
+                   [class]="'delay-' + ((i % 4 + 1) * 100)"
+                   style="border-color: rgba(27,58,107,0.08);"
+                   (click)="viewProfile(provider._id)">
 
-        <!-- Results count -->
-        @if (!loading() && providers().length > 0) {
-          <p class="text-sm mb-4" style="color: #1A2E20; opacity: 0.6;">
-            {{ providers().length }} provider{{ providers().length !== 1 ? 's' : '' }} found
-          </p>
-        }
-
-        <!-- Provider Cards -->
-        <div class="flex flex-col gap-4">
-          @for (provider of providers(); track provider._id) {
-            <div class="bg-white rounded-2xl p-5 border border-[#F2E8D9] hover:shadow-md transition-all animate-fade-up">
-              <div class="flex flex-col sm:flex-row gap-4">
-
-                <!-- Avatar -->
-                <div class="flex-shrink-0">
-                  @if (provider.profileImage) {
-                    <img [src]="provider.profileImage"
-                         [alt]="provider.name"
-                         class="w-16 h-16 rounded-xl object-cover border-2 border-[#F2E8D9]" />
-                  } @else {
-                    <div class="w-16 h-16 rounded-xl flex items-center justify-center text-white text-xl font-bold"
-                         style="background: linear-gradient(135deg, #1E5C3A, #7AAE8E);">
-                      {{ provider.name.charAt(0).toUpperCase() }}
-                    </div>
-                  }
+                <!-- Card top band -->
+                <div class="h-1.5 w-full"
+                     [style.background-color]="getCategoryColor(provider.providerInfo?.category || '')">
                 </div>
 
-                <!-- Info -->
-                <div class="flex-1 min-w-0">
-                  <div class="flex flex-wrap items-start gap-2 mb-1">
-                    <h3 class="font-bold text-lg" style="color: #1A2E20;">{{ provider.name }}</h3>
+                <div class="p-5">
+                  <!-- Header row -->
+                  <div class="flex items-start gap-3 mb-4">
+                    @if (provider.profileImage) {
+                      <img [src]="provider.profileImage"
+                           class="w-12 h-12 rounded-2xl object-cover flex-shrink-0" />
+                    } @else {
+                      <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-white font-bold text-lg flex-shrink-0"
+                           style="background: linear-gradient(135deg, #1B3A6B, #2d5a9e);">
+                        {{ provider.name.charAt(0).toUpperCase() }}
+                      </div>
+                    }
+                    <div class="flex-1 min-w-0">
+                      <p class="font-bold truncate" style="color: #1B3A6B;">{{ provider.name }}</p>
+                      <p class="text-xs capitalize" style="color: #3D4A5C; opacity: 0.6;">
+                        {{ provider.providerInfo?.category || 'General Services' }}
+                      </p>
+                    </div>
                     @if (provider.providerInfo?.verified) {
-                      <span class="text-xs px-2 py-0.5 rounded-full font-medium"
-                            style="background-color: #F2E8D9; color: #1E5C3A;">
-                        ✓ Verified
+                      <span class="text-xs px-2 py-0.5 rounded-full font-medium flex-shrink-0"
+                            style="background-color: rgba(45,155,111,0.1); color: #2D9B6F;">
+                        ✓
                       </span>
                     }
                   </div>
 
-                  <p class="text-xs mb-2 capitalize" style="color: #1A2E20; opacity: 0.6;">
-                    {{ getCategoryLabel(provider.providerInfo?.category || '') }} ·
-                    {{ provider.providerInfo?.serviceArea || 'Angeles City' }}
-                  </p>
-
-                  <!-- Rating -->
-                  <div class="flex items-center gap-1.5 mb-2">
-                    <div class="flex text-sm" style="color: #C9A87C;">
-                      @for (star of getStars(provider.providerInfo?.rating || 0); track $index) {
-                        <span>{{ star }}</span>
-                      }
+                  <!-- Rating + area -->
+                  <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-1">
+                      <div class="flex gap-0.5">
+                        @for (star of getStars(provider.providerInfo?.rating ?? 0); track $index) {
+                          <span class="text-xs" style="color: #F08C00;">{{ star }}</span>
+                        }
+                      </div>
+                      <span class="text-xs font-medium" style="color: #3D4A5C; opacity: 0.6;">
+                        ({{ provider.providerInfo?.rating?.toFixed(1) || '0.0' }})
+                      </span>
                     </div>
-                    <span class="text-xs" style="color: #1A2E20; opacity: 0.6;">
-                      {{ (provider.providerInfo?.rating || 0).toFixed(1) }}
-                      ({{ provider.providerInfo?.reviewCount || 0 }} reviews)
-                    </span>
+                    @if (provider.providerInfo?.serviceArea) {
+                      <span class="text-xs" style="color: #3D4A5C; opacity: 0.5;">
+                        📍 {{ provider.providerInfo!.serviceArea }}
+                      </span>
+                    }
                   </div>
 
+                  <!-- Bio -->
                   @if (provider.providerInfo?.bio) {
-                    <p class="text-sm leading-relaxed line-clamp-2" style="color: #1A2E20; opacity: 0.7;">
+                    <p class="text-xs leading-relaxed mb-4 line-clamp-2"
+                       style="color: #3D4A5C; opacity: 0.65;">
                       {{ provider.providerInfo!.bio }}
                     </p>
                   }
-                </div>
 
-                <!-- Right side -->
-                <div class="flex flex-col items-end justify-between gap-3 flex-shrink-0">
-                  @if (provider.providerInfo?.hourlyRate) {
-                    <div class="text-right">
-                      <p class="text-xs" style="color: #1A2E20; opacity: 0.5;">Starting at</p>
-                      <p class="font-bold text-lg" style="color: #1E5C3A;">
-                        ₱{{ provider.providerInfo!.hourlyRate!.toLocaleString() }}
+<!-- Footer row -->
+                  <div class="pt-3 border-t" style="border-color: rgba(27,58,107,0.06);">
+                    @if (provider.providerInfo?.hourlyRate) {
+                      <p class="text-sm font-black mb-3" style="color: #1B3A6B; font-family: 'Fraunces', serif;">
+                        ₱{{ provider.providerInfo!.hourlyRate }}/hr
                       </p>
+                    } @else {
+                      <p class="text-xs mb-3" style="color: #3D4A5C; opacity: 0.4;">Rate on request</p>
+                    }
+                    <div class="flex gap-2">
+                      <button (click)="viewProfile(provider._id); $event.stopPropagation()"
+                              class="flex-1 py-2 rounded-xl text-xs font-semibold border-2 transition-all"
+                              style="border-color: rgba(27,58,107,0.15); color: #1B3A6B;"
+                              onmouseover="this.style.backgroundColor='rgba(27,58,107,0.05)'"
+                              onmouseout="this.style.backgroundColor='transparent'">
+                        View Profile
+                      </button>
+                      <button (click)="bookProvider(provider._id); $event.stopPropagation()"
+                              class="flex-1 py-2 rounded-xl text-xs font-bold text-white relative overflow-hidden group"
+                              style="background-color: #F08C00;">
+                        <span class="relative z-10">Book Now</span>
+                        <div class="absolute inset-0 bg-white/15 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+                      </button>
                     </div>
-                  }
-
-                  <div class="flex gap-2">
-                    <button (click)="viewProvider(provider._id)"
-                            class="px-3 py-1.5 rounded-lg text-xs font-medium border transition-all"
-                            style="border-color: #1E5C3A; color: #1E5C3A;">
-                      View Profile
-                    </button>
-                    <button (click)="bookProvider(provider._id)"
-                            class="px-3 py-1.5 rounded-lg text-xs font-medium text-white transition-all"
-                            style="background-color: #1E5C3A;">
-                      Book Now
-                    </button>
                   </div>
                 </div>
 
               </div>
-            </div>
-          }
-        </div>
-
+            }
+          </div>
+        }
       </div>
+
     </div>
   </div>
-
-</main>
-
-<!-- Login Prompt Modal -->
-@if (showLoginModal()) {
-  <div class="fixed inset-0 z-50 flex items-center justify-center px-4"
-       style="background-color: rgba(0,0,0,0.5);">
-    <div class="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-fade-up">
-      <h3 class="text-lg font-bold mb-2" style="color: #1A2E20;">Login Required</h3>
-      <p class="text-sm mb-6" style="color: #1A2E20; opacity: 0.6;">
-        You need to be logged in to book or message a provider.
-      </p>
-      <div class="flex flex-col gap-2">
-        <button (click)="goToLogin()"
-                class="w-full py-2.5 rounded-xl text-sm font-medium text-white"
-                style="background-color: #1E5C3A;">
-          Login
-        </button>
-        <button (click)="goToSignup()"
-                class="w-full py-2.5 rounded-xl text-sm font-medium border"
-                style="border-color: #1E5C3A; color: #1E5C3A;">
-          Create Account
-        </button>
-        <button (click)="closeLoginModal()"
-                class="w-full py-2.5 rounded-xl text-sm"
-                style="color: #1A2E20; opacity: 0.6;">
-          Cancel
-        </button>
-      </div>
-    </div>
-  </div>
-}
+</section>
 
 <app-footer />

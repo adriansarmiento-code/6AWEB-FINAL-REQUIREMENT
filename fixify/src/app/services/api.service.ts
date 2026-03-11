@@ -103,6 +103,12 @@ export class ApiService {
       .pipe(map((res) => res.providers));
   }
 
+getProvider(id: string): Observable<User> {
+  return this.http.get<User>(`${this.BASE_URL}/providers/${id}`, {
+    headers: this.getHeaders(),
+  });
+}
+
   getProviderById(id: string): Observable<User> {
     return this.http.get<User>(`${this.BASE_URL}/providers/${id}`);
   }

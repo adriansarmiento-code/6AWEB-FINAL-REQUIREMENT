@@ -1,76 +1,92 @@
-import { Component, inject, signal, OnInit, OnDestroy, computed } from '@angular/core';
-import { Router, ActivatedRoute, RouterLink } from '@angular/router';
+import { Component, inject, signal, OnInit, AfterViewChecked, ElementRef, ViewChild } from '@angular/core';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 import { HeaderComponent } from '../../components/header/header';
-import { Message, Conversation, User } from '../../models/models';
+import { Conversation, Message } from '../../models/models';
 
 @Component({
   selector: 'app-messages',
   imports: [FormsModule, HeaderComponent],
   templateUrl: './messages.html',
 })
-export class MessagesComponent implements OnInit, OnDestroy {
-  private router = inject(Router);
-  private route = inject(ActivatedRoute);
+export class MessagesComponent implements OnInit, AfterViewChecked {
+  @ViewChild('messagesEnd') messagesEnd!: ElementRef;
+
   private apiService = inject(ApiService);
+  private route = inject(ActivatedRoute);
   authService = inject(AuthService);
 
   conversations = signal<Conversation[]>([]);
   messages = signal<Message[]>([]);
+  selectedUserId = signal('');
+  selectedUser = signal<{ name: string; profileImage?: string } | null>(null);
+
   loadingConversations = signal(true);
   loadingMessages = signal(false);
-  sendingMessage = signal(false);
-
-  activeConversationUserId = signal<string | null>(null);
+  searchQuery = signal('');
   newMessage = signal('');
+  sending = signal(false);
 
-  private pollInterval: ReturnType<typeof setInterval> | null = null;
+  private shouldScroll = false;
+  private pollInterval: any;
 
   ngOnInit(): void {
     this.loadConversations();
-
-    const userId = this.route.snapshot.paramMap.get('conversationId');
-    if (userId) {
-      this.openConversation(userId);
-    }
-
-    // Poll for new messages every 5 seconds
+    this.route.queryParamMap.subscribe((params) => {
+      const userId = params.get('userId');
+      if (userId) this.selectConversation(userId);
+    });
     this.pollInterval = setInterval(() => {
-      this.loadConversations();
-      if (this.activeConversationUserId()) {
-        this.loadMessages(this.activeConversationUserId()!);
-      }
+      if (this.selectedUserId()) this.loadMessages(this.selectedUserId(), false);
     }, 5000);
   }
 
   ngOnDestroy(): void {
-    if (this.pollInterval) clearInterval(this.pollInterval);
+    clearInterval(this.pollInterval);
+  }
+
+  ngAfterViewChecked(): void {
+    if (this.shouldScroll) {
+      this.scrollToBottom();
+      this.shouldScroll = false;
+    }
   }
 
   loadConversations(): void {
+    this.loadingConversations.set(true);
     this.apiService.getConversations().subscribe({
-      next: (conversations) => {
-        this.conversations.set(conversations);
-        this.loadingConversations.set(false);
-      },
+      next: (c) => { this.conversations.set(c); this.loadingConversations.set(false); },
       error: () => this.loadingConversations.set(false),
     });
   }
 
-  openConversation(userId: string): void {
-    this.activeConversationUserId.set(userId);
-    this.router.navigate(['/messages', userId], { replaceUrl: true });
-    this.loadMessages(userId);
+  filteredConversations() {
+    const q = this.searchQuery().toLowerCase();
+    if (!q) return this.conversations();
+    return this.conversations().filter((c) =>
+      c.otherUser.name.toLowerCase().includes(q)
+    );
   }
 
-  loadMessages(userId: string): void {
-    this.loadingMessages.set(true);
+  selectConversation(userId: string, user?: any): void {
+    this.selectedUserId.set(userId);
+    if (user) this.selectedUser.set(user);
+    else {
+      const conv = this.conversations().find((c) => c.otherUser._id === userId);
+      if (conv) this.selectedUser.set(conv.otherUser);
+    }
+    this.loadMessages(userId, true);
+  }
+
+  loadMessages(userId: string, showLoader = true): void {
+    if (showLoader) this.loadingMessages.set(true);
     this.apiService.getMessages(userId).subscribe({
-      next: (msgs) => {
-        this.messages.set(msgs);
+      next: (m) => {
+        this.messages.set(m);
         this.loadingMessages.set(false);
+        this.shouldScroll = true;
       },
       error: () => this.loadingMessages.set(false),
     });
@@ -78,90 +94,50 @@ export class MessagesComponent implements OnInit, OnDestroy {
 
   sendMessage(): void {
     const text = this.newMessage().trim();
-    const toUserId = this.activeConversationUserId();
-    if (!text || !toUserId || this.sendingMessage()) return;
+    if (!text || !this.selectedUserId() || this.sending()) return;
 
-    this.sendingMessage.set(true);
-    this.apiService.sendMessage(toUserId, text).subscribe({
-      next: () => {
+    this.sending.set(true);
+    this.apiService.sendMessage(this.selectedUserId(), text).subscribe({
+      next: (msg) => {
+        this.messages.update((m) => [...m, msg]);
         this.newMessage.set('');
-        this.sendingMessage.set(false);
-        this.loadMessages(toUserId);
+        this.sending.set(false);
+        this.shouldScroll = true;
         this.loadConversations();
       },
-      error: () => this.sendingMessage.set(false),
+      error: () => this.sending.set(false),
     });
   }
 
-  onKeyDown(event: KeyboardEvent): void {
+  onKeydown(event: KeyboardEvent): void {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
       this.sendMessage();
     }
   }
 
-  activeConversation = computed(() => {
-    const userId = this.activeConversationUserId();
-    if (!userId) return null;
-    return this.conversations().find((c) => {
-      const other = this.getOtherParticipant(c);
-      return other?._id === userId;
-    }) || null;
-  });
-
-  getOtherParticipant(conv: Conversation): User | null {
-    const myId = this.authService.user()?._id;
-    const parts = conv.participants;
-    if (!parts) return null;
-    const other = parts.find((p) => {
-      const id = typeof p === 'object' ? (p as User)._id : p;
-      return id !== myId;
-    });
-    if (!other) return null;
-    if (typeof other === 'object') return other as User;
-    return null;
+  scrollToBottom(): void {
+    try { this.messagesEnd.nativeElement.scrollIntoView({ behavior: 'smooth' }); } catch {}
   }
 
-  getOtherName(conv: Conversation): string {
-    return this.getOtherParticipant(conv)?.name || 'User';
+  isMine(msg: Message): boolean {
+    const me = this.authService.user()?._id;
+    const sender = typeof msg.sender === 'string' ? msg.sender : (msg.sender as any)._id;
+    return sender === me;
   }
 
-  getOtherInitial(conv: Conversation): string {
-    return this.getOtherName(conv).charAt(0).toUpperCase();
-  }
-
-  getLastMessage(conv: Conversation): string {
-    const last = conv.lastMessage;
-    if (!last) return 'No messages yet';
-    if (typeof last === 'object' && 'content' in last) {
-      return (last as Message).content;
-    }
-    return '';
-  }
-
-  isMyMessage(msg: Message): boolean {
-    const myId = this.authService.user()?._id;
-    if (typeof msg.sender === 'object') return (msg.sender as User)._id === myId;
-    return msg.sender === myId;
-  }
-
-  formatTime(dateStr?: string): string {
-    if (!dateStr) return '';
-    const d = new Date(dateStr);
+  formatTime(d?: string): string {
+    if (!d) return '';
+    const date = new Date(d);
     const now = new Date();
-    const diff = now.getTime() - d.getTime();
-    const days = Math.floor(diff / 86400000);
-    if (days === 0) {
-      return d.toLocaleTimeString('en-PH', { hour: '2-digit', minute: '2-digit' });
-    } else if (days === 1) {
-      return 'Yesterday';
-    } else if (days < 7) {
-      return d.toLocaleDateString('en-PH', { weekday: 'short' });
-    }
-    return d.toLocaleDateString('en-PH', { month: 'short', day: 'numeric' });
+    const diff = now.getTime() - date.getTime();
+    if (diff < 60000) return 'just now';
+    if (diff < 3600000) return Math.floor(diff / 60000) + 'm ago';
+    if (diff < 86400000) return date.toLocaleTimeString('en-PH', { hour: '2-digit', minute: '2-digit' });
+    return date.toLocaleDateString('en-PH', { month: 'short', day: 'numeric' });
   }
 
-getOtherImage(conv: Conversation): string | undefined {
-  return this.getOtherParticipant(conv)?.profileImage ?? undefined;
-}
+  getInitial(name: string): string {
+    return name?.charAt(0).toUpperCase() || '?';
+  }
 }
