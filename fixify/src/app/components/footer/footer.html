@@ -1,0 +1,134 @@
+<footer style="background: linear-gradient(135deg, #0f2347 0%, #1B3A6B 50%, #0f2347 100%);"
+        class="relative overflow-hidden">
+
+  <!-- Noise overlay -->
+  <div class="noise-overlay absolute inset-0 pointer-events-none"></div>
+
+  <!-- Decorative orbs -->
+  <div class="absolute top-0 right-0 w-96 h-96 rounded-full pointer-events-none"
+       style="background: radial-gradient(circle, rgba(240,140,0,0.08) 0%, transparent 70%);
+              transform: translate(30%, -30%);"></div>
+  <div class="absolute bottom-0 left-0 w-64 h-64 rounded-full pointer-events-none"
+       style="background: radial-gradient(circle, rgba(78,168,222,0.08) 0%, transparent 70%);
+              transform: translate(-30%, 30%);"></div>
+
+  <div class="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 pt-16 pb-8">
+
+    <!-- Top Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-12 mb-14">
+
+      <!-- Brand col (wider) -->
+      <div class="lg:col-span-2">
+        <div class="flex items-center gap-2.5 mb-5">
+          <div class="w-9 h-9 rounded-xl flex items-center justify-center text-white font-black text-base"
+               style="background: linear-gradient(135deg, #F08C00, #e07800);">
+            F
+          </div>
+          <span class="font-black text-xl text-white tracking-tight"
+                style="font-family: 'Fraunces', serif;">Fixify</span>
+        </div>
+        <p class="text-sm leading-relaxed mb-6 max-w-xs"
+           style="color: rgba(249,246,240,0.55);">
+          Connecting Angeles City residents with verified, trusted home service professionals.
+          Book in minutes, pay securely, and leave reviews that matter.
+        </p>
+        <!-- Stats row -->
+        <div class="flex gap-6">
+          @for (stat of [
+            {value: '3+', label: 'Categories'},
+            {value: '100%', label: 'Verified'},
+            {value: '5★', label: 'Rated'}
+          ]; track stat.label) {
+            <div>
+              <p class="text-lg font-black" style="color: #F08C00; font-family: 'Fraunces', serif;">
+                {{ stat.value }}
+              </p>
+              <p class="text-xs" style="color: rgba(249,246,240,0.4);">{{ stat.label }}</p>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Services -->
+      <div>
+        <p class="text-xs font-bold uppercase tracking-widest mb-5"
+           style="color: rgba(249,246,240,0.35);">Services</p>
+        <div class="flex flex-col gap-3">
+          @for (link of [
+            {label: 'Plumbing', path: '/search', params: 'plumbing'},
+            {label: 'Electrical', path: '/search', params: 'electrical'},
+            {label: 'Cleaning', path: '/search', params: 'cleaning'},
+            {label: 'All Services', path: '/services', params: ''}
+          ]; track link.label) {
+            <a [routerLink]="link.path"
+               [queryParams]="link.params ? {category: link.params} : {}"
+               class="text-sm transition-all hover:translate-x-1 duration-200"
+               style="color: rgba(249,246,240,0.55);"
+               onmouseover="this.style.color='#F08C00'"
+               onmouseout="this.style.color='rgba(249,246,240,0.55)'">
+              {{ link.label }}
+            </a>
+          }
+        </div>
+      </div>
+
+      <!-- Company -->
+      <div>
+        <p class="text-xs font-bold uppercase tracking-widest mb-5"
+           style="color: rgba(249,246,240,0.35);">Company</p>
+        <div class="flex flex-col gap-3">
+          @for (link of [
+            {label: 'About Us', path: '/about'},
+            {label: 'Contact', path: '/contact'},
+            {label: 'Become a Provider', path: '/signup'}
+          ]; track link.label) {
+            <a [routerLink]="link.path"
+               class="text-sm transition-all hover:translate-x-1 duration-200"
+               style="color: rgba(249,246,240,0.55);"
+               onmouseover="this.style.color='#F08C00'"
+               onmouseout="this.style.color='rgba(249,246,240,0.55)'">
+              {{ link.label }}
+            </a>
+          }
+        </div>
+      </div>
+
+      <!-- Account -->
+      <div>
+        <p class="text-xs font-bold uppercase tracking-widest mb-5"
+           style="color: rgba(249,246,240,0.35);">Account</p>
+        <div class="flex flex-col gap-3">
+          @for (link of [
+            {label: 'Login', path: '/login'},
+            {label: 'Register', path: '/signup'},
+            {label: 'Customer Dashboard', path: '/dashboard'},
+            {label: 'Provider Dashboard', path: '/provider-dashboard'}
+          ]; track link.label) {
+            <a [routerLink]="link.path"
+               class="text-sm transition-all hover:translate-x-1 duration-200"
+               style="color: rgba(249,246,240,0.55);"
+               onmouseover="this.style.color='#F08C00'"
+               onmouseout="this.style.color='rgba(249,246,240,0.55)'">
+              {{ link.label }}
+            </a>
+          }
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Divider -->
+    <div class="border-t mb-8" style="border-color: rgba(249,246,240,0.08);"></div>
+
+    <!-- Bottom row -->
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p class="text-xs" style="color: rgba(249,246,240,0.3);">
+        © 2026 Fixify. Holy Angel University — 6AWEB Final Project.
+      </p>
+      <p class="text-xs" style="color: rgba(249,246,240,0.2);">
+        Angeles City, Pampanga · Plumbing · Electrical · Cleaning
+      </p>
+    </div>
+
+  </div>
+</footer>

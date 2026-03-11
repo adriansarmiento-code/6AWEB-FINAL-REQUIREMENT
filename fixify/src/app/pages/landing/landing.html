@@ -1,0 +1,353 @@
+<app-header />
+
+<!-- ═══════════════════════════════════════════ HERO ═══ -->
+<section class="relative min-h-screen flex items-center overflow-hidden noise-overlay diagonal-cut"
+         style="background: linear-gradient(135deg, #0f2347 0%, #1B3A6B 45%, #1a3d5c 100%);">
+
+  <!-- Mesh orbs -->
+  <div class="absolute inset-0 pointer-events-none overflow-hidden">
+    <div class="absolute w-[600px] h-[600px] rounded-full"
+         style="background: radial-gradient(circle, rgba(240,140,0,0.12) 0%, transparent 70%);
+                top: -10%; right: -5%;"></div>
+    <div class="absolute w-[400px] h-[400px] rounded-full"
+         style="background: radial-gradient(circle, rgba(78,168,222,0.1) 0%, transparent 70%);
+                bottom: 10%; left: -5%;"></div>
+    <div class="absolute w-[300px] h-[300px] rounded-full"
+         style="background: radial-gradient(circle, rgba(45,155,111,0.08) 0%, transparent 70%);
+                top: 40%; left: 30%;"></div>
+  </div>
+
+  <div class="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 pt-32 pb-40 w-full">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+
+      <!-- Left content -->
+      <div class="lg:col-span-7">
+        <!-- Eyebrow -->
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-8 animate-fade-in"
+             style="border-color: rgba(240,140,0,0.3); background-color: rgba(240,140,0,0.08);">
+          <div class="w-1.5 h-1.5 rounded-full" style="background-color: #F08C00;"></div>
+          <span class="text-xs font-semibold uppercase tracking-widest"
+                style="color: #F08C00;">Serving Angeles City, Pampanga</span>
+        </div>
+
+        <!-- Headline -->
+        <h1 class="text-5xl sm:text-6xl lg:text-7xl font-black leading-[0.95] tracking-tight text-white mb-6 animate-fade-up"
+            style="font-family: 'Fraunces', serif;">
+          Home repairs,<br />
+          <span style="-webkit-background-clip: text; -webkit-text-fill-color: transparent;
+                        background-image: linear-gradient(90deg, #F08C00, #ffb347);">
+            done right.
+          </span>
+        </h1>
+
+        <p class="text-lg leading-relaxed mb-10 max-w-lg animate-fade-up delay-100"
+           style="color: rgba(249,246,240,0.7);">
+          Find verified plumbers, electricians, and cleaners in your area.
+          Book in minutes, pay securely, and leave reviews that matter.
+        </p>
+
+        <!-- CTA row -->
+        <div class="flex flex-wrap gap-4 animate-fade-up delay-200">
+          <a routerLink="/search"
+             class="relative inline-flex items-center gap-2 px-7 py-4 rounded-xl font-bold text-white overflow-hidden group transition-all"
+             style="background-color: #F08C00;">
+            <span class="relative z-10">Browse Services</span>
+            <span class="relative z-10 text-lg group-hover:translate-x-1 transition-transform">→</span>
+            <div class="absolute inset-0 bg-white/15 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+          </a>
+          <a routerLink="/signup"
+             class="inline-flex items-center gap-2 px-7 py-4 rounded-xl font-bold border-2 transition-all"
+             style="border-color: rgba(249,246,240,0.25); color: white;"
+             onmouseover="this.style.borderColor='rgba(249,246,240,0.6)'"
+             onmouseout="this.style.borderColor='rgba(249,246,240,0.25)'">
+            Create Account
+          </a>
+        </div>
+
+        <!-- Trust badges -->
+        <div class="flex flex-wrap gap-6 mt-12 animate-fade-up delay-300">
+          @for (badge of [
+            {icon: '✓', label: 'Verified Providers'},
+            {icon: '🔒', label: 'Secure Payments'},
+            {icon: '⭐', label: 'Real Reviews'}
+          ]; track badge.label) {
+            <div class="flex items-center gap-2">
+              <span class="text-sm" style="color: #2D9B6F;">{{ badge.icon }}</span>
+              <span class="text-sm font-medium" style="color: rgba(249,246,240,0.6);">
+                {{ badge.label }}
+              </span>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Right: floating stat cards -->
+      <div class="lg:col-span-5 relative hidden lg:block">
+        <div class="relative h-[480px]">
+
+          <!-- Main card -->
+          <div class="absolute top-0 right-0 w-72 rounded-3xl p-6 border-2 animate-fade-up delay-200"
+               style="background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1);
+                      backdrop-filter: blur(20px);">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg"
+                   style="background-color: rgba(240,140,0,0.15);">🔧</div>
+              <div>
+                <p class="font-bold text-white text-sm">Plumbing Service</p>
+                <p class="text-xs" style="color: rgba(249,246,240,0.5);">Pipe Leak Repair</p>
+              </div>
+            </div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs px-2 py-1 rounded-full font-medium"
+                    style="background-color: rgba(45,155,111,0.15); color: #2D9B6F;">
+                ✓ Confirmed
+              </span>
+              <span class="text-sm font-bold" style="color: #F08C00;">₱850</span>
+            </div>
+            <div class="w-full rounded-full h-1.5" style="background-color: rgba(255,255,255,0.1);">
+              <div class="h-1.5 rounded-full w-3/4" style="background-color: #2D9B6F;"></div>
+            </div>
+            <p class="text-xs mt-1.5" style="color: rgba(249,246,240,0.4);">Job in progress</p>
+          </div>
+
+          <!-- Review card -->
+          <div class="absolute top-44 left-0 w-60 rounded-3xl p-5 border-2 animate-fade-up delay-300"
+               style="background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1);
+                      backdrop-filter: blur(20px);">
+            <div class="flex gap-0.5 mb-2">
+              @for (s of [1,2,3,4,5]; track s) {
+                <span style="color: #F08C00;">★</span>
+              }
+            </div>
+            <p class="text-xs leading-relaxed mb-3" style="color: rgba(249,246,240,0.7);">
+              "Fast and professional. Fixed my leaking pipe in under an hour!"
+            </p>
+            <p class="text-xs font-medium" style="color: rgba(249,246,240,0.4);">
+              — Maria S., Balibago
+            </p>
+          </div>
+
+          <!-- Stat card -->
+          <div class="absolute bottom-0 right-8 w-48 rounded-3xl p-5 border-2 animate-fade-up delay-400"
+               style="background: rgba(240,140,0,0.1); border-color: rgba(240,140,0,0.2);
+                      backdrop-filter: blur(20px);">
+            <p class="text-4xl font-black mb-1" style="color: #F08C00; font-family: 'Fraunces', serif;">
+              98%
+            </p>
+            <p class="text-xs" style="color: rgba(249,246,240,0.6);">Customer satisfaction rate</p>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ FEATURES ═══ -->
+<section class="py-24" style="background-color: #F9F6F0;">
+  <div class="max-w-7xl mx-auto px-6 lg:px-8">
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
+
+      <!-- Left sticky label -->
+      <div class="lg:col-span-4 lg:sticky lg:top-28">
+        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border mb-5"
+             style="border-color: rgba(27,58,107,0.15); background-color: rgba(27,58,107,0.05);">
+          <span class="text-xs font-bold uppercase tracking-widest" style="color: #1B3A6B;">
+            Why Fixify
+          </span>
+        </div>
+        <h2 class="text-4xl lg:text-5xl font-black leading-tight mb-6"
+            style="color: #1B3A6B; font-family: 'Fraunces', serif;">
+          We built what Angeles City was missing.
+        </h2>
+        <p class="text-base leading-relaxed" style="color: #3D4A5C; opacity: 0.75;">
+          A platform designed around trust, transparency, and speed — for homeowners and providers alike.
+        </p>
+      </div>
+
+      <!-- Right features grid -->
+      <div class="lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
+        @for (feature of [
+          {icon: '🛡️', title: 'Verified Providers', desc: 'Every provider is reviewed and approved by our admin team before they can accept bookings.', color: '#1B3A6B'},
+          {icon: '🔒', title: 'Secure Payments', desc: 'Payments are held in escrow and only released after you confirm the job is done.', color: '#F08C00'},
+          {icon: '⭐', title: 'Real Reviews', desc: 'Reviews are tied to verified completed bookings — no fake ratings, ever.', color: '#4EA8DE'},
+          {icon: '💬', title: 'In-App Messaging', desc: 'Chat directly with your service provider before, during, and after your booking.', color: '#2D9B6F'},
+          {icon: '📍', title: 'Hyperlocal', desc: 'Built specifically for Angeles City, Pampanga — filter by barangay and find providers near you.', color: '#F08C00'},
+          {icon: '🔔', title: 'Live Notifications', desc: 'Get notified the moment your booking is confirmed, updated, or completed.', color: '#4EA8DE'}
+        ]; track feature.title; let i = $index) {
+          <div class="rounded-3xl p-6 border-2 group hover:shadow-lg transition-all duration-300 animate-fade-up"
+               [class]="'delay-' + ((i % 4 + 1) * 100)"
+               style="background-color: white; border-color: rgba(27,58,107,0.08);">
+            <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-xl mb-4"
+                 [style.background-color]="feature.color + '15'">
+              {{ feature.icon }}
+            </div>
+            <h3 class="font-bold text-base mb-2" style="color: #1B3A6B;">{{ feature.title }}</h3>
+            <p class="text-sm leading-relaxed" style="color: #3D4A5C; opacity: 0.7;">{{ feature.desc }}</p>
+          </div>
+        }
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════ POPULAR SERVICES ═══ -->
+<section class="py-24 noise-overlay diagonal-cut-reverse relative overflow-hidden"
+         style="background: linear-gradient(135deg, #1B3A6B 0%, #0f2347 100%);">
+
+  <div class="absolute inset-0 pointer-events-none">
+    <div class="absolute w-96 h-96 rounded-full"
+         style="background: radial-gradient(circle, rgba(78,168,222,0.1) 0%, transparent 70%);
+                top: -20%; left: 50%;"></div>
+  </div>
+
+  <div class="relative z-10 max-w-7xl mx-auto px-6 lg:px-8">
+
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-14">
+      <div>
+        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border mb-4"
+             style="border-color: rgba(240,140,0,0.3); background-color: rgba(240,140,0,0.08);">
+          <span class="text-xs font-bold uppercase tracking-widest" style="color: #F08C00;">
+            Popular Services
+          </span>
+        </div>
+        <h2 class="text-4xl lg:text-5xl font-black text-white"
+            style="font-family: 'Fraunces', serif;">
+          What do you need fixed?
+        </h2>
+      </div>
+      <a routerLink="/services"
+         class="flex-shrink-0 text-sm font-semibold transition-all"
+         style="color: rgba(249,246,240,0.5);"
+         onmouseover="this.style.color='#F08C00'"
+         onmouseout="this.style.color='rgba(249,246,240,0.5)'">
+        View all services →
+      </a>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      @for (cat of [
+        {id: 'plumbing', label: 'Plumbing', icon: '🔧', desc: 'Leaks, pipes, drains, fixtures, and emergency repairs.', color: '#4EA8DE'},
+        {id: 'electrical', label: 'Electrical', icon: '⚡', desc: 'Wiring, outlets, fixtures, and electrical fault diagnosis.', color: '#F08C00'},
+        {id: 'cleaning', label: 'Cleaning', icon: '🧹', desc: 'Deep cleaning, regular maintenance, and move-in/out cleaning.', color: '#2D9B6F'}
+      ]; track cat.id; let i = $index) {
+        <button (click)="goToSearch(cat.id)"
+                class="text-left rounded-3xl p-7 border-2 group hover:scale-[1.02] transition-all duration-300 animate-fade-up"
+                [class]="'delay-' + ((i + 1) * 100)"
+                style="background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1);">
+
+          <div class="flex items-start justify-between mb-6">
+            <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl"
+                 [style.background-color]="cat.color + '20'">
+              {{ cat.icon }}
+            </div>
+            <span class="text-xs font-medium px-3 py-1.5 rounded-full"
+                  style="background-color: rgba(249,246,240,0.08); color: rgba(249,246,240,0.5);">
+              {{ providerCounts()[cat.id] }} providers
+            </span>
+          </div>
+
+          <h3 class="text-2xl font-black text-white mb-2"
+              style="font-family: 'Fraunces', serif;">{{ cat.label }}</h3>
+          <p class="text-sm leading-relaxed mb-6" style="color: rgba(249,246,240,0.55);">
+            {{ cat.desc }}
+          </p>
+
+          <div class="flex items-center gap-2 font-semibold text-sm transition-all group-hover:gap-3"
+               [style.color]="cat.color">
+            Browse providers
+            <span class="transition-transform group-hover:translate-x-1">→</span>
+          </div>
+
+        </button>
+      }
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════════════════════ HOW IT WORKS ═══ -->
+<section class="py-24" style="background-color: #F9F6F0;">
+  <div class="max-w-7xl mx-auto px-6 lg:px-8">
+
+    <div class="text-center mb-16">
+      <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border mb-5"
+           style="border-color: rgba(27,58,107,0.15); background-color: rgba(27,58,107,0.05);">
+        <span class="text-xs font-bold uppercase tracking-widest" style="color: #1B3A6B;">
+          How it works
+        </span>
+      </div>
+      <h2 class="text-4xl lg:text-5xl font-black"
+          style="color: #1B3A6B; font-family: 'Fraunces', serif;">
+        From search to service<br />in four simple steps.
+      </h2>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      @for (step of [
+        {num: '01', title: 'Browse & Filter', desc: 'Search verified providers by category, area, price, and rating.', color: '#1B3A6B'},
+        {num: '02', title: 'Book a Service', desc: 'Choose your service, pick a date and time, and confirm your booking.', color: '#F08C00'},
+        {num: '03', title: 'Pay Securely', desc: 'Payment is held in escrow until you confirm the job is complete.', color: '#4EA8DE'},
+        {num: '04', title: 'Leave a Review', desc: 'Rate your provider and help the community make better decisions.', color: '#2D9B6F'}
+      ]; track step.num; let i = $index) {
+        <div class="relative rounded-3xl p-7 border-2 animate-fade-up"
+             [class]="'delay-' + ((i + 1) * 100)"
+             style="background-color: white; border-color: rgba(27,58,107,0.08);">
+          <!-- Step number -->
+          <div class="text-6xl font-black mb-4 leading-none"
+               [style.color]="step.color + '15'"
+               style="font-family: 'Fraunces', serif;">
+            {{ step.num }}
+          </div>
+          <div class="w-1 h-8 rounded-full mb-4" [style.background-color]="step.color"></div>
+          <h3 class="font-bold text-lg mb-2" style="color: #1B3A6B;">{{ step.title }}</h3>
+          <p class="text-sm leading-relaxed" style="color: #3D4A5C; opacity: 0.7;">{{ step.desc }}</p>
+        </div>
+      }
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════ CTA ═══ -->
+<section class="py-24 noise-overlay relative overflow-hidden"
+         style="background: linear-gradient(135deg, #0f2347 0%, #1B3A6B 100%);">
+
+  <div class="absolute inset-0 pointer-events-none">
+    <div class="absolute w-[500px] h-[500px] rounded-full"
+         style="background: radial-gradient(circle, rgba(240,140,0,0.1) 0%, transparent 70%);
+                top: -30%; right: -10%;"></div>
+  </div>
+
+  <div class="relative z-10 max-w-4xl mx-auto px-6 lg:px-8 text-center">
+    <h2 class="text-4xl lg:text-6xl font-black text-white mb-6 animate-fade-up"
+        style="font-family: 'Fraunces', serif;">
+      Ready to get started?
+    </h2>
+    <p class="text-lg mb-10 animate-fade-up delay-100"
+       style="color: rgba(249,246,240,0.65);">
+      Join hundreds of Angeles City residents already using Fixify to find trusted home service professionals.
+    </p>
+    <div class="flex flex-wrap justify-center gap-4 animate-fade-up delay-200">
+      <a routerLink="/signup"
+         class="relative inline-flex items-center gap-2 px-8 py-4 rounded-xl font-bold text-white overflow-hidden group transition-all"
+         style="background-color: #F08C00;">
+        <span class="relative z-10">Create Free Account</span>
+        <span class="relative z-10 group-hover:translate-x-1 transition-transform">→</span>
+        <div class="absolute inset-0 bg-white/15 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+      </a>
+      <a routerLink="/signup" [queryParams]="{type: 'provider'}"
+         class="inline-flex items-center gap-2 px-8 py-4 rounded-xl font-bold border-2 transition-all"
+         style="border-color: rgba(249,246,240,0.2); color: white;"
+         onmouseover="this.style.borderColor='rgba(249,246,240,0.5)'"
+         onmouseout="this.style.borderColor='rgba(249,246,240,0.2)'">
+        Join as a Provider
+      </a>
+    </div>
+  </div>
+</section>
+
+<app-footer />

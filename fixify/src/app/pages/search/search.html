@@ -1,0 +1,277 @@
+<app-header />
+
+<main style="background-color: #F2E8D9; min-height: 100vh;">
+
+  <!-- Page Header -->
+  <section class="py-10 noise-overlay" style="background-color: #1E5C3A;">
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h1 class="text-3xl font-bold text-white mb-1 animate-fade-up">Find a Provider</h1>
+      <p class="text-[#F2E8D9] opacity-75 animate-fade-up delay-100">
+        Verified home service professionals in Angeles City, Pampanga
+      </p>
+    </div>
+  </section>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="flex flex-col lg:flex-row gap-6">
+
+      <!-- Sidebar Filters -->
+      <aside class="lg:w-64 flex-shrink-0">
+        <div class="bg-white rounded-2xl p-5 border border-[#F2E8D9] sticky top-20">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="font-bold text-sm" style="color: #1A2E20;">Filters</h2>
+            <button (click)="clearFilters()"
+                    class="text-xs transition-colors"
+                    style="color: #1E5C3A;">
+              Clear all
+            </button>
+          </div>
+
+          <!-- Category -->
+          <div class="mb-4">
+            <label class="block text-xs font-medium mb-1.5" style="color: #1A2E20;">Category</label>
+            <select [ngModel]="category()"
+                    (ngModelChange)="category.set($event); onFilterChange()"
+                    name="category"
+                    class="w-full px-3 py-2 rounded-xl border text-sm outline-none"
+                    style="border-color: #F2E8D9; color: #1A2E20;">
+              @for (cat of categories; track cat.value) {
+                <option [value]="cat.value">{{ cat.label }}</option>
+              }
+            </select>
+          </div>
+
+          <!-- Service Area -->
+          <div class="mb-4">
+            <label class="block text-xs font-medium mb-1.5" style="color: #1A2E20;">Service Area</label>
+            <select [ngModel]="serviceArea()"
+                    (ngModelChange)="serviceArea.set($event); onFilterChange()"
+                    name="serviceArea"
+                    class="w-full px-3 py-2 rounded-xl border text-sm outline-none"
+                    style="border-color: #F2E8D9; color: #1A2E20;">
+              <option value="">All Areas</option>
+              @for (area of serviceAreas; track area) {
+                <option [value]="area">{{ area }}</option>
+              }
+            </select>
+          </div>
+
+          <!-- Min Rating -->
+          <div class="mb-4">
+            <label class="block text-xs font-medium mb-1.5" style="color: #1A2E20;">
+              Minimum Rating: {{ minRating() > 0 ? minRating() + '★' : 'Any' }}
+            </label>
+            <input type="range"
+                   [ngModel]="minRating()"
+                   (ngModelChange)="minRating.set($event); onFilterChange()"
+                   name="minRating"
+                   min="0" max="5" step="0.5"
+                   class="w-full accent-[#1E5C3A]" />
+            <div class="flex justify-between text-xs mt-1" style="color: #1A2E20; opacity: 0.5;">
+              <span>Any</span>
+              <span>5★</span>
+            </div>
+          </div>
+
+          <!-- Verified Only -->
+          <div class="mb-4">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox"
+                     [ngModel]="verifiedOnly()"
+                     (ngModelChange)="verifiedOnly.set($event); onFilterChange()"
+                     name="verifiedOnly"
+                     class="accent-[#1E5C3A]" />
+              <span class="text-sm" style="color: #1A2E20;">Verified only</span>
+            </label>
+          </div>
+
+          <!-- Sort -->
+          <div>
+            <label class="block text-xs font-medium mb-1.5" style="color: #1A2E20;">Sort by</label>
+            <select [ngModel]="sortBy()"
+                    (ngModelChange)="sortBy.set($event); onFilterChange()"
+                    name="sortBy"
+                    class="w-full px-3 py-2 rounded-xl border text-sm outline-none"
+                    style="border-color: #F2E8D9; color: #1A2E20;">
+              <option value="rating">Top Rated</option>
+              <option value="price-low">Price: Low to High</option>
+              <option value="price-high">Price: High to Low</option>
+              <option value="experience">Most Experienced</option>
+              <option value="reviews">Most Reviews</option>
+            </select>
+          </div>
+
+        </div>
+      </aside>
+
+      <!-- Results -->
+      <div class="flex-1">
+
+        <!-- Loading -->
+        @if (loading()) {
+          <div class="flex flex-col items-center justify-center py-20">
+            <div class="w-10 h-10 rounded-full border-4 border-[#7AAE8E] border-t-[#1E5C3A] animate-spin mb-4"></div>
+            <p class="text-sm" style="color: #1A2E20; opacity: 0.6;">Finding providers...</p>
+          </div>
+        }
+
+        <!-- Error -->
+        @if (error() && !loading()) {
+          <div class="text-center py-20">
+            <div class="text-5xl mb-4">⚠️</div>
+            <p class="text-sm mb-4" style="color: #1A2E20;">{{ error() }}</p>
+            <button (click)="loadProviders()"
+                    class="px-4 py-2 rounded-xl text-sm font-medium text-white"
+                    style="background-color: #1E5C3A;">
+              Try Again
+            </button>
+          </div>
+        }
+
+        <!-- Empty -->
+        @if (!loading() && !error() && providers().length === 0) {
+          <div class="text-center py-20">
+            <div class="text-5xl mb-4">🔍</div>
+            <h3 class="text-xl font-bold mb-2" style="color: #1A2E20;">No providers found</h3>
+            <p class="text-sm mb-4" style="color: #1A2E20; opacity: 0.6;">
+              Try adjusting your filters.
+            </p>
+            <button (click)="clearFilters()"
+                    class="px-4 py-2 rounded-xl text-sm font-medium text-white"
+                    style="background-color: #1E5C3A;">
+              Clear Filters
+            </button>
+          </div>
+        }
+
+        <!-- Results count -->
+        @if (!loading() && providers().length > 0) {
+          <p class="text-sm mb-4" style="color: #1A2E20; opacity: 0.6;">
+            {{ providers().length }} provider{{ providers().length !== 1 ? 's' : '' }} found
+          </p>
+        }
+
+        <!-- Provider Cards -->
+        <div class="flex flex-col gap-4">
+          @for (provider of providers(); track provider._id) {
+            <div class="bg-white rounded-2xl p-5 border border-[#F2E8D9] hover:shadow-md transition-all animate-fade-up">
+              <div class="flex flex-col sm:flex-row gap-4">
+
+                <!-- Avatar -->
+                <div class="flex-shrink-0">
+                  @if (provider.profileImage) {
+                    <img [src]="provider.profileImage"
+                         [alt]="provider.name"
+                         class="w-16 h-16 rounded-xl object-cover border-2 border-[#F2E8D9]" />
+                  } @else {
+                    <div class="w-16 h-16 rounded-xl flex items-center justify-center text-white text-xl font-bold"
+                         style="background: linear-gradient(135deg, #1E5C3A, #7AAE8E);">
+                      {{ provider.name.charAt(0).toUpperCase() }}
+                    </div>
+                  }
+                </div>
+
+                <!-- Info -->
+                <div class="flex-1 min-w-0">
+                  <div class="flex flex-wrap items-start gap-2 mb-1">
+                    <h3 class="font-bold text-lg" style="color: #1A2E20;">{{ provider.name }}</h3>
+                    @if (provider.providerInfo?.verified) {
+                      <span class="text-xs px-2 py-0.5 rounded-full font-medium"
+                            style="background-color: #F2E8D9; color: #1E5C3A;">
+                        ✓ Verified
+                      </span>
+                    }
+                  </div>
+
+                  <p class="text-xs mb-2 capitalize" style="color: #1A2E20; opacity: 0.6;">
+                    {{ getCategoryLabel(provider.providerInfo?.category || '') }} ·
+                    {{ provider.providerInfo?.serviceArea || 'Angeles City' }}
+                  </p>
+
+                  <!-- Rating -->
+                  <div class="flex items-center gap-1.5 mb-2">
+                    <div class="flex text-sm" style="color: #C9A87C;">
+                      @for (star of getStars(provider.providerInfo?.rating || 0); track $index) {
+                        <span>{{ star }}</span>
+                      }
+                    </div>
+                    <span class="text-xs" style="color: #1A2E20; opacity: 0.6;">
+                      {{ (provider.providerInfo?.rating || 0).toFixed(1) }}
+                      ({{ provider.providerInfo?.reviewCount || 0 }} reviews)
+                    </span>
+                  </div>
+
+                  @if (provider.providerInfo?.bio) {
+                    <p class="text-sm leading-relaxed line-clamp-2" style="color: #1A2E20; opacity: 0.7;">
+                      {{ provider.providerInfo!.bio }}
+                    </p>
+                  }
+                </div>
+
+                <!-- Right side -->
+                <div class="flex flex-col items-end justify-between gap-3 flex-shrink-0">
+                  @if (provider.providerInfo?.hourlyRate) {
+                    <div class="text-right">
+                      <p class="text-xs" style="color: #1A2E20; opacity: 0.5;">Starting at</p>
+                      <p class="font-bold text-lg" style="color: #1E5C3A;">
+                        ₱{{ provider.providerInfo!.hourlyRate!.toLocaleString() }}
+                      </p>
+                    </div>
+                  }
+
+                  <div class="flex gap-2">
+                    <button (click)="viewProvider(provider._id)"
+                            class="px-3 py-1.5 rounded-lg text-xs font-medium border transition-all"
+                            style="border-color: #1E5C3A; color: #1E5C3A;">
+                      View Profile
+                    </button>
+                    <button (click)="bookProvider(provider._id)"
+                            class="px-3 py-1.5 rounded-lg text-xs font-medium text-white transition-all"
+                            style="background-color: #1E5C3A;">
+                      Book Now
+                    </button>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          }
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- Login Prompt Modal -->
+@if (showLoginModal()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center px-4"
+       style="background-color: rgba(0,0,0,0.5);">
+    <div class="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-fade-up">
+      <h3 class="text-lg font-bold mb-2" style="color: #1A2E20;">Login Required</h3>
+      <p class="text-sm mb-6" style="color: #1A2E20; opacity: 0.6;">
+        You need to be logged in to book or message a provider.
+      </p>
+      <div class="flex flex-col gap-2">
+        <button (click)="goToLogin()"
+                class="w-full py-2.5 rounded-xl text-sm font-medium text-white"
+                style="background-color: #1E5C3A;">
+          Login
+        </button>
+        <button (click)="goToSignup()"
+                class="w-full py-2.5 rounded-xl text-sm font-medium border"
+                style="border-color: #1E5C3A; color: #1E5C3A;">
+          Create Account
+        </button>
+        <button (click)="closeLoginModal()"
+                class="w-full py-2.5 rounded-xl text-sm"
+                style="color: #1A2E20; opacity: 0.6;">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<app-footer />

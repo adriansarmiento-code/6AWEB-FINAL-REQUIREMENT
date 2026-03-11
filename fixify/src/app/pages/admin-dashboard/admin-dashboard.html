@@ -1,0 +1,457 @@
+<div class="min-h-screen" style="background-color: #F9F6F0;">
+
+  <!-- ═══════════════════ HEADER ═══ -->
+  <header class="sticky top-0 z-40 noise-overlay"
+          style="background: linear-gradient(135deg, #0f2347 0%, #1B3A6B 100%);">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg flex items-center justify-center text-white font-black text-sm"
+               style="background: linear-gradient(135deg, #F08C00, #e07800);">F</div>
+          <span class="font-black text-lg text-white" style="font-family: 'Fraunces', serif;">
+            Fixify <span class="text-sm font-medium opacity-60">Admin</span>
+          </span>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl"
+               style="background: rgba(255,255,255,0.08);">
+            <div class="w-1.5 h-1.5 rounded-full" style="background-color: #2D9B6F;"></div>
+            <span class="text-xs font-medium text-white opacity-70">
+              {{ authService.user()!.name }}
+            </span>
+          </div>
+          <button (click)="logout()"
+                  class="px-4 py-2 rounded-xl text-sm font-medium transition-all"
+                  style="color: rgba(249,246,240,0.55);"
+                  onmouseover="this.style.backgroundColor='rgba(239,68,68,0.15)'; this.style.color='#ef4444'"
+                  onmouseout="this.style.backgroundColor='transparent'; this.style.color='rgba(249,246,240,0.55)'">
+            Logout
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <div class="max-w-7xl mx-auto px-6 lg:px-8 py-8">
+
+    <!-- Page title -->
+    <div class="mb-6 animate-fade-up">
+      <h1 class="text-3xl font-black" style="color: #1B3A6B; font-family: 'Fraunces', serif;">
+        Admin Dashboard
+      </h1>
+      <p class="text-sm mt-1" style="color: #3D4A5C; opacity: 0.5;">
+        Manage users, providers, bookings, and reviews.
+      </p>
+    </div>
+
+    <!-- ═══════════════════ TABS ═══ -->
+    <div class="flex gap-1 border-b mb-7 overflow-x-auto"
+         style="border-color: rgba(27,58,107,0.1);">
+      @for (tab of tabs; track tab.id) {
+        <button (click)="activeTab.set(tab.id)"
+                class="flex items-center gap-2 px-5 py-3 text-sm font-semibold whitespace-nowrap border-b-2 transition-all -mb-px"
+                [style.border-bottom-color]="activeTab() === tab.id ? '#1B3A6B' : 'transparent'"
+                [style.color]="activeTab() === tab.id ? '#1B3A6B' : '#3D4A5C'"
+                [style.opacity]="activeTab() === tab.id ? '1' : '0.5'">
+          {{ tab.icon }} {{ tab.label }}
+        </button>
+      }
+    </div>
+
+    <!-- ══════════════════════════════ OVERVIEW ══════════ -->
+    @if (activeTab() === 'overview') {
+
+      @if (loadingStats()) {
+        <div class="flex items-center justify-center py-20">
+          <div class="w-8 h-8 rounded-full border-4 border-[#4EA8DE] border-t-[#1B3A6B] animate-spin"></div>
+        </div>
+      } @else if (stats()) {
+
+        <!-- Stat cards -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          @for (card of [
+            {label: 'Total Users', value: stats()!.totalUsers, color: '#1B3A6B', icon: '👥'},
+            {label: 'Total Providers', value: stats()!.totalProviders, color: '#4EA8DE', icon: '🔧'},
+            {label: 'Total Bookings', value: stats()!.totalBookings, color: '#F08C00', icon: '📅'},
+            {label: 'Total Reviews', value: stats()!.totalReviews, color: '#2D9B6F', icon: '⭐'}
+          ]; track card.label; let i = $index) {
+            <div class="rounded-3xl p-5 border-2 bg-white animate-fade-up"
+                 [class]="'delay-' + ((i + 1) * 100)"
+                 style="border-color: rgba(27,58,107,0.08);">
+              <div class="flex items-start justify-between mb-3">
+                <div class="w-10 h-10 rounded-2xl flex items-center justify-center text-lg"
+                     [style.background-color]="card.color + '15'">
+                  {{ card.icon }}
+                </div>
+              </div>
+              <p class="text-3xl font-black mb-1" [style.color]="card.color"
+                 style="font-family: 'Fraunces', serif;">
+                {{ card.value }}
+              </p>
+              <p class="text-xs font-medium uppercase tracking-wide"
+                 style="color: #3D4A5C; opacity: 0.5;">{{ card.label }}</p>
+            </div>
+          }
+        </div>
+
+        <!-- Revenue + booking stats -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+          @for (card of [
+            {label: 'Total Revenue', value: '₱' + (stats()!.totalRevenue || 0).toLocaleString(), color: '#2D9B6F'},
+            {label: 'Pending Bookings', value: stats()!.pendingBookings, color: '#F08C00'},
+            {label: 'Completed Bookings', value: stats()!.completedBookings, color: '#1B3A6B'}
+          ]; track card.label) {
+            <div class="rounded-3xl p-6 border-2 text-white relative overflow-hidden noise-overlay"
+                 [style.background]="'linear-gradient(135deg, ' + card.color + ', ' + card.color + 'cc)'">
+              <p class="text-sm font-semibold mb-2 opacity-80">{{ card.label }}</p>
+              <p class="text-4xl font-black" style="font-family: 'Fraunces', serif;">
+                {{ card.value }}
+              </p>
+            </div>
+          }
+        </div>
+
+        <!-- Recent activity -->
+        @if (stats()!.recentActivity && stats()!.recentActivity!.length > 0) {
+          <div class="rounded-3xl border-2 bg-white overflow-hidden"
+               style="border-color: rgba(27,58,107,0.08);">
+            <div class="px-6 py-4 border-b" style="border-color: rgba(27,58,107,0.08);">
+              <h3 class="font-bold" style="color: #1B3A6B; font-family: 'Fraunces', serif;">
+                Recent Activity
+              </h3>
+            </div>
+            <div class="flex flex-col divide-y" style="divide-color: rgba(27,58,107,0.06);">
+              @for (item of stats()!.recentActivity!.slice(0, 8); track $index) {
+                <div class="flex items-center gap-4 px-6 py-4">
+                  <div class="w-8 h-8 rounded-xl flex items-center justify-center text-sm flex-shrink-0"
+                       [style.background-color]="item.type === 'booking' ? 'rgba(240,140,0,0.1)' :
+                                                  item.type === 'user' ? 'rgba(78,168,222,0.1)' :
+                                                  'rgba(45,155,111,0.1)'">
+                    {{ item.type === 'booking' ? '📅' : item.type === 'user' ? '👤' : '⭐' }}
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium truncate" style="color: #1B3A6B;">
+                      {{ item.description }}
+                    </p>
+                    <p class="text-xs" style="color: #3D4A5C; opacity: 0.4;">
+                      {{ formatDate(item.timestamp) }}
+                    </p>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        }
+      }
+    }
+
+    <!-- ══════════════════════════════ USERS ══════════ -->
+    @if (activeTab() === 'users') {
+
+      <div class="mb-4">
+        <input type="text"
+               [ngModel]="userSearch()"
+               (ngModelChange)="userSearch.set($event)"
+               name="userSearch"
+               placeholder="Search users by name or email..."
+               class="w-full max-w-sm px-4 py-2.5 rounded-2xl border-2 text-sm outline-none transition-all"
+               style="border-color: rgba(27,58,107,0.15); color: #1B3A6B; background-color: white;"
+               onfocus="this.style.borderColor='#1B3A6B'"
+               onblur="this.style.borderColor='rgba(27,58,107,0.15)'" />
+      </div>
+
+      @if (loadingUsers()) {
+        <div class="flex items-center justify-center py-20">
+          <div class="w-8 h-8 rounded-full border-4 border-[#4EA8DE] border-t-[#1B3A6B] animate-spin"></div>
+        </div>
+      } @else {
+        <div class="rounded-3xl border-2 bg-white overflow-hidden"
+             style="border-color: rgba(27,58,107,0.08);">
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr style="background-color: #F9F6F0; border-bottom: 1px solid rgba(27,58,107,0.08);">
+                  @for (col of ['Name', 'Email', 'Phone', 'Role', 'Joined', 'Action']; track col) {
+                    <th class="px-5 py-3 text-left text-xs font-bold uppercase tracking-wider"
+                        style="color: #3D4A5C; opacity: 0.5;">{{ col }}</th>
+                  }
+                </tr>
+              </thead>
+              <tbody>
+                @for (user of filteredUsers(); track user._id) {
+                  <tr class="border-b transition-colors"
+                      style="border-color: rgba(27,58,107,0.06);"
+                      onmouseover="this.style.backgroundColor='rgba(27,58,107,0.02)'"
+                      onmouseout="this.style.backgroundColor='transparent'">
+                    <td class="px-5 py-4">
+                      <div class="flex items-center gap-3">
+                        @if (user.profileImage) {
+                          <img [src]="user.profileImage"
+                               class="w-8 h-8 rounded-xl object-cover flex-shrink-0" />
+                        } @else {
+                          <div class="w-8 h-8 rounded-xl flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
+                               style="background: linear-gradient(135deg, #1B3A6B, #2d5a9e);">
+                            {{ user.name.charAt(0).toUpperCase() }}
+                          </div>
+                        }
+                        <span class="font-medium" style="color: #1B3A6B;">{{ user.name }}</span>
+                      </div>
+                    </td>
+                    <td class="px-5 py-4" style="color: #3D4A5C; opacity: 0.7;">{{ user.email }}</td>
+                    <td class="px-5 py-4" style="color: #3D4A5C; opacity: 0.7;">{{ user.phone || '—' }}</td>
+                    <td class="px-5 py-4">
+                      <span class="text-xs px-2.5 py-1 rounded-full font-medium capitalize"
+                            [style.color]="user.role === 'provider' ? '#4EA8DE' : '#1B3A6B'"
+                            [style.background-color]="user.role === 'provider' ? 'rgba(78,168,222,0.1)' : 'rgba(27,58,107,0.08)'">
+                        {{ user.role }}
+                      </span>
+                    </td>
+                    <td class="px-5 py-4 text-xs" style="color: #3D4A5C; opacity: 0.5;">
+                      {{ formatDate(user.createdAt) }}
+                    </td>
+                    <td class="px-5 py-4">
+                      @if (user.role !== 'admin') {
+                        <button (click)="suspendUser(user._id)"
+                                class="text-xs font-semibold px-3 py-1.5 rounded-xl border-2 transition-all"
+                                style="border-color: rgba(239,68,68,0.2); color: #ef4444;"
+                                onmouseover="this.style.backgroundColor='rgba(239,68,68,0.05)'"
+                                onmouseout="this.style.backgroundColor='transparent'">
+                          Suspend
+                        </button>
+                      }
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      }
+    }
+
+    <!-- ══════════════════════════════ PROVIDERS ══════════ -->
+    @if (activeTab() === 'providers') {
+
+      <div class="mb-4">
+        <input type="text"
+               [ngModel]="providerSearch()"
+               (ngModelChange)="providerSearch.set($event)"
+               name="providerSearch"
+               placeholder="Search providers..."
+               class="w-full max-w-sm px-4 py-2.5 rounded-2xl border-2 text-sm outline-none transition-all"
+               style="border-color: rgba(27,58,107,0.15); color: #1B3A6B; background-color: white;"
+               onfocus="this.style.borderColor='#1B3A6B'"
+               onblur="this.style.borderColor='rgba(27,58,107,0.15)'" />
+      </div>
+
+      @if (loadingProviders()) {
+        <div class="flex items-center justify-center py-20">
+          <div class="w-8 h-8 rounded-full border-4 border-[#4EA8DE] border-t-[#1B3A6B] animate-spin"></div>
+        </div>
+      } @else {
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          @for (provider of filteredProviders(); track provider._id) {
+            <div class="rounded-3xl p-6 border-2 bg-white animate-fade-up"
+                 style="border-color: rgba(27,58,107,0.08);">
+              <div class="flex items-start gap-3 mb-4">
+                @if (provider.profileImage) {
+                  <img [src]="provider.profileImage"
+                       class="w-12 h-12 rounded-2xl object-cover flex-shrink-0" />
+                } @else {
+                  <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-white font-bold text-lg flex-shrink-0"
+                       style="background: linear-gradient(135deg, #1B3A6B, #2d5a9e);">
+                    {{ provider.name.charAt(0).toUpperCase() }}
+                  </div>
+                }
+                <div class="flex-1 min-w-0">
+                  <p class="font-bold truncate" style="color: #1B3A6B;">{{ provider.name }}</p>
+                  <p class="text-xs truncate" style="color: #3D4A5C; opacity: 0.6;">{{ provider.email }}</p>
+                </div>
+              </div>
+
+              <div class="flex flex-wrap gap-2 mb-4">
+                <span class="text-xs px-2.5 py-1 rounded-full font-medium capitalize"
+                      style="background-color: rgba(78,168,222,0.1); color: #4EA8DE;">
+                  {{ provider.providerInfo?.category || 'General' }}
+                </span>
+                @if (provider.providerInfo?.verified) {
+                  <span class="text-xs px-2.5 py-1 rounded-full font-medium"
+                        style="background-color: rgba(45,155,111,0.1); color: #2D9B6F;">
+                    ✓ Verified
+                  </span>
+                } @else {
+                  <span class="text-xs px-2.5 py-1 rounded-full font-medium"
+                        style="background-color: rgba(240,140,0,0.1); color: #F08C00;">
+                    Pending
+                  </span>
+                }
+              </div>
+
+              <div class="flex items-center justify-between text-xs mb-4"
+                   style="color: #3D4A5C; opacity: 0.5;">
+                <span>⭐ {{ provider.providerInfo?.rating?.toFixed(1) || '0.0' }}</span>
+                @if (provider.providerInfo?.serviceArea) {
+                  <span>📍 {{ provider.providerInfo!.serviceArea }}</span>
+                }
+              </div>
+
+              @if (!provider.providerInfo?.verified) {
+                <button (click)="verifyProvider(provider._id)"
+                        class="w-full py-2.5 rounded-2xl text-xs font-bold text-white relative overflow-hidden group"
+                        style="background-color: #2D9B6F;">
+                  <span class="relative z-10">✓ Verify Provider</span>
+                  <div class="absolute inset-0 bg-white/15 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+                </button>
+              } @else {
+                <button (click)="suspendUser(provider._id)"
+                        class="w-full py-2.5 rounded-2xl text-xs font-semibold border-2 transition-all"
+                        style="border-color: rgba(239,68,68,0.2); color: #ef4444;"
+                        onmouseover="this.style.backgroundColor='rgba(239,68,68,0.05)'"
+                        onmouseout="this.style.backgroundColor='transparent'">
+                  Suspend
+                </button>
+              }
+            </div>
+          }
+        </div>
+      }
+    }
+
+    <!-- ══════════════════════════════ BOOKINGS ══════════ -->
+    @if (activeTab() === 'bookings') {
+
+      <div class="mb-4">
+        <select [ngModel]="bookingFilter()"
+                (ngModelChange)="bookingFilter.set($event)"
+                name="bookingFilter"
+                class="px-4 py-2.5 rounded-2xl border-2 text-sm font-medium outline-none transition-all"
+                style="border-color: rgba(27,58,107,0.15); color: #1B3A6B; background-color: white;"
+                onfocus="this.style.borderColor='#1B3A6B'"
+                onblur="this.style.borderColor='rgba(27,58,107,0.15)'">
+          <option value="all">All Bookings</option>
+          <option value="pending">Pending</option>
+          <option value="confirmed">Confirmed</option>
+          <option value="in-progress">In Progress</option>
+          <option value="completed">Completed</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+      </div>
+
+      @if (loadingBookings()) {
+        <div class="flex items-center justify-center py-20">
+          <div class="w-8 h-8 rounded-full border-4 border-[#4EA8DE] border-t-[#1B3A6B] animate-spin"></div>
+        </div>
+      } @else {
+        <div class="rounded-3xl border-2 bg-white overflow-hidden"
+             style="border-color: rgba(27,58,107,0.08);">
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr style="background-color: #F9F6F0; border-bottom: 1px solid rgba(27,58,107,0.08);">
+                  @for (col of ['Service', 'Customer', 'Provider', 'Date', 'Amount', 'Status']; track col) {
+                    <th class="px-5 py-3 text-left text-xs font-bold uppercase tracking-wider"
+                        style="color: #3D4A5C; opacity: 0.5;">{{ col }}</th>
+                  }
+                </tr>
+              </thead>
+              <tbody>
+                @for (booking of filteredBookings(); track booking._id) {
+                  <tr class="border-b transition-colors"
+                      style="border-color: rgba(27,58,107,0.06);"
+                      onmouseover="this.style.backgroundColor='rgba(27,58,107,0.02)'"
+                      onmouseout="this.style.backgroundColor='transparent'">
+                    <td class="px-5 py-4 font-medium" style="color: #1B3A6B;">
+                      {{ booking.service.name }}
+                    </td>
+                    <td class="px-5 py-4" style="color: #3D4A5C;">{{ getCustomerName(booking) }}</td>
+                    <td class="px-5 py-4" style="color: #3D4A5C;">{{ getProviderName(booking) }}</td>
+                    <td class="px-5 py-4 text-xs" style="color: #3D4A5C; opacity: 0.6;">
+                      {{ formatDate(booking.scheduledDate) }}
+                    </td>
+                    <td class="px-5 py-4 font-bold" style="color: #2D9B6F;">
+                      ₱{{ booking.service.price.toLocaleString() }}
+                    </td>
+                    <td class="px-5 py-4">
+                      <span class="text-xs px-2.5 py-1 rounded-full font-semibold capitalize"
+                            [style.color]="getStatusColor(booking.status)"
+                            [style.background-color]="getStatusBg(booking.status)">
+                        {{ booking.status }}
+                      </span>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      }
+    }
+
+    <!-- ══════════════════════════════ REVIEWS ══════════ -->
+    @if (activeTab() === 'reviews') {
+      @if (loadingReviews()) {
+        <div class="flex items-center justify-center py-20">
+          <div class="w-8 h-8 rounded-full border-4 border-[#4EA8DE] border-t-[#1B3A6B] animate-spin"></div>
+        </div>
+      } @else if (reviews().length === 0) {
+        <div class="flex flex-col items-center justify-center py-20 rounded-3xl border-2 bg-white"
+             style="border-color: rgba(27,58,107,0.08);">
+          <div class="text-5xl mb-4">⭐</div>
+          <p class="font-bold text-lg" style="color: #1B3A6B;">No reviews yet</p>
+        </div>
+      } @else {
+        <div class="flex flex-col gap-4">
+          @for (review of reviews(); track review._id) {
+            <div class="rounded-3xl p-6 border-2 bg-white animate-fade-up"
+                 style="border-color: rgba(27,58,107,0.08);">
+              <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-3">
+                <div>
+                  <div class="flex items-center gap-2 mb-0.5">
+                    <p class="font-bold text-sm" style="color: #1B3A6B;">
+                      {{ getReviewerName(review) }}
+                    </p>
+                    <span class="text-xs" style="color: #3D4A5C; opacity: 0.4;">→</span>
+                    <p class="text-sm" style="color: #3D4A5C; opacity: 0.7;">
+                      {{ getReviewProviderName(review) }}
+                    </p>
+                  </div>
+                  <div class="flex gap-0.5">
+                    @for (star of getStars(review.rating); track $index) {
+                      <span class="text-sm" style="color: #F08C00;">{{ star }}</span>
+                    }
+                  </div>
+                </div>
+                <div class="flex items-center gap-3 flex-shrink-0">
+                  <span class="text-xs" style="color: #3D4A5C; opacity: 0.4;">
+                    {{ formatDate(review.createdAt) }}
+                  </span>
+                  @if (review.status !== 'removed') {
+                    <button (click)="removeReview(review._id)"
+                            class="text-xs font-semibold px-3 py-1.5 rounded-xl border-2 transition-all"
+                            style="border-color: rgba(239,68,68,0.2); color: #ef4444;"
+                            onmouseover="this.style.backgroundColor='rgba(239,68,68,0.05)'"
+                            onmouseout="this.style.backgroundColor='transparent'">
+                      Remove
+                    </button>
+                  } @else {
+                    <span class="text-xs px-2.5 py-1 rounded-full font-medium"
+                          style="background-color: rgba(239,68,68,0.1); color: #ef4444;">
+                      Removed
+                    </span>
+                  }
+                </div>
+              </div>
+              <p class="text-sm leading-relaxed" style="color: #3D4A5C; opacity: 0.75;">
+                {{ review.comment }}
+              </p>
+            </div>
+          }
+        </div>
+      }
+    }
+
+  </div>
+</div>

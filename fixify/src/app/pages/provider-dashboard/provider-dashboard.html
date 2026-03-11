@@ -1,0 +1,654 @@
+<div class="min-h-screen" style="background-color: #F9F6F0;">
+
+  <!-- ═══════════════════ HEADER ═══ -->
+  <header class="sticky top-0 z-40 noise-overlay"
+          style="background: linear-gradient(135deg, #0f2347 0%, #1B3A6B 100%);">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+
+        <!-- Logo -->
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg flex items-center justify-center text-white font-black text-sm"
+               style="background: linear-gradient(135deg, #F08C00, #e07800);">F</div>
+          <span class="font-black text-lg text-white" style="font-family: 'Fraunces', serif;">
+            Fixify <span class="text-sm font-medium opacity-60">Provider</span>
+          </span>
+        </div>
+
+        <!-- Nav -->
+        <div class="flex items-center gap-2">
+          <a routerLink="/provider-messages"
+             class="px-4 py-2 rounded-xl text-sm font-medium transition-all"
+             style="color: rgba(249,246,240,0.75);"
+             onmouseover="this.style.backgroundColor='rgba(255,255,255,0.1)'; this.style.color='white'"
+             onmouseout="this.style.backgroundColor='transparent'; this.style.color='rgba(249,246,240,0.75)'">
+            💬 Messages
+          </a>
+          <button (click)="logout()"
+                  class="px-4 py-2 rounded-xl text-sm font-medium transition-all"
+                  style="color: rgba(249,246,240,0.55);"
+                  onmouseover="this.style.backgroundColor='rgba(239,68,68,0.15)'; this.style.color='#ef4444'"
+                  onmouseout="this.style.backgroundColor='transparent'; this.style.color='rgba(249,246,240,0.55)'">
+            Logout
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <div class="max-w-7xl mx-auto px-6 lg:px-8 py-8">
+
+    <!-- ═══════════════════ PROFILE SECTION ═══ -->
+    <div class="rounded-3xl p-6 sm:p-8 border-2 mb-6 animate-fade-up"
+         style="background-color: white; border-color: rgba(27,58,107,0.08);">
+      <div class="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+
+        <!-- Avatar + upload -->
+        <div class="flex flex-col items-center gap-3 flex-shrink-0">
+          <div class="relative">
+            @if (authService.user()?.profileImage) {
+              <img [src]="authService.user()!.profileImage!"
+                   class="w-28 h-28 rounded-2xl object-cover border-4"
+                   style="border-color: rgba(27,58,107,0.12);" />
+            } @else {
+              <div class="w-28 h-28 rounded-2xl flex items-center justify-center text-white text-4xl font-black"
+                   style="background: linear-gradient(135deg, #1B3A6B, #2d5a9e);">
+                {{ authService.user()!.name.charAt(0).toUpperCase() }}
+              </div>
+            }
+            @if (uploadingImage()) {
+              <div class="absolute inset-0 rounded-2xl flex items-center justify-center"
+                   style="background: rgba(27,58,107,0.7);">
+                <div class="w-6 h-6 rounded-full border-2 border-white border-t-transparent animate-spin"></div>
+              </div>
+            }
+          </div>
+          <button (click)="triggerImageInput()"
+                  [disabled]="uploadingImage()"
+                  class="px-4 py-2 rounded-xl text-xs font-bold text-white relative overflow-hidden group disabled:opacity-60 transition-all"
+                  style="background-color: #F08C00;">
+            <span class="relative z-10">{{ uploadingImage() ? '⏳ Uploading...' : 'Change Photo' }}</span>
+            <div class="absolute inset-0 bg-white/15 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+          </button>
+          <input #imageInput type="file" accept="image/jpeg,image/jpg,image/png,image/gif"
+                 (change)="handleImageUpload($event)" class="hidden" />
+        </div>
+
+        <!-- Info -->
+        <div class="flex-1 text-center sm:text-left">
+          <div class="flex flex-col sm:flex-row sm:items-center gap-2 mb-1">
+            <h1 class="text-2xl font-black" style="color: #1B3A6B; font-family: 'Fraunces', serif;">
+              {{ authService.user()!.name }}
+            </h1>
+            @if (authService.user()!.providerInfo?.verified) {
+              <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold"
+                    style="background-color: rgba(45,155,111,0.1); color: #2D9B6F;
+                           border: 1px solid rgba(45,155,111,0.2);">
+                ✓ Verified Provider
+              </span>
+            } @else {
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold"
+                    style="background-color: rgba(240,140,0,0.1); color: #F08C00;
+                           border: 1px solid rgba(240,140,0,0.2);">
+                Pending Verification
+              </span>
+            }
+          </div>
+          <p class="text-sm mb-1" style="color: #3D4A5C; opacity: 0.6;">
+            {{ authService.user()!.email }}
+          </p>
+          <p class="text-sm capitalize font-medium mb-3" style="color: #4EA8DE;">
+            {{ authService.user()!.providerInfo?.category || 'General Services' }}
+            @if (authService.user()!.providerInfo?.serviceArea) {
+              · {{ authService.user()!.providerInfo!.serviceArea }}
+            }
+          </p>
+          @if (authService.user()!.providerInfo?.bio) {
+            <p class="text-sm leading-relaxed max-w-lg" style="color: #3D4A5C; opacity: 0.7;">
+              {{ authService.user()!.providerInfo!.bio }}
+            </p>
+          }
+        </div>
+
+        <!-- Rating -->
+        <div class="flex flex-col items-center gap-1 flex-shrink-0">
+          <p class="text-5xl font-black" style="color: #1B3A6B; font-family: 'Fraunces', serif;">
+            {{ stats().rating.toFixed(1) }}
+          </p>
+          <div class="flex gap-0.5">
+            @for (star of getStars(stats().rating); track $index) {
+              <span style="color: #F08C00;">{{ star }}</span>
+            }
+          </div>
+          <p class="text-xs" style="color: #3D4A5C; opacity: 0.5;">
+            {{ reviews().length }} reviews
+          </p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ═══════════════════ STATS ═══ -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      @for (stat of [
+        {value: stats().totalBookings, label: 'Total Jobs', color: '#1B3A6B', prefix: ''},
+        {value: stats().completedJobs, label: 'Completed', color: '#2D9B6F', prefix: ''},
+        {value: stats().totalEarnings, label: 'Total Earnings', color: '#F08C00', prefix: '₱'},
+        {value: pendingPayout(), label: 'Pending Payout', color: '#4EA8DE', prefix: '₱'}
+      ]; track stat.label; let i = $index) {
+        <div class="rounded-3xl p-5 border-2 animate-fade-up bg-white"
+             [class]="'delay-' + ((i + 1) * 100)"
+             style="border-color: rgba(27,58,107,0.08);">
+          <p class="text-3xl font-black mb-1" [style.color]="stat.color"
+             style="font-family: 'Fraunces', serif;">
+            {{ stat.prefix }}{{ stat.value.toLocaleString() }}
+          </p>
+          <p class="text-xs font-medium uppercase tracking-wide" style="color: #3D4A5C; opacity: 0.5;">
+            {{ stat.label }}
+          </p>
+        </div>
+      }
+    </div>
+
+    <!-- ═══════════════════ TABS ═══ -->
+    <div class="flex gap-1 border-b mb-6 overflow-x-auto"
+         style="border-color: rgba(27,58,107,0.1);">
+      @for (tab of tabs; track tab.id) {
+        <button (click)="activeTab.set(tab.id)"
+                class="flex items-center gap-2 px-5 py-3 text-sm font-semibold whitespace-nowrap border-b-2 transition-all -mb-px"
+                [style.border-bottom-color]="activeTab() === tab.id ? '#1B3A6B' : 'transparent'"
+                [style.color]="activeTab() === tab.id ? '#1B3A6B' : '#3D4A5C'"
+                [style.opacity]="activeTab() === tab.id ? '1' : '0.5'">
+          {{ tab.icon }} {{ tab.label }}
+        </button>
+      }
+    </div>
+
+    <!-- ══════════════════════════════ JOBS TAB ══════════ -->
+    @if (activeTab() === 'bookings') {
+      <div class="mb-4">
+        <select [ngModel]="bookingFilter()"
+                (ngModelChange)="onFilterChange($event)"
+                name="bookingFilter"
+                class="px-4 py-2.5 rounded-2xl border-2 text-sm font-medium outline-none transition-all"
+                style="border-color: rgba(27,58,107,0.15); color: #1B3A6B; background-color: white;"
+                onfocus="this.style.borderColor='#1B3A6B'"
+                onblur="this.style.borderColor='rgba(27,58,107,0.15)'">
+          <option value="all">All Bookings</option>
+          <option value="pending">Pending</option>
+          <option value="confirmed">Confirmed</option>
+          <option value="in-progress">In Progress</option>
+          <option value="completed">Completed</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+      </div>
+
+      @if (loadingBookings()) {
+        <div class="flex items-center justify-center py-20">
+          <div class="w-8 h-8 rounded-full border-4 border-[#4EA8DE] border-t-[#1B3A6B] animate-spin"></div>
+        </div>
+      } @else if (filteredBookings().length === 0) {
+        <div class="flex flex-col items-center justify-center py-20 rounded-3xl border-2 bg-white"
+             style="border-color: rgba(27,58,107,0.08);">
+          <div class="text-5xl mb-4">📋</div>
+          <p class="font-bold text-lg mb-1" style="color: #1B3A6B;">No bookings yet</p>
+          <p class="text-sm" style="color: #3D4A5C; opacity: 0.5;">Incoming jobs will appear here.</p>
+        </div>
+      } @else {
+        <div class="flex flex-col gap-3">
+          @for (booking of filteredBookings(); track booking._id) {
+            <div class="rounded-3xl p-6 border-2 bg-white animate-fade-up"
+                 style="border-color: rgba(27,58,107,0.08); border-left: 4px solid #1B3A6B;">
+              <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-4">
+                <div>
+                  <div class="flex flex-wrap items-center gap-2 mb-1">
+                    <h3 class="font-bold text-base" style="color: #1B3A6B;">
+                      {{ booking.service.name }}
+                    </h3>
+                    <span class="text-xs px-2.5 py-1 rounded-full font-semibold capitalize"
+                          [style.color]="getStatusColor(booking.status)"
+                          [style.background-color]="getStatusBg(booking.status)">
+                      {{ booking.status }}
+                    </span>
+                  </div>
+                  <p class="text-sm" style="color: #3D4A5C; opacity: 0.7;">
+                    <strong>Customer:</strong> {{ getCustomerName(booking) }}
+                  </p>
+                  <p class="text-sm" style="color: #3D4A5C; opacity: 0.7;">
+                    <strong>Date:</strong> {{ formatDate(booking.scheduledDate) }} · {{ booking.scheduledTime }}
+                  </p>
+                  <p class="text-sm" style="color: #3D4A5C; opacity: 0.7;">
+                    <strong>Address:</strong> {{ booking.address }}
+                  </p>
+                  @if (booking.notes) {
+                    <p class="text-sm" style="color: #3D4A5C; opacity: 0.7;">
+                      <strong>Notes:</strong> {{ booking.notes }}
+                    </p>
+                  }
+                </div>
+                <div class="text-right flex-shrink-0">
+                  <p class="text-2xl font-black" style="color: #2D9B6F; font-family: 'Fraunces', serif;">
+                    ₱{{ booking.service.price.toLocaleString() }}
+                  </p>
+                  <p class="text-xs" style="color: #3D4A5C; opacity: 0.4;">service price</p>
+                </div>
+              </div>
+              <div class="flex flex-wrap gap-2">
+                @if (booking.status === 'pending') {
+                  <button (click)="confirmBooking(booking._id)"
+                          class="px-4 py-2 rounded-xl text-xs font-bold text-white relative overflow-hidden group"
+                          style="background-color: #2D9B6F;">
+                    <span class="relative z-10">✓ Accept Job</span>
+                    <div class="absolute inset-0 bg-white/15 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+                  </button>
+                }
+                @if (booking.status === 'confirmed') {
+                  <button (click)="startJob(booking._id)"
+                          class="px-4 py-2 rounded-xl text-xs font-bold text-white relative overflow-hidden group"
+                          style="background-color: #4EA8DE;">
+                    <span class="relative z-10">▶ Start Job</span>
+                    <div class="absolute inset-0 bg-white/15 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+                  </button>
+                }
+                <button (click)="openChat(booking)"
+                        class="px-4 py-2 rounded-xl text-xs font-semibold border-2 transition-all"
+                        style="border-color: rgba(27,58,107,0.15); color: #1B3A6B;"
+                        onmouseover="this.style.backgroundColor='rgba(27,58,107,0.05)'"
+                        onmouseout="this.style.backgroundColor='transparent'">
+                  💬 Message Customer
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    }
+
+    <!-- ══════════════════════════════ EARNINGS TAB ══════════ -->
+    @if (activeTab() === 'earnings') {
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+        @for (card of [
+          {label: 'This Month', value: monthlyEarnings(), color: '#1B3A6B'},
+          {label: 'Total Earnings', value: stats().totalEarnings, color: '#2D9B6F'},
+          {label: 'Pending Payout', value: pendingPayout(), color: '#F08C00'}
+        ]; track card.label) {
+          <div class="rounded-3xl p-6 border-2 text-white relative overflow-hidden noise-overlay"
+               [style.background]="'linear-gradient(135deg, ' + card.color + ', ' + card.color + 'cc)'">
+            <p class="text-sm font-semibold mb-2 opacity-80">{{ card.label }}</p>
+            <p class="text-4xl font-black" style="font-family: 'Fraunces', serif;">
+              ₱{{ card.value.toLocaleString() }}
+            </p>
+          </div>
+        }
+      </div>
+
+      <div class="rounded-3xl border-2 bg-white overflow-hidden"
+           style="border-color: rgba(27,58,107,0.08);">
+        <div class="px-6 py-4 border-b" style="border-color: rgba(27,58,107,0.08);">
+          <h3 class="font-bold" style="color: #1B3A6B; font-family: 'Fraunces', serif;">
+            Transaction History
+          </h3>
+        </div>
+        @if (completedBookings().length === 0) {
+          <div class="flex flex-col items-center justify-center py-12">
+            <div class="text-4xl mb-3">💰</div>
+            <p class="font-medium" style="color: #1B3A6B;">No completed jobs yet</p>
+            <p class="text-sm" style="color: #3D4A5C; opacity: 0.5;">Completed bookings will appear here.</p>
+          </div>
+        } @else {
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr style="background-color: #F9F6F0; border-bottom: 1px solid rgba(27,58,107,0.08);">
+                  @for (col of ['Date', 'Service', 'Customer', 'Amount', 'Payment']; track col) {
+                    <th class="px-5 py-3 text-left text-xs font-bold uppercase tracking-wider"
+                        style="color: #3D4A5C; opacity: 0.5;">{{ col }}</th>
+                  }
+                </tr>
+              </thead>
+              <tbody>
+                @for (b of completedBookings(); track b._id) {
+                  <tr class="border-b transition-colors"
+                      style="border-color: rgba(27,58,107,0.06);"
+                      onmouseover="this.style.backgroundColor='rgba(27,58,107,0.02)'"
+                      onmouseout="this.style.backgroundColor='transparent'">
+                    <td class="px-5 py-4" style="color: #3D4A5C;">{{ formatDate(b.scheduledDate) }}</td>
+                    <td class="px-5 py-4 font-medium" style="color: #1B3A6B;">{{ b.service.name }}</td>
+                    <td class="px-5 py-4" style="color: #3D4A5C;">{{ getCustomerName(b) }}</td>
+                    <td class="px-5 py-4 font-bold" style="color: #2D9B6F;">₱{{ b.service.price.toLocaleString() }}</td>
+                    <td class="px-5 py-4">
+                      <span class="text-xs px-2.5 py-1 rounded-full font-medium capitalize"
+                            [style.color]="b.paymentStatus === 'released' ? '#2D9B6F' : '#F08C00'"
+                            [style.background-color]="b.paymentStatus === 'released' ? 'rgba(45,155,111,0.1)' : 'rgba(240,140,0,0.1)'">
+                        {{ b.paymentStatus || 'pending' }}
+                      </span>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- ══════════════════════════════ REVIEWS TAB ══════════ -->
+    @if (activeTab() === 'reviews') {
+      @if (loadingReviews()) {
+        <div class="flex items-center justify-center py-20">
+          <div class="w-8 h-8 rounded-full border-4 border-[#4EA8DE] border-t-[#1B3A6B] animate-spin"></div>
+        </div>
+      } @else if (reviews().length === 0) {
+        <div class="flex flex-col items-center justify-center py-20 rounded-3xl border-2 bg-white"
+             style="border-color: rgba(27,58,107,0.08);">
+          <div class="text-5xl mb-4">⭐</div>
+          <p class="font-bold text-lg mb-1" style="color: #1B3A6B;">No reviews yet</p>
+          <p class="text-sm" style="color: #3D4A5C; opacity: 0.5;">Complete jobs to receive reviews.</p>
+        </div>
+      } @else {
+        <!-- Rating overview -->
+        <div class="rounded-3xl p-6 border-2 bg-white mb-5 text-center"
+             style="border-color: rgba(27,58,107,0.08);">
+          <p class="text-6xl font-black mb-2" style="color: #1B3A6B; font-family: 'Fraunces', serif;">
+            {{ stats().rating.toFixed(1) }}
+          </p>
+          <div class="flex justify-center gap-1 mb-1 text-2xl">
+            @for (star of getStars(stats().rating); track $index) {
+              <span style="color: #F08C00;">{{ star }}</span>
+            }
+          </div>
+          <p class="text-sm" style="color: #3D4A5C; opacity: 0.5;">{{ reviews().length }} reviews</p>
+        </div>
+
+        <div class="flex flex-col gap-4">
+          @for (review of reviews(); track review._id) {
+            <div class="rounded-3xl p-6 border-2 bg-white animate-fade-up"
+                 style="border-color: rgba(27,58,107,0.08);">
+              <div class="flex items-start justify-between gap-3 mb-2">
+                <div>
+                  <p class="font-bold" style="color: #1B3A6B;">{{ getReviewerName(review) }}</p>
+                  <div class="flex gap-0.5 mt-0.5">
+                    @for (star of getStars(review.rating); track $index) {
+                      <span style="color: #F08C00;">{{ star }}</span>
+                    }
+                  </div>
+                </div>
+                <span class="text-xs flex-shrink-0" style="color: #3D4A5C; opacity: 0.4;">
+                  {{ formatDate(review.createdAt) }}
+                </span>
+              </div>
+              <p class="text-sm leading-relaxed mb-4" style="color: #3D4A5C; opacity: 0.75;">
+                {{ review.comment }}
+              </p>
+              @if (review.response?.text) {
+                <div class="pl-4 border-l-2 py-1" style="border-color: #4EA8DE;">
+                  <p class="text-xs font-bold mb-1" style="color: #4EA8DE;">Your Response</p>
+                  <p class="text-sm" style="color: #3D4A5C; opacity: 0.7;">{{ review.response!.text }}</p>
+                </div>
+              } @else if (replyingToReview() === review._id) {
+                <div>
+                  <textarea [ngModel]="replyText()"
+                            (ngModelChange)="replyText.set($event)"
+                            name="replyText"
+                            rows="2"
+                            placeholder="Write your response..."
+                            class="w-full px-4 py-3 rounded-2xl border-2 text-sm outline-none resize-none transition-all"
+                            style="border-color: rgba(27,58,107,0.15); color: #1B3A6B;"
+                            onfocus="this.style.borderColor='#1B3A6B'"
+                            onblur="this.style.borderColor='rgba(27,58,107,0.15)'"></textarea>
+                  <div class="flex gap-2 mt-2">
+                    <button (click)="submitReply(review._id)"
+                            [disabled]="submittingReply()"
+                            class="px-4 py-2 rounded-xl text-xs font-bold text-white disabled:opacity-60"
+                            style="background-color: #1B3A6B;">
+                      {{ submittingReply() ? 'Sending...' : 'Send Reply' }}
+                    </button>
+                    <button (click)="cancelReply()"
+                            class="px-4 py-2 rounded-xl text-xs font-semibold border-2"
+                            style="border-color: rgba(27,58,107,0.15); color: #3D4A5C;">
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              } @else {
+                <button (click)="startReply(review._id)"
+                        class="text-xs font-semibold transition-colors"
+                        style="color: #4EA8DE;">
+                  + Reply to review
+                </button>
+              }
+            </div>
+          }
+        </div>
+      }
+    }
+
+    <!-- ══════════════════════════════ SERVICES TAB ══════════ -->
+    @if (activeTab() === 'services') {
+      <div class="flex items-center justify-between mb-5">
+        <h2 class="font-black text-xl" style="color: #1B3A6B; font-family: 'Fraunces', serif;">
+          My Services
+        </h2>
+        <button (click)="openAddService()"
+                class="px-5 py-2.5 rounded-xl text-sm font-bold text-white relative overflow-hidden group"
+                style="background-color: #F08C00;">
+          <span class="relative z-10">+ Add Service</span>
+          <div class="absolute inset-0 bg-white/15 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+        </button>
+      </div>
+
+      @if (services().length === 0) {
+        <div class="flex flex-col items-center justify-center py-20 rounded-3xl border-2 bg-white"
+             style="border-color: rgba(27,58,107,0.08);">
+          <div class="text-5xl mb-4">🔧</div>
+          <p class="font-bold text-lg mb-1" style="color: #1B3A6B;">No services listed</p>
+          <p class="text-sm mb-4" style="color: #3D4A5C; opacity: 0.5;">Add services so customers can book you.</p>
+        </div>
+      } @else {
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          @for (service of services(); track $index; let i = $index) {
+            <div class="rounded-3xl p-6 border-2 bg-white"
+                 style="border-color: rgba(27,58,107,0.08); border-left: 4px solid #1B3A6B;">
+              <h3 class="font-bold text-base mb-1" style="color: #1B3A6B;">{{ service.name }}</h3>
+              @if (service.description) {
+                <p class="text-xs mb-3 leading-relaxed" style="color: #3D4A5C; opacity: 0.6;">
+                  {{ service.description }}
+                </p>
+              }
+              <p class="text-2xl font-black mb-4" style="color: #F08C00; font-family: 'Fraunces', serif;">
+                ₱{{ service.price.toLocaleString() }}
+              </p>
+              <div class="flex gap-2">
+                <button (click)="openEditService(i)"
+                        class="px-4 py-1.5 rounded-xl text-xs font-semibold border-2 transition-all"
+                        style="border-color: rgba(27,58,107,0.15); color: #1B3A6B;"
+                        onmouseover="this.style.backgroundColor='rgba(27,58,107,0.05)'"
+                        onmouseout="this.style.backgroundColor='transparent'">
+                  Edit
+                </button>
+                <button (click)="deleteService(i)"
+                        class="px-4 py-1.5 rounded-xl text-xs font-semibold border-2 transition-all"
+                        style="border-color: rgba(239,68,68,0.2); color: #ef4444;"
+                        onmouseover="this.style.backgroundColor='rgba(239,68,68,0.05)'"
+                        onmouseout="this.style.backgroundColor='transparent'">
+                  Delete
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    }
+
+    <!-- ══════════════════════════════ SETTINGS TAB ══════════ -->
+    @if (activeTab() === 'settings') {
+      <div class="max-w-xl">
+        <div class="rounded-3xl p-6 border-2 bg-white"
+             style="border-color: rgba(27,58,107,0.08);">
+          <h2 class="font-black text-xl mb-6" style="color: #1B3A6B; font-family: 'Fraunces', serif;">
+            Account Settings
+          </h2>
+
+          @if (settingsSuccess()) {
+            <div class="mb-4 px-4 py-3 rounded-2xl text-sm font-medium"
+                 style="background-color: rgba(45,155,111,0.1); color: #2D9B6F;
+                        border: 1px solid rgba(45,155,111,0.2);">
+              {{ settingsSuccess() }}
+            </div>
+          }
+          @if (settingsError()) {
+            <div class="mb-4 px-4 py-3 rounded-2xl text-sm"
+                 style="background-color: rgba(239,68,68,0.1); color: #ef4444;
+                        border: 1px solid rgba(239,68,68,0.2);">
+              {{ settingsError() }}
+            </div>
+          }
+
+          <div class="mb-4">
+            <label class="block text-xs font-bold uppercase tracking-wider mb-2"
+                   style="color: #3D4A5C; opacity: 0.5;">Name</label>
+            <input type="text" [ngModel]="settingsName()" (ngModelChange)="settingsName.set($event)"
+                   name="settingsName"
+                   class="w-full px-4 py-3 rounded-2xl border-2 text-sm outline-none transition-all"
+                   style="border-color: rgba(27,58,107,0.12); color: #1B3A6B;"
+                   onfocus="this.style.borderColor='#1B3A6B'"
+                   onblur="this.style.borderColor='rgba(27,58,107,0.12)'" />
+          </div>
+          <div class="mb-4">
+            <label class="block text-xs font-bold uppercase tracking-wider mb-2"
+                   style="color: #3D4A5C; opacity: 0.5;">Phone</label>
+            <input type="tel" [ngModel]="settingsPhone()" (ngModelChange)="settingsPhone.set($event)"
+                   name="settingsPhone"
+                   class="w-full px-4 py-3 rounded-2xl border-2 text-sm outline-none transition-all"
+                   style="border-color: rgba(27,58,107,0.12); color: #1B3A6B;"
+                   onfocus="this.style.borderColor='#1B3A6B'"
+                   onblur="this.style.borderColor='rgba(27,58,107,0.12)'" />
+          </div>
+          <div class="mb-4">
+            <label class="block text-xs font-bold uppercase tracking-wider mb-2"
+                   style="color: #3D4A5C; opacity: 0.5;">Service Area</label>
+            <select [ngModel]="settingsServiceArea()" (ngModelChange)="settingsServiceArea.set($event)"
+                    name="settingsServiceArea"
+                    class="w-full px-4 py-3 rounded-2xl border-2 text-sm outline-none transition-all"
+                    style="border-color: rgba(27,58,107,0.12); color: #1B3A6B; background-color: white;"
+                    onfocus="this.style.borderColor='#1B3A6B'"
+                    onblur="this.style.borderColor='rgba(27,58,107,0.12)'">
+              @for (area of serviceAreas; track area) {
+                <option [value]="area">{{ area }}</option>
+              }
+            </select>
+          </div>
+          <div class="mb-4">
+            <label class="block text-xs font-bold uppercase tracking-wider mb-2"
+                   style="color: #3D4A5C; opacity: 0.5;">Bio</label>
+            <textarea [ngModel]="settingsBio()" (ngModelChange)="settingsBio.set($event)"
+                      name="settingsBio" rows="3"
+                      placeholder="Describe your experience..."
+                      class="w-full px-4 py-3 rounded-2xl border-2 text-sm outline-none resize-none transition-all"
+                      style="border-color: rgba(27,58,107,0.12); color: #1B3A6B;"
+                      onfocus="this.style.borderColor='#1B3A6B'"
+                      onblur="this.style.borderColor='rgba(27,58,107,0.12)'"></textarea>
+          </div>
+          <div class="mb-4">
+            <label class="block text-xs font-bold uppercase tracking-wider mb-2"
+                   style="color: #3D4A5C; opacity: 0.5;">Hourly Rate (₱)</label>
+            <input type="number" [ngModel]="settingsHourlyRate()" (ngModelChange)="settingsHourlyRate.set($event)"
+                   name="settingsHourlyRate" min="0"
+                   class="w-full px-4 py-3 rounded-2xl border-2 text-sm outline-none transition-all"
+                   style="border-color: rgba(27,58,107,0.12); color: #1B3A6B;"
+                   onfocus="this.style.borderColor='#1B3A6B'"
+                   onblur="this.style.borderColor='rgba(27,58,107,0.12)'" />
+          </div>
+          <div class="mb-6">
+            <label class="block text-xs font-bold uppercase tracking-wider mb-2"
+                   style="color: #3D4A5C; opacity: 0.5;">Skills (comma-separated)</label>
+            <input type="text" [ngModel]="settingsSkills()" (ngModelChange)="settingsSkills.set($event)"
+                   name="settingsSkills"
+                   placeholder="e.g. pipe repair, drain cleaning"
+                   class="w-full px-4 py-3 rounded-2xl border-2 text-sm outline-none transition-all"
+                   style="border-color: rgba(27,58,107,0.12); color: #1B3A6B;"
+                   onfocus="this.style.borderColor='#1B3A6B'"
+                   onblur="this.style.borderColor='rgba(27,58,107,0.12)'" />
+          </div>
+
+          <button (click)="saveSettings()" [disabled]="savingSettings()"
+                  class="px-8 py-3 rounded-xl text-sm font-bold text-white relative overflow-hidden group disabled:opacity-60"
+                  style="background-color: #F08C00;">
+            <span class="relative z-10">{{ savingSettings() ? 'Saving...' : 'Save Changes' }}</span>
+            <div class="absolute inset-0 bg-white/15 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+          </button>
+        </div>
+      </div>
+    }
+
+  </div>
+</div>
+
+<!-- ══════════════════ ADD/EDIT SERVICE MODAL ══════════ -->
+@if (showAddServiceModal()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center px-4"
+       style="background-color: rgba(0,0,0,0.6);"
+       (click)="showAddServiceModal.set(false)">
+    <div class="bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl animate-fade-up"
+         (click)="$event.stopPropagation()">
+      <div class="flex items-center justify-between mb-5">
+        <h3 class="font-black text-lg" style="color: #1B3A6B; font-family: 'Fraunces', serif;">
+          {{ editingServiceIndex() !== null ? 'Edit Service' : 'Add New Service' }}
+        </h3>
+        <button (click)="showAddServiceModal.set(false)"
+                class="w-8 h-8 rounded-xl flex items-center justify-center text-lg font-bold transition-all"
+                style="color: #3D4A5C;"
+                onmouseover="this.style.backgroundColor='rgba(27,58,107,0.06)'"
+                onmouseout="this.style.backgroundColor='transparent'">×</button>
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-xs font-bold uppercase tracking-wider mb-2"
+               style="color: #3D4A5C; opacity: 0.5;">Service Name</label>
+        <input type="text" [ngModel]="serviceFormName()" (ngModelChange)="serviceFormName.set($event)"
+               name="serviceFormName" placeholder="e.g. Pipe Leak Repair" required
+               class="w-full px-4 py-3 rounded-2xl border-2 text-sm outline-none transition-all"
+               style="border-color: rgba(27,58,107,0.12); color: #1B3A6B;"
+               onfocus="this.style.borderColor='#1B3A6B'"
+               onblur="this.style.borderColor='rgba(27,58,107,0.12)'" />
+      </div>
+      <div class="mb-4">
+        <label class="block text-xs font-bold uppercase tracking-wider mb-2"
+               style="color: #3D4A5C; opacity: 0.5;">Description</label>
+        <textarea [ngModel]="serviceFormDesc()" (ngModelChange)="serviceFormDesc.set($event)"
+                  name="serviceFormDesc" rows="2" placeholder="Brief description..."
+                  class="w-full px-4 py-3 rounded-2xl border-2 text-sm outline-none resize-none transition-all"
+                  style="border-color: rgba(27,58,107,0.12); color: #1B3A6B;"
+                  onfocus="this.style.borderColor='#1B3A6B'"
+                  onblur="this.style.borderColor='rgba(27,58,107,0.12)'"></textarea>
+      </div>
+      <div class="mb-6">
+        <label class="block text-xs font-bold uppercase tracking-wider mb-2"
+               style="color: #3D4A5C; opacity: 0.5;">Price (₱)</label>
+        <input type="number" [ngModel]="serviceFormPrice()" (ngModelChange)="serviceFormPrice.set($event)"
+               name="serviceFormPrice" min="0" placeholder="0" required
+               class="w-full px-4 py-3 rounded-2xl border-2 text-sm outline-none transition-all"
+               style="border-color: rgba(27,58,107,0.12); color: #1B3A6B;"
+               onfocus="this.style.borderColor='#1B3A6B'"
+               onblur="this.style.borderColor='rgba(27,58,107,0.12)'" />
+      </div>
+
+      <div class="flex gap-3">
+        <button (click)="saveService()" [disabled]="savingService()"
+                class="flex-1 py-3 rounded-2xl text-sm font-bold text-white relative overflow-hidden group disabled:opacity-60"
+                style="background-color: #F08C00;">
+          <span class="relative z-10">{{ savingService() ? 'Saving...' : 'Save Service' }}</span>
+          <div class="absolute inset-0 bg-white/15 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+        </button>
+        <button (click)="showAddServiceModal.set(false)"
+                class="flex-1 py-3 rounded-2xl text-sm font-semibold border-2 transition-all"
+                style="border-color: rgba(27,58,107,0.15); color: #3D4A5C;"
+                onmouseover="this.style.backgroundColor='rgba(27,58,107,0.04)'"
+                onmouseout="this.style.backgroundColor='transparent'">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+}

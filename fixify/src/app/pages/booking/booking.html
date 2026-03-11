@@ -1,0 +1,266 @@
+<app-header />
+
+<main style="background-color: #F2E8D9; min-height: 100vh;">
+
+  <!-- Loading -->
+  @if (loadingProvider()) {
+    <div class="flex flex-col items-center justify-center py-32">
+      <div class="w-10 h-10 rounded-full border-4 border-[#7AAE8E] border-t-[#1E5C3A] animate-spin mb-4"></div>
+      <p class="text-sm" style="color: #1A2E20; opacity: 0.6;">Loading...</p>
+    </div>
+  }
+
+  <!-- Error -->
+  @if (errorProvider() && !loadingProvider()) {
+    <div class="flex flex-col items-center justify-center py-32">
+      <div class="text-5xl mb-4">⚠️</div>
+      <p class="text-lg font-bold" style="color: #1A2E20;">{{ errorProvider() }}</p>
+    </div>
+  }
+
+  @if (!loadingProvider() && !errorProvider() && provider()) {
+
+    <!-- Header -->
+    <section class="py-10 noise-overlay" style="background-color: #1E5C3A;">
+      <div class="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h1 class="text-3xl font-bold text-white mb-1">Book a Service</h1>
+        <p class="text-[#F2E8D9] opacity-75 text-sm">
+          with {{ provider()!.name }}
+        </p>
+      </div>
+    </section>
+
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <!-- Form -->
+        <div class="lg:col-span-2">
+          <form (ngSubmit)="onSubmit()">
+
+            <!-- Error -->
+            @if (error()) {
+              <div class="mb-4 px-4 py-3 rounded-xl text-sm"
+                   style="background-color: #FEE2E2; color: #DC2626;">
+                {{ error() }}
+              </div>
+            }
+
+            <!-- Select Service -->
+            <div class="bg-white rounded-2xl p-6 border border-[#F2E8D9] mb-4">
+              <h2 class="font-bold text-lg mb-4" style="color: #1A2E20;">Select a Service</h2>
+
+              @if (!provider()!.providerInfo?.services?.length) {
+                <p class="text-sm" style="color: #1A2E20; opacity: 0.6;">
+                  This provider has no services listed yet.
+                </p>
+              }
+
+              <div class="flex flex-col gap-3">
+                @for (service of provider()!.providerInfo?.services || []; track $index) {
+                  <button type="button"
+                          (click)="selectService(service)"
+                          class="flex items-center justify-between p-4 rounded-xl border-2 text-left transition-all"
+                          [style.border-color]="selectedService()?._id === service._id || selectedService()?.name === service.name ? '#1E5C3A' : '#F2E8D9'"
+                          [style.background-color]="selectedService()?._id === service._id || selectedService()?.name === service.name ? 'rgba(30,92,58,0.05)' : 'white'">
+                    <div>
+                      <p class="font-medium text-sm" style="color: #1A2E20;">{{ service.name }}</p>
+                      @if (service.description) {
+                        <p class="text-xs mt-0.5" style="color: #1A2E20; opacity: 0.6;">
+                          {{ service.description }}
+                        </p>
+                      }
+                    </div>
+                    <p class="font-bold text-sm flex-shrink-0 ml-4" style="color: #1E5C3A;">
+                      ₱{{ service.price.toLocaleString() }}
+                    </p>
+                  </button>
+                }
+              </div>
+            </div>
+
+            <!-- Schedule -->
+            <div class="bg-white rounded-2xl p-6 border border-[#F2E8D9] mb-4">
+              <h2 class="font-bold text-lg mb-4" style="color: #1A2E20;">Schedule</h2>
+
+              <div class="mb-4">
+                <label class="block text-sm font-medium mb-1.5" style="color: #1A2E20;">
+                  Preferred Date
+                </label>
+                <input type="date"
+                       [ngModel]="scheduledDate()"
+                       (ngModelChange)="scheduledDate.set($event)"
+                       name="scheduledDate"
+                       [min]="minDate()"
+                       required
+                       class="w-full px-4 py-2.5 rounded-xl border text-sm outline-none"
+                       style="border-color: #F2E8D9; color: #1A2E20;"
+                       onfocus="this.style.borderColor='#1E5C3A'"
+                       onblur="this.style.borderColor='#F2E8D9'" />
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium mb-2" style="color: #1A2E20;">
+                  Preferred Time
+                </label>
+                <div class="grid grid-cols-3 gap-2">
+                  @for (slot of timeSlots; track slot) {
+                    <button type="button"
+                            (click)="scheduledTime.set(slot)"
+                            class="py-2 rounded-lg text-xs font-medium border-2 transition-all"
+                            [style.border-color]="scheduledTime() === slot ? '#1E5C3A' : '#F2E8D9'"
+                            [style.background-color]="scheduledTime() === slot ? 'rgba(30,92,58,0.05)' : 'white'"
+                            [style.color]="scheduledTime() === slot ? '#1E5C3A' : '#1A2E20'">
+                      {{ slot }}
+                    </button>
+                  }
+                </div>
+              </div>
+            </div>
+
+            <!-- Location & Contact -->
+            <div class="bg-white rounded-2xl p-6 border border-[#F2E8D9] mb-4">
+              <h2 class="font-bold text-lg mb-4" style="color: #1A2E20;">Location & Contact</h2>
+
+              <div class="mb-4">
+                <label class="block text-sm font-medium mb-1.5" style="color: #1A2E20;">
+                  Service Address
+                </label>
+                <input type="text"
+                       [ngModel]="address()"
+                       (ngModelChange)="address.set($event)"
+                       name="address"
+                       placeholder="House No., Street, Barangay, Angeles City"
+                       required
+                       class="w-full px-4 py-2.5 rounded-xl border text-sm outline-none"
+                       style="border-color: #F2E8D9; color: #1A2E20;"
+                       onfocus="this.style.borderColor='#1E5C3A'"
+                       onblur="this.style.borderColor='#F2E8D9'" />
+              </div>
+
+              <div class="mb-4">
+                <label class="block text-sm font-medium mb-1.5" style="color: #1A2E20;">
+                  Contact Phone
+                </label>
+                <input type="tel"
+                       [ngModel]="contactPhone()"
+                       (ngModelChange)="contactPhone.set($event)"
+                       name="contactPhone"
+                       placeholder="09xxxxxxxxx"
+                       class="w-full px-4 py-2.5 rounded-xl border text-sm outline-none"
+                       style="border-color: #F2E8D9; color: #1A2E20;"
+                       onfocus="this.style.borderColor='#1E5C3A'"
+                       onblur="this.style.borderColor='#F2E8D9'" />
+              </div>
+
+              <div class="mb-4">
+                <label class="block text-sm font-medium mb-1.5" style="color: #1A2E20;">
+                  Contact Email
+                </label>
+                <input type="email"
+                       [ngModel]="contactEmail()"
+                       (ngModelChange)="contactEmail.set($event)"
+                       name="contactEmail"
+                       class="w-full px-4 py-2.5 rounded-xl border text-sm outline-none"
+                       style="border-color: #F2E8D9; color: #1A2E20;"
+                       onfocus="this.style.borderColor='#1E5C3A'"
+                       onblur="this.style.borderColor='#F2E8D9'" />
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium mb-1.5" style="color: #1A2E20;">
+                  Additional Notes <span class="opacity-50 font-normal">(optional)</span>
+                </label>
+                <textarea [ngModel]="notes()"
+                          (ngModelChange)="notes.set($event)"
+                          name="notes"
+                          rows="3"
+                          placeholder="Describe the issue or any special instructions..."
+                          class="w-full px-4 py-2.5 rounded-xl border text-sm outline-none resize-none"
+                          style="border-color: #F2E8D9; color: #1A2E20;"
+                          onfocus="this.style.borderColor='#1E5C3A'"
+                          onblur="this.style.borderColor='#F2E8D9'"></textarea>
+              </div>
+            </div>
+
+            <button type="submit"
+                    [disabled]="submitting() || !selectedService()"
+                    class="w-full py-3 rounded-xl font-semibold text-sm text-white transition-all disabled:opacity-60"
+                    style="background-color: #1E5C3A;">
+              @if (submitting()) {
+                <span>Confirming booking...</span>
+              } @else {
+                <span>Confirm Booking →</span>
+              }
+            </button>
+
+          </form>
+        </div>
+
+        <!-- Summary Sidebar -->
+        <div class="flex flex-col gap-4">
+
+          <!-- Provider Card -->
+          <div class="bg-white rounded-2xl p-5 border border-[#F2E8D9]">
+            <h3 class="font-bold text-sm mb-3" style="color: #1A2E20;">Provider</h3>
+            <div class="flex items-center gap-3">
+              @if (provider()!.profileImage) {
+                <img [src]="provider()!.profileImage!"
+                     [alt]="provider()!.name"
+                     class="w-10 h-10 rounded-xl object-cover" />
+              } @else {
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white text-sm font-bold"
+                     style="background: linear-gradient(135deg, #1E5C3A, #7AAE8E);">
+                  {{ provider()!.name.charAt(0).toUpperCase() }}
+                </div>
+              }
+              <div>
+                <p class="font-medium text-sm" style="color: #1A2E20;">{{ provider()!.name }}</p>
+                <p class="text-xs capitalize" style="color: #1A2E20; opacity: 0.6;">
+                  {{ provider()!.providerInfo?.category }}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Price Summary -->
+          <div class="bg-white rounded-2xl p-5 border border-[#F2E8D9]">
+            <h3 class="font-bold text-sm mb-4" style="color: #1A2E20;">Price Summary</h3>
+
+            @if (!selectedService()) {
+              <p class="text-sm" style="color: #1A2E20; opacity: 0.5;">
+                Select a service to see pricing.
+              </p>
+            } @else {
+              <div class="flex flex-col gap-2">
+                <div class="flex justify-between text-sm">
+                  <span style="color: #1A2E20; opacity: 0.7;">{{ selectedService()!.name }}</span>
+                  <span style="color: #1A2E20;">₱{{ selectedService()!.price.toLocaleString() }}</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                  <span style="color: #1A2E20; opacity: 0.7;">Platform fee (10%)</span>
+                  <span style="color: #1A2E20;">₱{{ platformFee().toLocaleString() }}</span>
+                </div>
+                <div class="border-t pt-2 mt-1 flex justify-between" style="border-color: #F2E8D9;">
+                  <span class="font-bold text-sm" style="color: #1A2E20;">Total</span>
+                  <span class="font-bold text-sm" style="color: #1E5C3A;">
+                    ₱{{ totalAmount().toLocaleString() }}
+                  </span>
+                </div>
+              </div>
+            }
+          </div>
+
+          <!-- Info -->
+          <div class="rounded-2xl p-4 text-xs leading-relaxed"
+               style="background-color: rgba(30,92,58,0.08); color: #1E5C3A;">
+            💡 Payment is held in escrow and only released to the provider after you confirm the job is complete.
+          </div>
+
+        </div>
+      </div>
+    </div>
+  }
+
+</main>
+
+<app-footer />

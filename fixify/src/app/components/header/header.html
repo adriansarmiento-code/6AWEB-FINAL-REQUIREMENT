@@ -1,0 +1,149 @@
+<header
+  class="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
+  [style.background-color]="scrolled() ? '#1B3A6B' : 'transparent'"
+  [style.box-shadow]="scrolled() ? '0 2px 24px rgba(27,58,107,0.15)' : 'none'"
+  [style.backdrop-filter]="scrolled() ? 'blur(12px)' : 'none'">
+
+  <div class="max-w-7xl mx-auto px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16 lg:h-20">
+
+      <!-- Logo -->
+      <a routerLink="/" class="flex items-center gap-2.5 group">
+        <div class="w-8 h-8 rounded-lg flex items-center justify-center text-white text-sm font-black"
+             style="background: linear-gradient(135deg, #F08C00, #e07800);">
+          F
+        </div>
+        <span class="font-black text-lg tracking-tight text-white"
+              style="font-family: 'Fraunces', serif;">
+          Fixify
+        </span>
+      </a>
+
+      <!-- Desktop Nav -->
+      <nav class="hidden lg:flex items-center gap-1">
+        <a routerLink="/"
+           class="px-4 py-2 rounded-xl text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-all">
+          Home
+        </a>
+        <a routerLink="/services"
+           class="px-4 py-2 rounded-xl text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-all">
+          Services
+        </a>
+        <a routerLink="/about"
+           class="px-4 py-2 rounded-xl text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-all">
+          About
+        </a>
+        <a routerLink="/contact"
+           class="px-4 py-2 rounded-xl text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-all">
+          Contact
+        </a>
+      </nav>
+
+      <!-- Desktop Auth -->
+      <div class="hidden lg:flex items-center gap-3">
+        @if (!authService.isAuthenticated()) {
+          <a routerLink="/login"
+             class="px-4 py-2 text-sm font-medium text-white/80 hover:text-white transition-all">
+            Login
+          </a>
+          <a routerLink="/signup"
+             class="px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all relative overflow-hidden group"
+             style="background-color: #F08C00;">
+            <span class="relative z-10">Sign Up</span>
+            <div class="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+          </a>
+        } @else {
+          <!-- Avatar + name -->
+          <button (click)="goToMessages()"
+                  class="px-4 py-2 rounded-xl text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-all">
+            Messages
+          </button>
+          <button (click)="goToDashboard()"
+                  class="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-white/10 transition-all">
+            @if (authService.user()?.profileImage) {
+              <img [src]="authService.user()!.profileImage!"
+                   class="w-7 h-7 rounded-lg object-cover" />
+            } @else {
+              <div class="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold text-white"
+                   style="background-color: #F08C00;">
+                {{ authService.user()!.name.charAt(0).toUpperCase() }}
+              </div>
+            }
+            <span class="text-sm font-medium text-white">
+              {{ authService.user()!.name.split(' ')[0] }}
+            </span>
+          </button>
+          <button (click)="logout()"
+                  class="px-4 py-2 rounded-xl text-sm font-medium text-white/60 hover:text-white hover:bg-white/10 transition-all">
+            Logout
+          </button>
+        }
+      </div>
+
+      <!-- Mobile Hamburger -->
+      <button (click)="toggleMobile()"
+              class="lg:hidden flex flex-col gap-1.5 p-2 rounded-xl hover:bg-white/10 transition-all">
+        <span class="w-5 h-0.5 bg-white transition-all duration-300"
+              [style.transform]="mobileOpen() ? 'rotate(45deg) translate(3px, 3px)' : 'none'"></span>
+        <span class="w-5 h-0.5 bg-white transition-all duration-300"
+              [style.opacity]="mobileOpen() ? '0' : '1'"></span>
+        <span class="w-5 h-0.5 bg-white transition-all duration-300"
+              [style.transform]="mobileOpen() ? 'rotate(-45deg) translate(3px, -3px)' : 'none'"></span>
+      </button>
+
+    </div>
+  </div>
+
+  <!-- Mobile Menu -->
+  @if (mobileOpen()) {
+    <div class="lg:hidden border-t border-white/10 animate-fade-in"
+         style="background-color: #1B3A6B;">
+      <div class="px-6 py-4 flex flex-col gap-1">
+        <a routerLink="/" (click)="mobileOpen.set(false)"
+           class="px-4 py-3 rounded-xl text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-all">
+          Home
+        </a>
+        <a routerLink="/services" (click)="mobileOpen.set(false)"
+           class="px-4 py-3 rounded-xl text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-all">
+          Services
+        </a>
+        <a routerLink="/about" (click)="mobileOpen.set(false)"
+           class="px-4 py-3 rounded-xl text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-all">
+          About
+        </a>
+        <a routerLink="/contact" (click)="mobileOpen.set(false)"
+           class="px-4 py-3 rounded-xl text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-all">
+          Contact
+        </a>
+
+        <div class="border-t border-white/10 my-2"></div>
+
+        @if (!authService.isAuthenticated()) {
+          <a routerLink="/login" (click)="mobileOpen.set(false)"
+             class="px-4 py-3 rounded-xl text-sm font-medium text-white/80 hover:bg-white/10 transition-all">
+            Login
+          </a>
+          <a routerLink="/signup" (click)="mobileOpen.set(false)"
+             class="px-4 py-3 rounded-xl text-sm font-semibold text-white text-center transition-all"
+             style="background-color: #F08C00;">
+            Sign Up
+          </a>
+        } @else {
+          <button (click)="goToMessages()"
+                  class="px-4 py-3 rounded-xl text-sm font-medium text-white/80 hover:bg-white/10 transition-all text-left">
+            Messages
+          </button>
+          <button (click)="goToDashboard()"
+                  class="px-4 py-3 rounded-xl text-sm font-medium text-white/80 hover:bg-white/10 transition-all text-left">
+            Dashboard
+          </button>
+          <button (click)="logout()"
+                  class="px-4 py-3 rounded-xl text-sm font-medium text-white/60 hover:bg-white/10 transition-all text-left">
+            Logout
+          </button>
+        }
+      </div>
+    </div>
+  }
+
+</header>

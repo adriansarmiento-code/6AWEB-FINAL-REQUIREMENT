@@ -1,0 +1,173 @@
+<app-header />
+
+<div style="background-color: #F2E8D9; height: calc(100vh - 64px);" class="flex overflow-hidden">
+
+  <!-- Sidebar -->
+  <aside class="w-full sm:w-80 flex-shrink-0 bg-white border-r flex flex-col"
+         style="border-color: #F2E8D9;"
+         [class.hidden]="activeConversationUserId() !== null"
+         [class.sm:flex]="true">
+
+    <div class="p-4 border-b" style="border-color: #F2E8D9;">
+      <h2 class="font-bold text-lg" style="color: #1A2E20;">Messages</h2>
+      <p class="text-xs mt-0.5" style="color: #1A2E20; opacity: 0.5;">Provider inbox</p>
+    </div>
+
+    @if (loadingConversations()) {
+      <div class="flex items-center justify-center flex-1">
+        <div class="w-7 h-7 rounded-full border-4 border-[#7AAE8E] border-t-[#1E5C3A] animate-spin"></div>
+      </div>
+    } @else if (conversations().length === 0) {
+      <div class="flex flex-col items-center justify-center flex-1 px-6 text-center">
+        <div class="text-4xl mb-3">💬</div>
+        <p class="font-medium mb-1" style="color: #1A2E20;">No messages yet</p>
+        <p class="text-xs" style="color: #1A2E20; opacity: 0.6;">
+          Messages from customers will appear here.
+        </p>
+      </div>
+    } @else {
+      <div class="overflow-y-auto flex-1">
+        @for (conv of conversations(); track conv._id) {
+          <button (click)="openConversation(getOtherParticipant(conv)?._id || '')"
+                  class="w-full flex items-center gap-3 px-4 py-3 border-b text-left transition-all hover:bg-[#F2E8D9]"
+                  style="border-color: #F2E8D9;"
+                  [style.background-color]="activeConversationUserId() === getOtherParticipant(conv)?._id ? '#F2E8D9' : 'transparent'">
+
+            @if (getOtherImage(conv)) {
+              <img [src]="getOtherImage(conv)!"
+                   class="w-10 h-10 rounded-xl object-cover flex-shrink-0" />
+            } @else {
+              <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white text-sm font-bold flex-shrink-0"
+                   style="background: linear-gradient(135deg, #C9A87C, #7AAE8E);">
+                {{ getOtherInitial(conv) }}
+              </div>
+            }
+
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center justify-between mb-0.5">
+                <p class="font-medium text-sm truncate" style="color: #1A2E20;">
+                  {{ getOtherName(conv) }}
+                </p>
+                <span class="text-xs flex-shrink-0 ml-2" style="color: #1A2E20; opacity: 0.4;">
+                  {{ formatTime(conv.updatedAt) }}
+                </span>
+              </div>
+              <p class="text-xs truncate" style="color: #1A2E20; opacity: 0.6;">
+                {{ getLastMessage(conv) }}
+              </p>
+            </div>
+
+            @if (conv.unreadCount && conv.unreadCount > 0) {
+              <span class="w-5 h-5 rounded-full text-xs text-white flex items-center justify-center flex-shrink-0 font-medium"
+                    style="background-color: #1A2E20;">
+                {{ conv.unreadCount }}
+              </span>
+            }
+          </button>
+        }
+      </div>
+    }
+  </aside>
+
+  <!-- Chat Area -->
+  <div class="flex-1 flex flex-col"
+       [class.hidden]="activeConversationUserId() === null"
+       [class.sm:flex]="true">
+
+    @if (!activeConversationUserId()) {
+      <div class="flex-1 flex flex-col items-center justify-center text-center px-6">
+        <div class="text-5xl mb-4">💬</div>
+        <h3 class="font-bold text-lg mb-2" style="color: #1A2E20;">Select a conversation</h3>
+        <p class="text-sm" style="color: #1A2E20; opacity: 0.6;">
+          Choose a conversation from the list to start messaging.
+        </p>
+      </div>
+    }
+
+    @if (activeConversationUserId()) {
+      <!-- Header -->
+      <div class="flex items-center gap-3 px-4 py-3 bg-white border-b flex-shrink-0"
+           style="border-color: #F2E8D9;">
+        <button (click)="activeConversationUserId.set(null)"
+                class="sm:hidden text-xl"
+                style="color: #1A2E20;">←</button>
+        @if (activeConversation()) {
+          @if (getOtherImage(activeConversation()!)) {
+            <img [src]="getOtherImage(activeConversation()!)!"
+                 class="w-9 h-9 rounded-xl object-cover" />
+          } @else {
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center text-white text-sm font-bold"
+                 style="background: linear-gradient(135deg, #C9A87C, #7AAE8E);">
+              {{ getOtherInitial(activeConversation()!) }}
+            </div>
+          }
+          <div>
+            <p class="font-semibold text-sm" style="color: #1A2E20;">
+              {{ getOtherName(activeConversation()!) }}
+            </p>
+            <p class="text-xs" style="color: #1A2E20; opacity: 0.5;">Customer</p>
+          </div>
+        }
+      </div>
+
+      <!-- Messages -->
+      <div class="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-3">
+        @if (loadingMessages()) {
+          <div class="flex items-center justify-center flex-1">
+            <div class="w-7 h-7 rounded-full border-4 border-[#7AAE8E] border-t-[#1E5C3A] animate-spin"></div>
+          </div>
+        }
+        @if (!loadingMessages() && messages().length === 0) {
+          <div class="flex flex-col items-center justify-center flex-1 text-center">
+            <div class="text-4xl mb-2">👋</div>
+            <p class="text-sm" style="color: #1A2E20; opacity: 0.6;">No messages yet. Say hello!</p>
+          </div>
+        }
+        @for (msg of messages(); track msg._id) {
+          <div class="flex"
+               [class.justify-end]="isMyMessage(msg)"
+               [class.justify-start]="!isMyMessage(msg)">
+            <div class="max-w-xs sm:max-w-md px-4 py-2.5 rounded-2xl text-sm"
+                 [style.background-color]="isMyMessage(msg) ? '#1A2E20' : 'white'"
+                 [style.color]="isMyMessage(msg) ? 'white' : '#1A2E20'"
+                 [style.border]="isMyMessage(msg) ? 'none' : '1px solid #F2E8D9'"
+                 [style.border-radius]="isMyMessage(msg) ? '18px 18px 4px 18px' : '18px 18px 18px 4px'">
+              <p class="leading-relaxed">{{ msg.content }}</p>
+              <p class="text-xs mt-1"
+                 [style.opacity]="isMyMessage(msg) ? '0.5' : '0.4'"
+                 [class.text-right]="isMyMessage(msg)">
+                {{ formatTime(msg.createdAt) }}
+              </p>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Input -->
+      <div class="bg-white border-t px-4 py-3 flex items-end gap-2 flex-shrink-0"
+           style="border-color: #F2E8D9;">
+        <textarea [ngModel]="newMessage()"
+                  (ngModelChange)="newMessage.set($event)"
+                  (keydown)="onKeyDown($event)"
+                  name="newMessage"
+                  rows="1"
+                  placeholder="Type a message..."
+                  class="flex-1 px-4 py-2.5 rounded-xl border text-sm outline-none resize-none"
+                  style="border-color: #F2E8D9; color: #1A2E20; max-height: 120px;"
+                  onfocus="this.style.borderColor='#1A2E20'"
+                  onblur="this.style.borderColor='#F2E8D9'"></textarea>
+        <button (click)="sendMessage()"
+                [disabled]="sendingMessage() || !newMessage().trim()"
+                class="w-10 h-10 rounded-xl flex items-center justify-center text-white flex-shrink-0 disabled:opacity-50 transition-all"
+                style="background-color: #1A2E20;">
+          @if (sendingMessage()) {
+            <span class="w-4 h-4 rounded-full border-2 border-white border-t-transparent animate-spin"></span>
+          } @else {
+            <span class="text-lg">↑</span>
+          }
+        </button>
+      </div>
+    }
+  </div>
+
+</div>

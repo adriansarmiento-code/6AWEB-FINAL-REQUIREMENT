@@ -1,0 +1,259 @@
+<main class="min-h-screen flex noise-overlay relative overflow-hidden"
+      style="background: linear-gradient(135deg, #0f2347 0%, #1B3A6B 100%);">
+
+  <!-- Mesh orbs -->
+  <div class="absolute inset-0 pointer-events-none">
+    <div class="absolute w-96 h-96 rounded-full"
+         style="background: radial-gradient(circle, rgba(240,140,0,0.1) 0%, transparent 70%);
+                top: -10%; right: -5%;"></div>
+    <div class="absolute w-64 h-64 rounded-full"
+         style="background: radial-gradient(circle, rgba(78,168,222,0.1) 0%, transparent 70%);
+                bottom: 10%; left: -5%;"></div>
+  </div>
+
+  <!-- Back link -->
+  <a routerLink="/"
+     class="absolute top-6 left-6 z-20 flex items-center gap-2 text-sm font-medium transition-all"
+     style="color: rgba(249,246,240,0.5);"
+     onmouseover="this.style.color='white'"
+     onmouseout="this.style.color='rgba(249,246,240,0.5)'">
+    ← Back to Fixify
+  </a>
+
+  <div class="relative z-10 flex w-full">
+
+    <!-- Left panel -->
+    <div class="hidden lg:flex lg:w-5/12 flex-col justify-between p-16">
+      <div>
+        <div class="flex items-center gap-2.5 mb-20">
+          <div class="w-9 h-9 rounded-xl flex items-center justify-center text-white font-black"
+               style="background: linear-gradient(135deg, #F08C00, #e07800);">F</div>
+          <span class="font-black text-xl text-white" style="font-family: 'Fraunces', serif;">Fixify</span>
+        </div>
+
+        <div class="mb-6 inline-flex items-center gap-2 px-3 py-1.5 rounded-full border"
+             style="border-color: rgba(240,140,0,0.3); background-color: rgba(240,140,0,0.08);">
+          <div class="w-1.5 h-1.5 rounded-full" style="background-color: #F08C00;"></div>
+          <span class="text-xs font-bold uppercase tracking-widest" style="color: #F08C00;">
+            Join Fixify
+          </span>
+        </div>
+
+        <h1 class="text-5xl font-black text-white leading-tight mb-6"
+            style="font-family: 'Fraunces', serif;">
+          Start your<br />
+          <span style="-webkit-background-clip: text; -webkit-text-fill-color: transparent;
+                        background-image: linear-gradient(90deg, #F08C00, #ffb347);">
+            Fixify journey.
+          </span>
+        </h1>
+        <p class="text-base leading-relaxed max-w-sm"
+           style="color: rgba(249,246,240,0.6);">
+          Whether you need a service or offer one — Fixify connects you with trusted professionals in Angeles City.
+        </p>
+      </div>
+
+      <!-- Feature list -->
+      <div class="flex flex-col gap-4">
+        @for (feat of [
+          {icon: '🛡️', text: 'All providers are verified by our team'},
+          {icon: '🔒', text: 'Escrow payments — pay only when done'},
+          {icon: '⭐', text: 'Real reviews from real customers'}
+        ]; track feat.text) {
+          <div class="flex items-center gap-3">
+            <span class="text-base">{{ feat.icon }}</span>
+            <span class="text-sm" style="color: rgba(249,246,240,0.6);">{{ feat.text }}</span>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Right panel — form -->
+    <div class="w-full lg:w-7/12 flex items-center justify-center p-6 lg:p-16 overflow-y-auto">
+      <div class="w-full max-w-lg py-16 lg:py-0">
+
+        <div class="rounded-3xl p-8 border-2"
+             style="background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.1);
+                    backdrop-filter: blur(20px);">
+
+          <!-- Mobile logo -->
+          <div class="flex items-center gap-2 mb-6 lg:hidden">
+            <div class="w-8 h-8 rounded-lg flex items-center justify-center text-white font-black text-sm"
+                 style="background: linear-gradient(135deg, #F08C00, #e07800);">F</div>
+            <span class="font-black text-lg text-white" style="font-family: 'Fraunces', serif;">Fixify</span>
+          </div>
+
+          <h2 class="text-2xl font-black text-white mb-1"
+              style="font-family: 'Fraunces', serif;">Create an account</h2>
+          <p class="text-sm mb-6" style="color: rgba(249,246,240,0.5);">
+            Fill in your details to get started
+          </p>
+
+          <!-- Role Toggle -->
+          <div class="flex rounded-2xl p-1 mb-6"
+               style="background: rgba(255,255,255,0.07);">
+            <button type="button"
+                    (click)="setRole('customer')"
+                    class="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all"
+                    [style.background-color]="role() === 'customer' ? '#F08C00' : 'transparent'"
+                    [style.color]="role() === 'customer' ? 'white' : 'rgba(249,246,240,0.5)'">
+              I need services
+            </button>
+            <button type="button"
+                    (click)="setRole('provider')"
+                    class="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all"
+                    [style.background-color]="role() === 'provider' ? '#F08C00' : 'transparent'"
+                    [style.color]="role() === 'provider' ? 'white' : 'rgba(249,246,240,0.5)'">
+              I offer services
+            </button>
+          </div>
+
+          @if (error()) {
+            <div class="mb-5 px-4 py-3 rounded-2xl text-sm font-medium animate-fade-in"
+                 style="background-color: rgba(220,38,38,0.15); color: #fca5a5;
+                        border: 1px solid rgba(220,38,38,0.3);">
+              {{ error() }}
+            </div>
+          }
+
+          <form (ngSubmit)="onSubmit()">
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+              <div>
+                <label class="block text-xs font-semibold uppercase tracking-wider mb-2"
+                       style="color: rgba(249,246,240,0.5);">Full Name</label>
+                <input type="text"
+                       [ngModel]="name()"
+                       (ngModelChange)="name.set($event)"
+                       name="name"
+                       placeholder="Juan dela Cruz"
+                       required
+                       class="w-full px-4 py-3 rounded-2xl text-sm outline-none transition-all"
+                       style="background: rgba(255,255,255,0.07); border: 1.5px solid rgba(255,255,255,0.12); color: white;"
+                       onfocus="this.style.borderColor='#F08C00'; this.style.background='rgba(255,255,255,0.1)'"
+                       onblur="this.style.borderColor='rgba(255,255,255,0.12)'; this.style.background='rgba(255,255,255,0.07)'" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold uppercase tracking-wider mb-2"
+                       style="color: rgba(249,246,240,0.5);">Phone Number</label>
+                <input type="tel"
+                       [ngModel]="phone()"
+                       (ngModelChange)="phone.set($event)"
+                       name="phone"
+                       placeholder="09xxxxxxxxx"
+                       required
+                       class="w-full px-4 py-3 rounded-2xl text-sm outline-none transition-all"
+                       style="background: rgba(255,255,255,0.07); border: 1.5px solid rgba(255,255,255,0.12); color: white;"
+                       onfocus="this.style.borderColor='#F08C00'; this.style.background='rgba(255,255,255,0.1)'"
+                       onblur="this.style.borderColor='rgba(255,255,255,0.12)'; this.style.background='rgba(255,255,255,0.07)'" />
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <label class="block text-xs font-semibold uppercase tracking-wider mb-2"
+                     style="color: rgba(249,246,240,0.5);">Email Address</label>
+              <input type="email"
+                     [ngModel]="email()"
+                     (ngModelChange)="email.set($event)"
+                     name="email"
+                     placeholder="you@example.com"
+                     required
+                     class="w-full px-4 py-3 rounded-2xl text-sm outline-none transition-all"
+                     style="background: rgba(255,255,255,0.07); border: 1.5px solid rgba(255,255,255,0.12); color: white;"
+                     onfocus="this.style.borderColor='#F08C00'; this.style.background='rgba(255,255,255,0.1)'"
+                     onblur="this.style.borderColor='rgba(255,255,255,0.12)'; this.style.background='rgba(255,255,255,0.07)'" />
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+              <div>
+                <label class="block text-xs font-semibold uppercase tracking-wider mb-2"
+                       style="color: rgba(249,246,240,0.5);">Password</label>
+                <input type="password"
+                       [ngModel]="password()"
+                       (ngModelChange)="password.set($event)"
+                       name="password"
+                       placeholder="Min. 8 characters"
+                       required
+                       class="w-full px-4 py-3 rounded-2xl text-sm outline-none transition-all"
+                       style="background: rgba(255,255,255,0.07); border: 1.5px solid rgba(255,255,255,0.12); color: white;"
+                       onfocus="this.style.borderColor='#F08C00'; this.style.background='rgba(255,255,255,0.1)'"
+                       onblur="this.style.borderColor='rgba(255,255,255,0.12)'; this.style.background='rgba(255,255,255,0.07)'" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold uppercase tracking-wider mb-2"
+                       style="color: rgba(249,246,240,0.5);">Confirm Password</label>
+                <input type="password"
+                       [ngModel]="confirmPassword()"
+                       (ngModelChange)="confirmPassword.set($event)"
+                       name="confirmPassword"
+                       placeholder="••••••••"
+                       required
+                       class="w-full px-4 py-3 rounded-2xl text-sm outline-none transition-all"
+                       style="background: rgba(255,255,255,0.07); border: 1.5px solid rgba(255,255,255,0.12); color: white;"
+                       onfocus="this.style.borderColor='#F08C00'; this.style.background='rgba(255,255,255,0.1)'"
+                       onblur="this.style.borderColor='rgba(255,255,255,0.12)'; this.style.background='rgba(255,255,255,0.07)'" />
+              </div>
+            </div>
+
+            <!-- Provider extras -->
+            @if (role() === 'provider') {
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4 animate-fade-in">
+                <div>
+                  <label class="block text-xs font-semibold uppercase tracking-wider mb-2"
+                         style="color: rgba(249,246,240,0.5);">Service Category</label>
+                  <select [ngModel]="category()"
+                          (ngModelChange)="category.set($event)"
+                          name="category"
+                          class="w-full px-4 py-3 rounded-2xl text-sm outline-none transition-all"
+                          style="background: rgba(255,255,255,0.07); border: 1.5px solid rgba(255,255,255,0.12); color: white;"
+                          onfocus="this.style.borderColor='#F08C00'"
+                          onblur="this.style.borderColor='rgba(255,255,255,0.12)'">
+                    @for (cat of categories; track cat.value) {
+                      <option [value]="cat.value" style="background-color: #1B3A6B;">
+                        {{ cat.label }}
+                      </option>
+                    }
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold uppercase tracking-wider mb-2"
+                         style="color: rgba(249,246,240,0.5);">Years Experience</label>
+                  <input type="number"
+                         [ngModel]="yearsExperience()"
+                         (ngModelChange)="yearsExperience.set($event)"
+                         name="yearsExperience"
+                         min="0"
+                         placeholder="0"
+                         class="w-full px-4 py-3 rounded-2xl text-sm outline-none transition-all"
+                         style="background: rgba(255,255,255,0.07); border: 1.5px solid rgba(255,255,255,0.12); color: white;"
+                         onfocus="this.style.borderColor='#F08C00'; this.style.background='rgba(255,255,255,0.1)'"
+                         onblur="this.style.borderColor='rgba(255,255,255,0.12)'; this.style.background='rgba(255,255,255,0.07)'" />
+                </div>
+              </div>
+            }
+
+            <button type="submit"
+                    [disabled]="loading()"
+                    class="w-full py-3.5 rounded-2xl font-bold text-white relative overflow-hidden group transition-all disabled:opacity-60 mt-2"
+                    style="background-color: #F08C00;">
+              <span class="relative z-10">
+                @if (loading()) { Creating account... } @else { Create Account }
+              </span>
+              <div class="absolute inset-0 bg-white/15 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+            </button>
+
+          </form>
+
+          <div class="mt-6 pt-6 border-t" style="border-color: rgba(255,255,255,0.08);">
+            <p class="text-sm text-center" style="color: rgba(249,246,240,0.45);">
+              Already have an account?
+              <a routerLink="/login" class="font-semibold ml-1" style="color: #F08C00;">Sign in</a>
+            </p>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
