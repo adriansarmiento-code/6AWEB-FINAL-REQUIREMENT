@@ -74,18 +74,16 @@
       </div>
 
       <!-- Right: value cards -->
-      <div class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4 animate-fade-up delay-200">
-        @for (val of [
-          {icon: '🔍', title: 'Verified Providers', desc: 'Every provider is manually reviewed and approved before appearing on our platform.', color: '#4EA8DE'},
-          {icon: '🔒', title: 'Escrow Payments', desc: 'Pay securely upfront. Funds are only released after you confirm the job is complete.', color: '#2D9B6F'},
-          {icon: '⭐', title: 'Real Reviews', desc: 'Only customers who completed a booking can leave a review. No fakes, ever.', color: '#F08C00'},
-          {icon: '💬', title: 'Direct Messaging', desc: 'Chat directly with your provider before and during the job. Full transparency.', color: '#1B3A6B'}
-        ]; track val.title) {
+<div class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4 animate-fade-up delay-200">
+        @for (val of values; track val.title) {
           <div class="rounded-3xl p-6 border-2 bg-white hover:shadow-md transition-all"
                style="border-color: rgba(27,58,107,0.08);">
-            <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl mb-4"
+            <div class="w-12 h-12 rounded-2xl flex items-center justify-center mb-4"
                  [style.background-color]="val.color + '15'">
-              {{ val.icon }}
+              <svg class="w-6 h-6" [style.color]="val.color" fill="none" stroke="currentColor"
+                   stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" [attr.d]="val.icon"/>
+              </svg>
             </div>
             <h3 class="font-black mb-2" style="color: #1B3A6B;">{{ val.title }}</h3>
             <p class="text-sm leading-relaxed" style="color: #3D4A5C; opacity: 0.65;">

@@ -54,6 +54,7 @@
           </a>
         } @else {
           <!-- Avatar + name -->
+           <app-notification-bell />
           <button (click)="goToMessages()"
                   class="px-4 py-2 rounded-xl text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-all">
             Messages
@@ -129,6 +130,7 @@
             Sign Up
           </a>
         } @else {
+          <app-notification-bell />
           <button (click)="goToMessages()"
                   class="px-4 py-3 rounded-xl text-sm font-medium text-white/80 hover:bg-white/10 transition-all text-left">
             Messages

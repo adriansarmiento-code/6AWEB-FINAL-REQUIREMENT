@@ -1,5 +1,5 @@
 import { Component, inject, signal, OnInit, AfterViewChecked, ElementRef, ViewChild, OnDestroy } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
@@ -110,7 +110,12 @@ export class ProviderMessagesComponent implements OnInit, AfterViewChecked, OnDe
     return sender === me;
   }
 
-  logout(): void { this.authService.logout(); }
+  private router = inject(Router);
+
+logout(): void {
+  this.authService.logout();
+  this.router.navigate(['/login']);
+}
 
   formatTime(d?: string): string {
     if (!d) return '';

@@ -91,7 +91,12 @@ export class SearchComponent implements OnInit {
     this.searchMaxPrice.set(0);
     this.loadProviders();
   }
-  bookProvider(providerId: string): void {
+
+bookProvider(providerId: string): void {
+  if (!this.authService.isAuthenticated()) {
+    this.router.navigate(['/provider', providerId]);
+    return;
+  }
   this.router.navigate(['/booking', providerId]);
 }
 

@@ -29,7 +29,6 @@ export class ProviderDashboardComponent implements OnInit {
 
   uploadingImage = signal(false);
 
-  // Settings
   settingsName = signal('');
   settingsPhone = signal('');
   settingsBio = signal('');
@@ -40,7 +39,6 @@ export class ProviderDashboardComponent implements OnInit {
   settingsSuccess = signal('');
   settingsError = signal('');
 
-  // Services
   services = signal<ProviderService[]>([]);
   showAddServiceModal = signal(false);
   editingServiceIndex = signal<number | null>(null);
@@ -49,7 +47,6 @@ export class ProviderDashboardComponent implements OnInit {
   serviceFormDesc = signal('');
   savingService = signal(false);
 
-  // Reviews
   replyingToReview = signal<string | null>(null);
   replyText = signal('');
   submittingReply = signal(false);
@@ -59,12 +56,12 @@ export class ProviderDashboardComponent implements OnInit {
     'Marquee Mall Area', 'Clark',
   ];
 
-  readonly tabs: { id: ProviderTab; label: string; icon: string }[] = [
-    { id: 'bookings', label: 'Jobs', icon: '📋' },
-    { id: 'earnings', label: 'Earnings', icon: '💰' },
-    { id: 'reviews', label: 'Reviews', icon: '⭐' },
-    { id: 'services', label: 'Services', icon: '🔧' },
-    { id: 'settings', label: 'Settings', icon: '⚙️' },
+  readonly tabs: { id: ProviderTab; label: string }[] = [
+    { id: 'bookings',  label: 'Jobs'      },
+    { id: 'earnings',  label: 'Earnings'  },
+    { id: 'reviews',   label: 'Reviews'   },
+    { id: 'services',  label: 'Services'  },
+    { id: 'settings',  label: 'Settings'  },
   ];
 
   ngOnInit(): void {
@@ -144,7 +141,6 @@ export class ProviderDashboardComponent implements OnInit {
       .reduce((sum, b) => sum + b.service.price, 0)
   );
 
-  // Photo upload
   triggerImageInput(): void { this.imageInput.nativeElement.click(); }
 
   handleImageUpload(event: Event): void {
@@ -152,16 +148,12 @@ export class ProviderDashboardComponent implements OnInit {
     if (!file) return;
     if (file.size > 5 * 1024 * 1024) { alert('Image must be under 5MB.'); return; }
     if (!file.type.startsWith('image/')) { alert('Please select an image file.'); return; }
-
     this.uploadingImage.set(true);
     const reader = new FileReader();
     reader.onload = () => {
       const base64 = reader.result as string;
       this.apiService.uploadProfileImage(base64).subscribe({
-        next: (res) => {
-          this.authService.updateUser(res.user);
-          this.uploadingImage.set(false);
-        },
+        next: (res) => { this.authService.updateUser(res.user); this.uploadingImage.set(false); },
         error: () => { alert('Failed to upload image.'); this.uploadingImage.set(false); },
       });
     };
@@ -169,7 +161,6 @@ export class ProviderDashboardComponent implements OnInit {
     (event.target as HTMLInputElement).value = '';
   }
 
-  // Bookings
   getCustomerName(b: Booking): string {
     const c = b.customer;
     return typeof c === 'object' && c !== null ? (c as User).name : 'Customer';
@@ -196,7 +187,6 @@ export class ProviderDashboardComponent implements OnInit {
     }
   }
 
-  // Services
   openAddService(): void {
     this.editingServiceIndex.set(null);
     this.serviceFormName.set('');
@@ -248,7 +238,6 @@ export class ProviderDashboardComponent implements OnInit {
     });
   }
 
-  // Reviews
   startReply(id: string): void { this.replyingToReview.set(id); this.replyText.set(''); }
   cancelReply(): void { this.replyingToReview.set(null); this.replyText.set(''); }
 
@@ -270,7 +259,6 @@ export class ProviderDashboardComponent implements OnInit {
     return Array(5).fill('').map((_, i) => i < Math.round(rating) ? '★' : '☆');
   }
 
-  // Settings
   saveSettings(): void {
     if (!this.settingsName().trim()) { this.settingsError.set('Name is required.'); return; }
     this.savingSettings.set(true);

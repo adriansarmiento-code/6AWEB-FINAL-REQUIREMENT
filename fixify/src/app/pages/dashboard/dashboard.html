@@ -41,7 +41,7 @@
                   style="background: rgba(255,255,255,0.1); color: rgba(249,246,240,0.8);"
                   onmouseover="this.style.background='rgba(255,255,255,0.18)'"
                   onmouseout="this.style.background='rgba(255,255,255,0.1)'">
-            {{ uploadingImage() ? '⏳ Uploading...' : 'Change Photo' }}
+            {{ uploadingImage() ? 'Uploading...' : 'Change Photo' }}
           </button>
           <input #imageInput type="file" accept="image/jpeg,image/jpg,image/png,image/gif"
                  (change)="handleImageUpload($event)" class="hidden" />
@@ -92,7 +92,7 @@
     </div>
 
     <!-- ═══════════════════ TABS ═══ -->
-    <div class="flex gap-1 border-b mb-6 overflow-x-auto"
+<div class="flex gap-1 border-b mb-6 overflow-x-auto"
          style="border-color: rgba(27,58,107,0.1);">
       @for (tab of tabs; track tab.id) {
         <button (click)="activeTab.set(tab.id)"
@@ -100,7 +100,7 @@
                 [style.border-bottom-color]="activeTab() === tab.id ? '#1B3A6B' : 'transparent'"
                 [style.color]="activeTab() === tab.id ? '#1B3A6B' : '#3D4A5C'"
                 [style.opacity]="activeTab() === tab.id ? '1' : '0.5'">
-          {{ tab.icon }} {{ tab.label }}
+          {{ tab.label }}
         </button>
       }
     </div>
@@ -114,7 +114,6 @@
       } @else if (bookings().length === 0) {
         <div class="flex flex-col items-center justify-center py-20 rounded-3xl border-2 bg-white"
              style="border-color: rgba(27,58,107,0.08);">
-          <div class="text-5xl mb-4">📋</div>
           <p class="font-bold text-lg mb-1" style="color: #1B3A6B;">No bookings yet</p>
           <p class="text-sm mb-5" style="color: #3D4A5C; opacity: 0.5;">
             Browse services and book your first provider.
@@ -222,7 +221,14 @@
         </div>
         @if (bookings().length === 0) {
           <div class="flex flex-col items-center justify-center py-12">
-            <div class="text-4xl mb-3">💳</div>
+            <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-3"
+                 style="background-color: rgba(27,58,107,0.06);">
+              <svg class="w-7 h-7" style="color: #1B3A6B; opacity: 0.3;" fill="none" stroke="currentColor"
+                   stroke-width="1.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z"/>
+              </svg>
+            </div>
             <p class="font-medium" style="color: #1B3A6B;">No transactions yet</p>
           </div>
         } @else {

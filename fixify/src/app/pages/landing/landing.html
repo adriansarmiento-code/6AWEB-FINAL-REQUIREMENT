@@ -4,7 +4,6 @@
 <section class="relative min-h-screen flex items-center overflow-hidden noise-overlay diagonal-cut"
          style="background: linear-gradient(135deg, #0f2347 0%, #1B3A6B 45%, #1a3d5c 100%);">
 
-  <!-- Mesh orbs -->
   <div class="absolute inset-0 pointer-events-none overflow-hidden">
     <div class="absolute w-[600px] h-[600px] rounded-full"
          style="background: radial-gradient(circle, rgba(240,140,0,0.12) 0%, transparent 70%);
@@ -22,7 +21,6 @@
 
       <!-- Left content -->
       <div class="lg:col-span-7">
-        <!-- Eyebrow -->
         <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-8 animate-fade-in"
              style="border-color: rgba(240,140,0,0.3); background-color: rgba(240,140,0,0.08);">
           <div class="w-1.5 h-1.5 rounded-full" style="background-color: #F08C00;"></div>
@@ -30,7 +28,6 @@
                 style="color: #F08C00;">Serving Angeles City, Pampanga</span>
         </div>
 
-        <!-- Headline -->
         <h1 class="text-5xl sm:text-6xl lg:text-7xl font-black leading-[0.95] tracking-tight text-white mb-6 animate-fade-up"
             style="font-family: 'Fraunces', serif;">
           Home repairs,<br />
@@ -46,13 +43,12 @@
           Book in minutes, pay securely, and leave reviews that matter.
         </p>
 
-        <!-- CTA row -->
         <div class="flex flex-wrap gap-4 animate-fade-up delay-200">
           <a routerLink="/search"
              class="relative inline-flex items-center gap-2 px-7 py-4 rounded-xl font-bold text-white overflow-hidden group transition-all"
              style="background-color: #F08C00;">
             <span class="relative z-10">Browse Services</span>
-            <span class="relative z-10 text-lg group-hover:translate-x-1 transition-transform">→</span>
+            <svg class="relative z-10 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
             <div class="absolute inset-0 bg-white/15 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
           </a>
           @if (!authService.isAuthenticated()) {
@@ -69,25 +65,26 @@
                style="border-color: rgba(249,246,240,0.25); color: white;"
                onmouseover="this.style.borderColor='rgba(249,246,240,0.6)'"
                onmouseout="this.style.borderColor='rgba(249,246,240,0.25)'">
-              My Dashboard →
+              My Dashboard
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
             </a>
           }
         </div>
 
         <!-- Trust badges -->
         <div class="flex flex-wrap gap-6 mt-12 animate-fade-up delay-300">
-          @for (badge of [
-            {icon: '✓', label: 'Verified Providers'},
-            {icon: '🔒', label: 'Secure Payments'},
-            {icon: '⭐', label: 'Real Reviews'}
-          ]; track badge.label) {
-            <div class="flex items-center gap-2">
-              <span class="text-sm" style="color: #2D9B6F;">{{ badge.icon }}</span>
-              <span class="text-sm font-medium" style="color: rgba(249,246,240,0.6);">
-                {{ badge.label }}
-              </span>
-            </div>
-          }
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4 flex-shrink-0" style="color: #2D9B6F;" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <span class="text-sm font-medium" style="color: rgba(249,246,240,0.6);">Verified Providers</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4 flex-shrink-0" style="color: #2D9B6F;" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/></svg>
+            <span class="text-sm font-medium" style="color: rgba(249,246,240,0.6);">Secure Payments</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4 flex-shrink-0" style="color: #2D9B6F;" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"/></svg>
+            <span class="text-sm font-medium" style="color: rgba(249,246,240,0.6);">Real Reviews</span>
+          </div>
         </div>
       </div>
 
@@ -100,17 +97,21 @@
                style="background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1);
                       backdrop-filter: blur(20px);">
             <div class="flex items-center gap-3 mb-4">
-              <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg"
-                   style="background-color: rgba(240,140,0,0.15);">🔧</div>
+              <div class="w-10 h-10 rounded-xl flex items-center justify-center"
+                   style="background-color: rgba(240,140,0,0.15);">
+                <!-- Wrench icon -->
+                <svg class="w-5 h-5" style="color: #F08C00;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 004.486-6.336l-3.276 3.277a3.004 3.004 0 01-2.25-2.25l3.276-3.276a4.5 4.5 0 00-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437l1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008z"/></svg>
+              </div>
               <div>
                 <p class="font-bold text-white text-sm">Plumbing Service</p>
                 <p class="text-xs" style="color: rgba(249,246,240,0.5);">Pipe Leak Repair</p>
               </div>
             </div>
             <div class="flex items-center justify-between mb-3">
-              <span class="text-xs px-2 py-1 rounded-full font-medium"
+              <span class="flex items-center gap-1 text-xs px-2 py-1 rounded-full font-medium"
                     style="background-color: rgba(45,155,111,0.15); color: #2D9B6F;">
-                ✓ Confirmed
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                Confirmed
               </span>
               <span class="text-sm font-bold" style="color: #F08C00;">₱850</span>
             </div>
@@ -126,7 +127,7 @@
                       backdrop-filter: blur(20px);">
             <div class="flex gap-0.5 mb-2">
               @for (s of [1,2,3,4,5]; track s) {
-                <span style="color: #F08C00;">★</span>
+                <svg class="w-3.5 h-3.5" style="color: #F08C00;" fill="currentColor" viewBox="0 0 24 24"><path d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"/></svg>
               }
             </div>
             <p class="text-xs leading-relaxed mb-3" style="color: rgba(249,246,240,0.7);">
@@ -160,7 +161,6 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
 
-      <!-- Left sticky label -->
       <div class="lg:col-span-4 lg:sticky lg:top-28">
         <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border mb-5"
              style="border-color: rgba(27,58,107,0.15); background-color: rgba(27,58,107,0.05);">
@@ -177,22 +177,16 @@
         </p>
       </div>
 
-      <!-- Right features grid -->
       <div class="lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
-        @for (feature of [
-          {icon: '🛡️', title: 'Verified Providers', desc: 'Every provider is reviewed and approved by our admin team before they can accept bookings.', color: '#1B3A6B'},
-          {icon: '🔒', title: 'Secure Payments', desc: 'Payments are held in escrow and only released after you confirm the job is done.', color: '#F08C00'},
-          {icon: '⭐', title: 'Real Reviews', desc: 'Reviews are tied to verified completed bookings — no fake ratings, ever.', color: '#4EA8DE'},
-          {icon: '💬', title: 'In-App Messaging', desc: 'Chat directly with your service provider before, during, and after your booking.', color: '#2D9B6F'},
-          {icon: '📍', title: 'Hyperlocal', desc: 'Built specifically for Angeles City, Pampanga — filter by barangay and find providers near you.', color: '#F08C00'},
-          {icon: '🔔', title: 'Live Notifications', desc: 'Get notified the moment your booking is confirmed, updated, or completed.', color: '#4EA8DE'}
-        ]; track feature.title; let i = $index) {
+        @for (feature of features; track feature.title; let i = $index) {
           <div class="rounded-3xl p-6 border-2 group hover:shadow-lg transition-all duration-300 animate-fade-up"
                [class]="'delay-' + ((i % 4 + 1) * 100)"
                style="background-color: white; border-color: rgba(27,58,107,0.08);">
-            <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-xl mb-4"
+            <div class="w-11 h-11 rounded-2xl flex items-center justify-center mb-4"
                  [style.background-color]="feature.color + '15'">
-              {{ feature.icon }}
+              <svg class="w-5 h-5" [style.color]="feature.color" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" [attr.d]="feature.icon"/>
+              </svg>
             </div>
             <h3 class="font-bold text-base mb-2" style="color: #1B3A6B;">{{ feature.title }}</h3>
             <p class="text-sm leading-relaxed" style="color: #3D4A5C; opacity: 0.7;">{{ feature.desc }}</p>
@@ -230,29 +224,28 @@
         </h2>
       </div>
       <a routerLink="/services"
-         class="flex-shrink-0 text-sm font-semibold transition-all"
+         class="flex-shrink-0 flex items-center gap-1 text-sm font-semibold transition-all"
          style="color: rgba(249,246,240,0.5);"
          onmouseover="this.style.color='#F08C00'"
          onmouseout="this.style.color='rgba(249,246,240,0.5)'">
-        View all services →
+        View all services
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
       </a>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      @for (cat of [
-        {id: 'plumbing', label: 'Plumbing', icon: '🔧', desc: 'Leaks, pipes, drains, fixtures, and emergency repairs.', color: '#4EA8DE'},
-        {id: 'electrical', label: 'Electrical', icon: '⚡', desc: 'Wiring, outlets, fixtures, and electrical fault diagnosis.', color: '#F08C00'},
-        {id: 'cleaning', label: 'Cleaning', icon: '🧹', desc: 'Deep cleaning, regular maintenance, and move-in/out cleaning.', color: '#2D9B6F'}
-      ]; track cat.id; let i = $index) {
+      @for (cat of categories; track cat.id; let i = $index) {
         <button (click)="goToSearch(cat.id)"
                 class="text-left rounded-3xl p-7 border-2 group hover:scale-[1.02] transition-all duration-300 animate-fade-up"
                 [class]="'delay-' + ((i + 1) * 100)"
                 style="background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1);">
 
           <div class="flex items-start justify-between mb-6">
-            <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl"
+            <div class="w-14 h-14 rounded-2xl flex items-center justify-center"
                  [style.background-color]="cat.color + '20'">
-              {{ cat.icon }}
+              <svg class="w-7 h-7" [style.color]="cat.color" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" [attr.d]="cat.icon"/>
+              </svg>
             </div>
             <span class="text-xs font-medium px-3 py-1.5 rounded-full"
                   style="background-color: rgba(249,246,240,0.08); color: rgba(249,246,240,0.5);">
@@ -269,7 +262,7 @@
           <div class="flex items-center gap-2 font-semibold text-sm transition-all group-hover:gap-3"
                [style.color]="cat.color">
             Browse providers
-            <span class="transition-transform group-hover:translate-x-1">→</span>
+            <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
           </div>
 
         </button>
@@ -297,22 +290,21 @@
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-      @for (step of [
-        {num: '01', title: 'Browse & Filter', desc: 'Search verified providers by category, area, price, and rating.', color: '#1B3A6B'},
-        {num: '02', title: 'Book a Service', desc: 'Choose your service, pick a date and time, and confirm your booking.', color: '#F08C00'},
-        {num: '03', title: 'Pay Securely', desc: 'Payment is held in escrow until you confirm the job is complete.', color: '#4EA8DE'},
-        {num: '04', title: 'Leave a Review', desc: 'Rate your provider and help the community make better decisions.', color: '#2D9B6F'}
-      ]; track step.num; let i = $index) {
+      @for (step of steps; track step.num; let i = $index) {
         <div class="relative rounded-3xl p-7 border-2 animate-fade-up"
              [class]="'delay-' + ((i + 1) * 100)"
              style="background-color: white; border-color: rgba(27,58,107,0.08);">
-          <!-- Step number -->
           <div class="text-6xl font-black mb-4 leading-none"
                [style.color]="step.color + '15'"
                style="font-family: 'Fraunces', serif;">
             {{ step.num }}
           </div>
-          <div class="w-1 h-8 rounded-full mb-4" [style.background-color]="step.color"></div>
+          <div class="w-8 h-8 rounded-xl flex items-center justify-center mb-4"
+               [style.background-color]="step.color + '15'">
+            <svg class="w-4 h-4" [style.color]="step.color" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" [attr.d]="step.icon"/>
+            </svg>
+          </div>
           <h3 class="font-bold text-lg mb-2" style="color: #1B3A6B;">{{ step.title }}</h3>
           <p class="text-sm leading-relaxed" style="color: #3D4A5C; opacity: 0.7;">{{ step.desc }}</p>
         </div>
@@ -347,7 +339,7 @@
            class="relative inline-flex items-center gap-2 px-8 py-4 rounded-xl font-bold text-white overflow-hidden group transition-all"
            style="background-color: #F08C00;">
           <span class="relative z-10">Create Free Account</span>
-          <span class="relative z-10 group-hover:translate-x-1 transition-transform">→</span>
+          <svg class="relative z-10 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
           <div class="absolute inset-0 bg-white/15 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
         </a>
         <a routerLink="/signup" [queryParams]="{type: 'provider'}"
@@ -362,7 +354,7 @@
            class="relative inline-flex items-center gap-2 px-8 py-4 rounded-xl font-bold text-white overflow-hidden group transition-all"
            style="background-color: #F08C00;">
           <span class="relative z-10">Browse Providers</span>
-          <span class="relative z-10 group-hover:translate-x-1 transition-transform">→</span>
+          <svg class="relative z-10 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
           <div class="absolute inset-0 bg-white/15 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
         </a>
         <a routerLink="/dashboard"

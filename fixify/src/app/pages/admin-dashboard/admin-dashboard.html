@@ -5,7 +5,6 @@
           style="background: linear-gradient(135deg, #0f2347 0%, #1B3A6B 100%);">
     <div class="max-w-7xl mx-auto px-6 lg:px-8">
       <div class="flex items-center justify-between h-16">
-
         <div class="flex items-center gap-2.5">
           <div class="w-8 h-8 rounded-lg flex items-center justify-center text-white font-black text-sm"
                style="background: linear-gradient(135deg, #F08C00, #e07800);">F</div>
@@ -13,7 +12,6 @@
             Fixify <span class="text-sm font-medium opacity-60">Admin</span>
           </span>
         </div>
-
         <div class="flex items-center gap-3">
           <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl"
                style="background: rgba(255,255,255,0.08);">
@@ -30,7 +28,6 @@
             Logout
           </button>
         </div>
-
       </div>
     </div>
   </header>
@@ -56,14 +53,13 @@
                 [style.border-bottom-color]="activeTab() === tab.id ? '#1B3A6B' : 'transparent'"
                 [style.color]="activeTab() === tab.id ? '#1B3A6B' : '#3D4A5C'"
                 [style.opacity]="activeTab() === tab.id ? '1' : '0.5'">
-          {{ tab.icon }} {{ tab.label }}
+          {{ tab.label }}
         </button>
       }
     </div>
 
     <!-- ══════════════════════════════ OVERVIEW ══════════ -->
     @if (activeTab() === 'overview') {
-
       @if (loadingStats()) {
         <div class="flex items-center justify-center py-20">
           <div class="w-8 h-8 rounded-full border-4 border-[#4EA8DE] border-t-[#1B3A6B] animate-spin"></div>
@@ -73,18 +69,22 @@
         <!-- Stat cards -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           @for (card of [
-            {label: 'Total Users', value: stats()!.totalUsers, color: '#1B3A6B', icon: '👥'},
-            {label: 'Total Providers', value: stats()!.totalProviders, color: '#4EA8DE', icon: '🔧'},
-            {label: 'Total Bookings', value: stats()!.totalBookings, color: '#F08C00', icon: '📅'},
-            {label: 'Total Reviews', value: stats()!.totalReviews, color: '#2D9B6F', icon: '⭐'}
+            {label: 'Total Users',     value: stats()!.totalUsers,     color: '#1B3A6B', iconKey: 'users'},
+            {label: 'Total Providers', value: stats()!.totalProviders, color: '#4EA8DE', iconKey: 'providers'},
+            {label: 'Total Bookings',  value: stats()!.totalBookings,  color: '#F08C00', iconKey: 'bookings'},
+            {label: 'Total Reviews',   value: stats()!.totalReviews,   color: '#2D9B6F', iconKey: 'reviews'}
           ]; track card.label; let i = $index) {
             <div class="rounded-3xl p-5 border-2 bg-white animate-fade-up"
                  [class]="'delay-' + ((i + 1) * 100)"
                  style="border-color: rgba(27,58,107,0.08);">
               <div class="flex items-start justify-between mb-3">
-                <div class="w-10 h-10 rounded-2xl flex items-center justify-center text-lg"
+                <div class="w-10 h-10 rounded-2xl flex items-center justify-center"
                      [style.background-color]="card.color + '15'">
-                  {{ card.icon }}
+                  <svg class="w-5 h-5" [style.color]="card.color" fill="none" stroke="currentColor"
+                       stroke-width="1.8" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          [attr.d]="statIcons[card.iconKey]"/>
+                  </svg>
                 </div>
               </div>
               <p class="text-3xl font-black mb-1" [style.color]="card.color"
@@ -100,9 +100,9 @@
         <!-- Revenue + booking stats -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
           @for (card of [
-            {label: 'Total Revenue', value: '₱' + (stats()!.totalRevenue || 0).toLocaleString(), color: '#2D9B6F'},
-            {label: 'Pending Bookings', value: stats()!.pendingBookings, color: '#F08C00'},
-            {label: 'Completed Bookings', value: stats()!.completedBookings, color: '#1B3A6B'}
+            {label: 'Total Revenue',      value: '₱' + (stats()!.totalRevenue || 0).toLocaleString(), color: '#2D9B6F'},
+            {label: 'Pending Bookings',   value: stats()!.pendingBookings,                            color: '#F08C00'},
+            {label: 'Completed Bookings', value: stats()!.completedBookings,                          color: '#1B3A6B'}
           ]; track card.label) {
             <div class="rounded-3xl p-6 border-2 text-white relative overflow-hidden noise-overlay"
                  [style.background]="'linear-gradient(135deg, ' + card.color + ', ' + card.color + 'cc)'">
@@ -126,11 +126,16 @@
             <div class="flex flex-col divide-y" style="divide-color: rgba(27,58,107,0.06);">
               @for (item of stats()!.recentActivity!.slice(0, 8); track $index) {
                 <div class="flex items-center gap-4 px-6 py-4">
-                  <div class="w-8 h-8 rounded-xl flex items-center justify-center text-sm flex-shrink-0"
+                  <div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
                        [style.background-color]="item.type === 'booking' ? 'rgba(240,140,0,0.1)' :
                                                   item.type === 'user' ? 'rgba(78,168,222,0.1)' :
                                                   'rgba(45,155,111,0.1)'">
-                    {{ item.type === 'booking' ? '📅' : item.type === 'user' ? '👤' : '⭐' }}
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
+                         [style.color]="item.type === 'booking' ? '#F08C00' :
+                                        item.type === 'user' ? '#4EA8DE' : '#2D9B6F'">
+                      <path stroke-linecap="round" stroke-linejoin="round"
+                            [attr.d]="statIcons[item.type] || statIcons['booking']"/>
+                    </svg>
                   </div>
                   <div class="flex-1 min-w-0">
                     <p class="text-sm font-medium truncate" style="color: #1B3A6B;">
@@ -150,7 +155,6 @@
 
     <!-- ══════════════════════════════ USERS ══════════ -->
     @if (activeTab() === 'users') {
-
       <div class="mb-4">
         <input type="text"
                [ngModel]="userSearch()"
@@ -234,7 +238,6 @@
 
     <!-- ══════════════════════════════ PROVIDERS ══════════ -->
     @if (activeTab() === 'providers') {
-
       <div class="mb-4">
         <input type="text"
                [ngModel]="providerSearch()"
@@ -278,9 +281,12 @@
                   {{ provider.providerInfo?.category || 'General' }}
                 </span>
                 @if (provider.providerInfo?.verified) {
-                  <span class="text-xs px-2.5 py-1 rounded-full font-medium"
+                  <span class="flex items-center gap-1 text-xs px-2.5 py-1 rounded-full font-medium"
                         style="background-color: rgba(45,155,111,0.1); color: #2D9B6F;">
-                    ✓ Verified
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
+                    </svg>
+                    Verified
                   </span>
                 } @else {
                   <span class="text-xs px-2.5 py-1 rounded-full font-medium"
@@ -292,17 +298,31 @@
 
               <div class="flex items-center justify-between text-xs mb-4"
                    style="color: #3D4A5C; opacity: 0.5;">
-                <span>⭐ {{ provider.providerInfo?.rating?.toFixed(1) || '0.0' }}</span>
+                <div class="flex items-center gap-1">
+                  <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24" style="color: #F08C00;">
+                    <path d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"/>
+                  </svg>
+                  {{ provider.providerInfo?.rating?.toFixed(1) || '0.0' }}
+                </div>
                 @if (provider.providerInfo?.serviceArea) {
-                  <span>📍 {{ provider.providerInfo!.serviceArea }}</span>
+                  <div class="flex items-center gap-1">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/>
+                    </svg>
+                    {{ provider.providerInfo!.serviceArea }}
+                  </div>
                 }
               </div>
 
               @if (!provider.providerInfo?.verified) {
                 <button (click)="verifyProvider(provider._id)"
-                        class="w-full py-2.5 rounded-2xl text-xs font-bold text-white relative overflow-hidden group"
+                        class="w-full flex items-center justify-center gap-2 py-2.5 rounded-2xl text-xs font-bold text-white relative overflow-hidden group"
                         style="background-color: #2D9B6F;">
-                  <span class="relative z-10">✓ Verify Provider</span>
+                  <svg class="relative z-10 w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
+                  </svg>
+                  <span class="relative z-10">Verify Provider</span>
                   <div class="absolute inset-0 bg-white/15 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
                 </button>
               } @else {
@@ -322,7 +342,6 @@
 
     <!-- ══════════════════════════════ BOOKINGS ══════════ -->
     @if (activeTab() === 'bookings') {
-
       <div class="mb-4">
         <select [ngModel]="bookingFilter()"
                 (ngModelChange)="bookingFilter.set($event)"
@@ -399,7 +418,14 @@
       } @else if (reviews().length === 0) {
         <div class="flex flex-col items-center justify-center py-20 rounded-3xl border-2 bg-white"
              style="border-color: rgba(27,58,107,0.08);">
-          <div class="text-5xl mb-4">⭐</div>
+          <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-4"
+               style="background-color: rgba(240,140,0,0.08);">
+            <svg class="w-8 h-8" style="color: #F08C00; opacity: 0.4;" fill="none" stroke="currentColor"
+                 stroke-width="1.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"/>
+            </svg>
+          </div>
           <p class="font-bold text-lg" style="color: #1B3A6B;">No reviews yet</p>
         </div>
       } @else {
@@ -413,7 +439,10 @@
                     <p class="font-bold text-sm" style="color: #1B3A6B;">
                       {{ getReviewerName(review) }}
                     </p>
-                    <span class="text-xs" style="color: #3D4A5C; opacity: 0.4;">→</span>
+                    <svg class="w-3.5 h-3.5" style="color: #3D4A5C; opacity: 0.4;" fill="none"
+                         stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
+                    </svg>
                     <p class="text-sm" style="color: #3D4A5C; opacity: 0.7;">
                       {{ getReviewProviderName(review) }}
                     </p>

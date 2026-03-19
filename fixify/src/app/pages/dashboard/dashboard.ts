@@ -35,11 +35,11 @@ export class DashboardComponent implements OnInit {
   settingsSuccess = signal('');
   settingsError = signal('');
 
-  readonly tabs: { id: DashboardTab; label: string; icon: string }[] = [
-    { id: 'bookings', label: 'My Bookings', icon: '📋' },
-    { id: 'payments', label: 'Payments', icon: '💳' },
-    { id: 'settings', label: 'Settings', icon: '⚙️' },
-  ];
+readonly tabs: { id: DashboardTab; label: string }[] = [
+  { id: 'bookings', label: 'My Bookings' },
+  { id: 'payments', label: 'Payments' },
+  { id: 'settings', label: 'Settings' },
+];
 
   ngOnInit(): void {
     this.loadBookings();

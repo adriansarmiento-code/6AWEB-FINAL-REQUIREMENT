@@ -1,148 +1,229 @@
 <app-header />
 
-<main style="background-color: #F2E8D9; min-height: 100vh;">
-
-  <!-- Hero -->
-  <section class="py-16 noise-overlay" style="background-color: #1E5C3A;">
-    <div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-      <h1 class="text-4xl font-bold text-white mb-3 animate-fade-up">Contact Us</h1>
-      <p class="text-[#F2E8D9] opacity-75 animate-fade-up delay-100">
-        Have a question or concern? We're here to help.
+<!-- ═══════════════════════════════════════════ HERO ═══ -->
+<section class="relative pt-32 pb-24 overflow-hidden noise-overlay diagonal-cut"
+         style="background: linear-gradient(135deg, #0f2347 0%, #1B3A6B 100%);">
+  <div class="absolute inset-0 pointer-events-none">
+    <div class="absolute w-96 h-96 rounded-full"
+         style="background: radial-gradient(circle, rgba(240,140,0,0.1) 0%, transparent 70%);
+                top: -15%; right: -5%;"></div>
+  </div>
+  <div class="relative z-10 max-w-7xl mx-auto px-6 lg:px-8">
+    <div class="max-w-2xl animate-fade-up">
+      <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border mb-6"
+           style="border-color: rgba(240,140,0,0.3); background-color: rgba(240,140,0,0.08);">
+        <div class="w-1.5 h-1.5 rounded-full" style="background-color: #F08C00;"></div>
+        <span class="text-xs font-bold uppercase tracking-widest" style="color: #F08C00;">
+          Get In Touch
+        </span>
+      </div>
+      <h1 class="text-5xl lg:text-6xl font-black text-white leading-tight mb-5"
+          style="font-family: 'Fraunces', serif;">
+        We're here<br />
+        <span style="-webkit-background-clip: text; -webkit-text-fill-color: transparent;
+                      background-image: linear-gradient(90deg, #F08C00, #ffb347);">
+          to help.
+        </span>
+      </h1>
+      <p class="text-lg leading-relaxed" style="color: rgba(249,246,240,0.65);">
+        Have a question, complaint, or just want to say hi?
+        Send us a message and we'll get back to you within 24 hours.
       </p>
     </div>
-  </section>
+  </div>
+</section>
 
-  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- ═══════════════════════════ MAIN ═══ -->
+<section class="py-20" style="background-color: #F9F6F0;">
+  <div class="max-w-7xl mx-auto px-6 lg:px-8">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
 
-      <!-- Info -->
-      <div class="flex flex-col gap-4">
-        @for (item of info; track item.label) {
-          <div class="bg-white rounded-2xl p-5 border border-[#F2E8D9]">
-            <div class="text-2xl mb-2">{{ item.icon }}</div>
-            <p class="font-bold text-sm mb-1" style="color: #1A2E20;">{{ item.label }}</p>
-            <p class="text-sm" style="color: #1A2E20; opacity: 0.65;">{{ item.value }}</p>
+      <!-- ══════════ CONTACT INFO ══════════ -->
+      <div class="lg:col-span-1 flex flex-col gap-5 animate-fade-up">
+
+@for (info of contactInfo; track info.title; let i = $index) {
+          <div class="rounded-3xl p-6 border-2 bg-white animate-fade-up"
+               [class]="'delay-' + ((i + 1) * 100)"
+               style="border-color: rgba(27,58,107,0.08);">
+            <div class="flex items-start gap-4">
+              <div class="w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0"
+                   style="background-color: rgba(27,58,107,0.07);">
+                <svg class="w-5 h-5" style="color: #1B3A6B;" fill="none" stroke="currentColor"
+                     stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" [attr.d]="info.icon"/>
+                </svg>
+              </div>
+              <div>
+                <p class="font-black text-sm mb-1" style="color: #1B3A6B;">{{ info.title }}</p>
+                @for (line of info.lines; track line) {
+                  <p class="text-sm" style="color: #3D4A5C; opacity: 0.65;">{{ line }}</p>
+                }
+              </div>
+            </div>
           </div>
         }
 
-        <div class="bg-white rounded-2xl p-5 border border-[#F2E8D9]">
-          <p class="font-bold text-sm mb-3" style="color: #1A2E20;">Quick Links</p>
+        <!-- Quick links -->
+        <div class="rounded-3xl p-6 border-2 bg-white animate-fade-up delay-500"
+             style="border-color: rgba(27,58,107,0.08);">
+          <p class="font-black text-sm mb-4" style="color: #1B3A6B;">Quick Links</p>
           <div class="flex flex-col gap-2">
-            <a routerLink="/search"
-               class="text-sm transition-colors"
-               style="color: #1E5C3A;">→ Find a Provider</a>
-            <a routerLink="/services"
-               class="text-sm transition-colors"
-               style="color: #1E5C3A;">→ Browse Services</a>
-            <a routerLink="/about"
-               class="text-sm transition-colors"
-               style="color: #1E5C3A;">→ About Fixify</a>
+            @for (link of [
+              {label: 'Browse Services', route: '/search'},
+              {label: 'Join as Provider', route: '/signup'},
+              {label: 'About Fixify', route: '/about'}
+            ]; track link.label) {
+              <a [routerLink]="link.route"
+                 class="text-sm font-medium flex items-center gap-2 transition-all"
+                 style="color: #4EA8DE;"
+                 onmouseover="this.style.opacity='0.7'"
+                 onmouseout="this.style.opacity='1'">
+                → {{ link.label }}
+              </a>
+            }
           </div>
         </div>
+
       </div>
 
-      <!-- Form -->
-      <div class="lg:col-span-2">
-        <div class="bg-white rounded-2xl p-6 border border-[#F2E8D9]">
+      <!-- ══════════ CONTACT FORM ══════════ -->
+      <div class="lg:col-span-2 animate-fade-up delay-100">
+        <div class="rounded-3xl p-7 sm:p-9 border-2 bg-white"
+             style="border-color: rgba(27,58,107,0.08);">
 
           @if (submitted()) {
-            <div class="text-center py-10 animate-fade-up">
-              <div class="text-5xl mb-4">✅</div>
-              <h3 class="text-xl font-bold mb-2" style="color: #1A2E20;">Message Sent!</h3>
-              <p class="text-sm mb-6" style="color: #1A2E20; opacity: 0.6;">
-                Thank you for reaching out. We'll get back to you within 24 hours.
+            <!-- Success state -->
+            <div class="flex flex-col items-center justify-center py-12 text-center animate-fade-up">
+              <div class="w-20 h-20 rounded-3xl flex items-center justify-center text-4xl mb-5"
+                   style="background: linear-gradient(135deg, rgba(45,155,111,0.15), rgba(45,155,111,0.05));">
+                ✅
+              </div>
+              <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border mb-4"
+                   style="border-color: rgba(45,155,111,0.3); background-color: rgba(45,155,111,0.08);">
+                <span class="text-xs font-bold uppercase tracking-widest" style="color: #2D9B6F;">
+                  Message Sent
+                </span>
+              </div>
+              <h3 class="text-2xl font-black mb-2"
+                  style="color: #1B3A6B; font-family: 'Fraunces', serif;">
+                Thanks, {{ name() }}!
+              </h3>
+              <p class="text-sm mb-6 max-w-sm" style="color: #3D4A5C; opacity: 0.65;">
+                We've received your message and will get back to you within 24 hours.
               </p>
               <button (click)="reset()"
-                      class="px-6 py-2.5 rounded-xl text-sm font-medium text-white"
-                      style="background-color: #1E5C3A;">
+                      class="px-6 py-3 rounded-xl text-sm font-bold border-2 transition-all"
+                      style="border-color: rgba(27,58,107,0.15); color: #1B3A6B;"
+                      onmouseover="this.style.backgroundColor='rgba(27,58,107,0.04)'"
+                      onmouseout="this.style.backgroundColor='transparent'">
                 Send Another Message
               </button>
             </div>
+
           } @else {
-            <h2 class="font-bold text-lg mb-6" style="color: #1A2E20;">Send a Message</h2>
 
-            <form (ngSubmit)="onSubmit()">
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                <div>
-                  <label class="block text-sm font-medium mb-1.5" style="color: #1A2E20;">
-                    Full Name
-                  </label>
-                  <input type="text"
-                         [ngModel]="name()"
-                         (ngModelChange)="name.set($event)"
-                         name="name"
-                         placeholder="Juan dela Cruz"
-                         required
-                         class="w-full px-4 py-2.5 rounded-xl border text-sm outline-none"
-                         style="border-color: #F2E8D9; color: #1A2E20;"
-                         onfocus="this.style.borderColor='#1E5C3A'"
-                         onblur="this.style.borderColor='#F2E8D9'" />
-                </div>
-                <div>
-                  <label class="block text-sm font-medium mb-1.5" style="color: #1A2E20;">
-                    Email Address
-                  </label>
-                  <input type="email"
-                         [ngModel]="email()"
-                         (ngModelChange)="email.set($event)"
-                         name="email"
-                         placeholder="you@example.com"
-                         required
-                         class="w-full px-4 py-2.5 rounded-xl border text-sm outline-none"
-                         style="border-color: #F2E8D9; color: #1A2E20;"
-                         onfocus="this.style.borderColor='#1E5C3A'"
-                         onblur="this.style.borderColor='#F2E8D9'" />
-                </div>
-              </div>
+            <h2 class="font-black text-2xl mb-6"
+                style="color: #1B3A6B; font-family: 'Fraunces', serif;">
+              Send a Message
+            </h2>
 
-              <div class="mb-4">
-                <label class="block text-sm font-medium mb-1.5" style="color: #1A2E20;">
-                  Subject
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+              <!-- Name -->
+              <div>
+                <label class="block text-xs font-bold uppercase tracking-wider mb-2"
+                       style="color: #3D4A5C; opacity: 0.5;">
+                  Your Name <span style="color: #ef4444;">*</span>
                 </label>
-                <select [ngModel]="subject()"
-                        (ngModelChange)="subject.set($event)"
-                        name="subject"
-                        class="w-full px-4 py-2.5 rounded-xl border text-sm outline-none"
-                        style="border-color: #F2E8D9; color: #1A2E20;"
-                        onfocus="this.style.borderColor='#1E5C3A'"
-                        onblur="this.style.borderColor='#F2E8D9'">
-                  <option value="">Select a subject...</option>
-                  @for (s of subjects; track s) {
-                    <option [value]="s">{{ s }}</option>
-                  }
-                </select>
+                <input type="text"
+                       [ngModel]="name()"
+                       (ngModelChange)="name.set($event)"
+                       name="name"
+                       placeholder="Juan dela Cruz"
+                       class="w-full px-4 py-3 rounded-2xl border-2 text-sm outline-none transition-all"
+                       style="border-color: rgba(27,58,107,0.12); color: #1B3A6B;"
+                       onfocus="this.style.borderColor='#1B3A6B'"
+                       onblur="this.style.borderColor='rgba(27,58,107,0.12)'" />
               </div>
 
-              <div class="mb-6">
-                <label class="block text-sm font-medium mb-1.5" style="color: #1A2E20;">
-                  Message
+              <!-- Email -->
+              <div>
+                <label class="block text-xs font-bold uppercase tracking-wider mb-2"
+                       style="color: #3D4A5C; opacity: 0.5;">
+                  Email Address <span style="color: #ef4444;">*</span>
                 </label>
-                <textarea [ngModel]="message()"
-                          (ngModelChange)="message.set($event)"
-                          name="message"
-                          rows="5"
-                          placeholder="Tell us how we can help..."
-                          required
-                          class="w-full px-4 py-2.5 rounded-xl border text-sm outline-none resize-none"
-                          style="border-color: #F2E8D9; color: #1A2E20;"
-                          onfocus="this.style.borderColor='#1E5C3A'"
-                          onblur="this.style.borderColor='#F2E8D9'"></textarea>
+                <input type="email"
+                       [ngModel]="email()"
+                       (ngModelChange)="email.set($event)"
+                       name="email"
+                       placeholder="juan@email.com"
+                       class="w-full px-4 py-3 rounded-2xl border-2 text-sm outline-none transition-all"
+                       style="border-color: rgba(27,58,107,0.12); color: #1B3A6B;"
+                       onfocus="this.style.borderColor='#1B3A6B'"
+                       onblur="this.style.borderColor='rgba(27,58,107,0.12)'" />
               </div>
+            </div>
 
-              <button type="submit"
-                      [disabled]="!name() || !email() || !message()"
-                      class="px-6 py-3 rounded-xl font-semibold text-sm text-white transition-all disabled:opacity-50"
-                      style="background-color: #1E5C3A;">
-                Send Message
-              </button>
-            </form>
+            <!-- Subject -->
+            <div class="mb-4">
+              <label class="block text-xs font-bold uppercase tracking-wider mb-2"
+                     style="color: #3D4A5C; opacity: 0.5;">
+                Subject <span style="color: #ef4444;">*</span>
+              </label>
+              <select [ngModel]="subject()"
+                      (ngModelChange)="subject.set($event)"
+                      name="subject"
+                      class="w-full px-4 py-3 rounded-2xl border-2 text-sm outline-none transition-all"
+                      style="border-color: rgba(27,58,107,0.12); color: #1B3A6B; background-color: white;"
+                      onfocus="this.style.borderColor='#1B3A6B'"
+                      onblur="this.style.borderColor='rgba(27,58,107,0.12)'">
+                <option value="">Select a topic...</option>
+                @for (s of subjects; track s) {
+                  <option [value]="s">{{ s }}</option>
+                }
+              </select>
+            </div>
+
+            <!-- Message -->
+            <div class="mb-7">
+              <label class="block text-xs font-bold uppercase tracking-wider mb-2"
+                     style="color: #3D4A5C; opacity: 0.5;">
+                Message <span style="color: #ef4444;">*</span>
+              </label>
+              <textarea [ngModel]="message()"
+                        (ngModelChange)="message.set($event)"
+                        name="message"
+                        rows="5"
+                        placeholder="Tell us how we can help..."
+                        class="w-full px-4 py-3 rounded-2xl border-2 text-sm outline-none resize-none transition-all"
+                        style="border-color: rgba(27,58,107,0.12); color: #1B3A6B;"
+                        onfocus="this.style.borderColor='#1B3A6B'"
+                        onblur="this.style.borderColor='rgba(27,58,107,0.12)'"></textarea>
+              <p class="text-xs mt-1 text-right" style="color: #3D4A5C; opacity: 0.35;">
+                {{ message().length }} characters
+              </p>
+            </div>
+
+            <button (click)="onSubmit()"
+                    [disabled]="submitting() || !name() || !email() || !subject() || !message()"
+                    class="w-full py-4 rounded-2xl font-bold text-white relative overflow-hidden group disabled:opacity-50 transition-all"
+                    style="background-color: #F08C00;">
+              @if (submitting()) {
+                <span class="relative z-10 flex items-center justify-center gap-3">
+                  <span class="w-4 h-4 rounded-full border-2 border-white border-t-transparent animate-spin"></span>
+                  Sending...
+                </span>
+              } @else {
+                <span class="relative z-10">Send Message →</span>
+                <div class="absolute inset-0 bg-white/15 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+              }
+            </button>
+
           }
-
         </div>
       </div>
+
     </div>
   </div>
-
-</main>
+</section>
 
 <app-footer />
